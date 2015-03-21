@@ -1,3 +1,5 @@
+package muffinc.frog.test.filereader;
+
 /**
  * FROG, a Face Recognition Gallery in Java
  * Copyright (C) 2015 Jun Zhou
@@ -17,5 +19,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * zj45499 (at) gmail (dot) com
  */
-public class Test {
+public class FolderSearch {
+
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     */
+    public static void main(String[] args) {
+
+    }
+
 }
