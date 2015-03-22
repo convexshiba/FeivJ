@@ -33,4 +33,8 @@ public class TrainingFaces {
         this.faces = faces;
         this.faceLength = faceLength;
     }
+
+    public static void main(String[] args) {
+
+    }
 }

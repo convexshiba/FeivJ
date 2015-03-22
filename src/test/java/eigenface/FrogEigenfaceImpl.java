@@ -27,4 +27,24 @@ public class FrogEigenfaceImpl implements FrogEigenface {
     public FrogEigenfaceImpl(DenseMatrix64F imageMatrix) {
         this.imageMatrix = imageMatrix;
     }
+
+    @Override
+    public void addTrainingFace(Face aFace) {
+
+    }
+
+    @Override
+    public void removeTrainingFace(Face aFace) {
+
+    }
+
+    @Override
+    public TrainingFaces getTrainingFaces() {
+        return null;
+    }
+
+    @Override
+    public Face identifyFace(Face aFace) {
+        return null;
+    }
 }

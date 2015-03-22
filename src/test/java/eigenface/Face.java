@@ -1,5 +1,7 @@
 package muffinc.frog.test.eigenface;
 
+import java.util.Arrays;
+
 /**
  * FROG, a Face Recognition Gallery in Java
  * Copyright (C) 2015 Jun Zhou
@@ -20,13 +22,13 @@ package muffinc.frog.test.eigenface;
  * zj45499 (at) gmail (dot) com
  */
 public class Face implements Cloneable {
-    private double[] faceVector;
-    private double[] faceCoeficients;
     private final String faceId;
 
-    public Face(double[] faceVector, double[] faceCoeficients, String faceId) {
+    private double[] faceVector;
+    private double[] faceCoeficients;
+
+    public Face(String faceId, double[] faceVector) {
         this.faceVector = faceVector;
-        this.faceCoeficients = faceCoeficients;
         this.faceId = faceId;
     }
 
@@ -42,8 +44,38 @@ public class Face implements Cloneable {
         return faceId;
     }
 
+    public void setFaceCoeficients(double[] faceCoeficients) {
+        this.faceCoeficients = faceCoeficients;
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(faceVector);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public String toString() {
+        return faceId;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        super.clone();
+        return new Face(faceId, Arrays.copyOf(faceVector, faceVector.length));
+    }
+
     public Face deepCopy() {
-        return null;
+        try {
+            Face f = (Face)this.clone();
+            return f;
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
     }
 
 
