@@ -1,4 +1,6 @@
-package muffinc.frog.test.filereader;
+package muffinc.frog.test.eigenface;
+
+import org.ejml.data.DenseMatrix64F;
 
 /**
  * FROG, a Face Recognition Gallery in Java
@@ -19,15 +21,10 @@ package muffinc.frog.test.filereader;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * zj45499 (at) gmail (dot) com
  */
-public class FolderSearch {
+public class FrogEigenfaceImpl implements FrogEigenface {
+    DenseMatrix64F imageMatrix;
 
-    /**
-     * The entry point of application.
-     *
-     * @param args the input arguments
-     */
-    public static void main(String[] args) {
-
+    public FrogEigenfaceImpl(DenseMatrix64F imageMatrix) {
+        this.imageMatrix = imageMatrix;
     }
-
 }
