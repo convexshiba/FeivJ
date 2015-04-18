@@ -1,5 +1,6 @@
 package muffinc.frog.test.eigenface;
 
+import org.bytedeco.javacpp.opencv_core.*;
 import java.util.Arrays;
 
 /**
@@ -22,14 +23,19 @@ import java.util.Arrays;
  * zj45499 (at) gmail (dot) com
  */
 public class Face implements Cloneable {
-    private final String faceId;
+    final String faceId;
 
-    private double[] faceVector;
-    private double[] faceCoeficients;
+    double[] faceVector;
+    double[] faceCoeficients;
 
     public Face(String faceId, double[] faceVector) {
         this.faceVector = faceVector;
         this.faceId = faceId;
+    }
+
+    public Face(String faceID, IplImage img) {
+        this.faceId = faceID;
+
     }
 
     public double[] getFaceVector() {

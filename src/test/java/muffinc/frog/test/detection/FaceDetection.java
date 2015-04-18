@@ -1,6 +1,9 @@
 package muffinc.frog.test.detection;
 
 import org.bytedeco.javacpp.opencv_core.IplImage;
+import org.bytedeco.javacv.CanvasFrame;
+
+import javax.swing.*;
 
 import static org.bytedeco.javacpp.opencv_core.*;
 import static org.bytedeco.javacpp.opencv_highgui.*;
@@ -32,8 +35,14 @@ public class FaceDetection {
             "/Users/Meth/Dropbox/Thesis/FROG/src/test/resources/xml/haarcascade_frontalface_default.xml";
 
     public static void main(String[] args) {
-        IplImage img = cvLoadImage("/Users/Meth/Dropbox/Thesis/FROG/src/test/resources/testtesttest/201404201524468276e.jpg");
-        detect(img);
+        long total = 0;
+        for (int i = 1; i >= 1; i--) {
+            IplImage img = cvLoadImage("/Users/Meth/Dropbox/Thesis/FROG/src/test/resources/FERET2/00728fa010_941201.tif");
+            long t1 = System.currentTimeMillis();
+            detect(img);
+            total += System.currentTimeMillis() - t1;
+        }
+        System.out.println(total / 200);
     }
 
     public static void detect(IplImage img) {
@@ -69,9 +78,12 @@ public class FaceDetection {
                     CV_AA,
                     0);
         }
-
-        cvShowImage("Detection Result", img);
-        cvWaitKey(0);
+        CanvasFrame canvas = new CanvasFrame("LuckyFrame");
+        canvas.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        canvas.showImage(img);
+        canvas.pack();
+//        cvShowImage("Detection Result", img);
+//        cvWaitKey(0);
     }
 
 }
