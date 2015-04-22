@@ -7,6 +7,7 @@ import org.ejml.simple.SimpleMatrix;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 /**
  * FROG, a Face Recognition Gallery in Java
@@ -55,7 +56,7 @@ public class TrainingFaces {
                          int numOfComponents) throws Exception{
 
         if (numOfComponents >= trainningSet.size()) {
-            throw new Exception("Dimension overflow");
+            throw new IllegalArgumentException("Dimension overflow");
         }
 
         this.trainningSet = trainningSet;
@@ -105,10 +106,10 @@ public class TrainingFaces {
         SimpleMatrix eigenVectors = A.mult(new SimpleMatrix(EigenOps.createMatrixV(d.getEVD())));
         SimpleMatrix selectedEigenVectors = new SimpleMatrix(eigenVectors.numRows(), indexes.length);
         for (int i = 0; i < indexes.length; i++) {
-            selectedEigenVectors.insertIntoThis(1, i ,eigenVectors.extractVector(false, indexes[i]));
+            selectedEigenVectors.insertIntoThis(0, i ,eigenVectors.extractVector(false, indexes[i]).divide(eigenVectors.extractVector(false, indexes[i]).normF()));
         }
 
-        selectedEigenVectors = selectedEigenVectors.divide(selectedEigenVectors.normF());
+//        selectedEigenVectors = selectedEigenVectors.divide(selectedEigenVectors.normF());
 
         return selectedEigenVectors;
     }
@@ -119,10 +120,10 @@ public class TrainingFaces {
         SimpleMatrix sum = new SimpleMatrix(rows, 1);
 
         for (SimpleMatrix anInput : input) {
-            sum.plus(anInput);
+            sum = sum.plus(anInput);
         }
 
-        return sum.divide(((double) 1) / length);
+        return sum.divide(length);
     }
 
     private class mix implements Comparable {
@@ -176,6 +177,31 @@ public class TrainingFaces {
 
     public ArrayList<SimpleMatrix> getTrainningSet() {
         return trainningSet;
+    }
+
+    public static void main(String[] args) {
+        Random rand = new Random(9989);
+        double[][] data = new double[20][1];
+        ArrayList<SimpleMatrix> a = new ArrayList<SimpleMatrix>();
+        ArrayList<String> l = new ArrayList<String>();
+
+        for (int t = 0; t < 15; t++) {
+            for (int i = 0; i < 20; i++) {
+                for (int j = 0; j < 1; j++) {
+                    data[i][j] = rand.nextInt(100);
+                    SimpleMatrix m = new SimpleMatrix(data);
+                    a.add(m);
+                    l.add(String.valueOf(t));
+                }
+            }
+        }
+
+        try {
+            TrainingFaces tf = new TrainingFaces(a, l, 10);
+            tf.getOutput().print();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

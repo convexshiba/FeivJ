@@ -82,7 +82,6 @@ public class FileManager {
     public static SimpleMatrix convertIMGtoMatrix(String address) throws IOException {
         BufferedImage img = ImageIO.read(new File(address));
         byte[] imageBytes = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
-        System.out.println(Arrays.toString(imageBytes));
 
 
         FileInputStream fileInputStream = new FileInputStream(address);
@@ -214,7 +213,8 @@ public class FileManager {
 
     public static void main(String[] args) {
         try {
-            convertIMGtoMatrix("/Users/Meth/Dropbox/Thesis/FROG/src/test/resources/test/00002fb010_940422.tif");
+            SimpleMatrix a = convertIMGtoMatrix("/Users/Meth/Documents/FROG/src/test/faces/s1/1.pgm");
+            normalize(a.extractVector(false, 0)).print();
         } catch (IOException e) {
             e.printStackTrace();
         }
