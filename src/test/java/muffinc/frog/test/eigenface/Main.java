@@ -28,7 +28,7 @@ package muffinc.frog.test.eigenface;
 //import static org.bytedeco.javacpp.opencv_calib3d.*;
 //import static org.bytedeco.javacpp.opencv_objdetect.*;
 
-import org.ejml.simple.SimpleMatrix;
+import muffinc.frog.test.Jama.Matrix;
 
 import java.io.IOException;
 import java.util.*;
@@ -60,17 +60,14 @@ public class Main {
 //		test(2,60,1,3,2);
 //		test(2,60,2,3,2);
 
-        final int NUMBER_OF_PEOPLE = 10;
-
-        int componentsRetained = 20;
+        int componentsRetained = 25;
         int featureExtractionMode = 0;
         int trainNums = 5;
 
-
-        //generate random training pictures, label other picture as test
+        //set trainSet and testSet
         HashMap<String, ArrayList<Integer>> trainMap = new HashMap();
         HashMap<String, ArrayList<Integer>> testMap = new HashMap();
-        for(int i = 1; i <= NUMBER_OF_PEOPLE; i ++ ){
+        for(int i = 1; i <= 10; i ++ ){
             String label = "s"+i;
             ArrayList<Integer> train = generateTrainNums(trainNums);
             ArrayList<Integer> test = generateTestNums(train);
@@ -78,7 +75,8 @@ public class Main {
             testMap.put(label, test);
         }
 
-        ArrayList<SimpleMatrix> trainingSet = new ArrayList<SimpleMatrix>();
+        //trainingSet & respective labels
+        ArrayList<Matrix> trainingSet = new ArrayList<Matrix>();
         ArrayList<String> labels = new ArrayList<String>();
 
         Set<String> labelSet = trainMap.keySet();
@@ -88,9 +86,9 @@ public class Main {
             ArrayList<Integer> cases = trainMap.get(label);
             for(int i = 0; i < cases.size(); i ++){
                 String filePath = "/Users/Meth/Documents/FROG/src/test/faces/"+label+"/"+cases.get(i)+".pgm";
-                SimpleMatrix temp;
+                Matrix temp;
                 try {
-                    temp = FileManager.convertIMGtoMatrix(filePath);
+                    temp = FileManager.convertPGMtoMatrix(filePath);
                     trainingSet.add(vectorize(temp));
                     labels.add(label);
                 } catch (IOException e) {
@@ -101,56 +99,23 @@ public class Main {
         }
 
 
+        //set featureExtraction
         try{
-            TrainingFaces fe = new TrainingFaces(trainingSet, labels,componentsRetained);
+            PCA fe = new PCA(trainingSet, labels,componentsRetained);
 
-            fe.getOutput().print();
-
-            FileManager.convertMatricetoImage(fe.getOutput(), featureExtractionMode);
-
-            //PCA Reconstruction
-//
-//			SimpleMatrix hhMatrix = fe.reconstruct(50, 60);
-//			FileManager.convertToImage(hhMatrix, 60);
-//
-//			hhMatrix = ((PCA) fe).reconstruct(50, 40);
-//			FileManager.convertToImage(hhMatrix, 40);
-//
-//			hhMatrix = ((PCA) fe).reconstruct(50, 20);
-//			FileManager.convertToImage(hhMatrix, 20);
-//
-//			hhMatrix = ((PCA) fe).reconstruct(50, 10);
-//			FileManager.convertToImage(hhMatrix, 10);
-//
-//			hhMatrix = ((PCA) fe).reconstruct(50, 6);
-//			FileManager.convertToImage(hhMatrix, 6);
-//
-//			hhMatrix = ((PCA) fe).reconstruct(50, 2);
-//			FileManager.convertToImage(hhMatrix, 2);
-//
-//			hhMatrix = ((PCA)fe).getTrainingSet().get(50);
+//			if(featureExtractionMode == 0)
+//				fe = new PCA(trainingSet, labels,componentsRetained);
+//			else if(featureExtractionMode == 1)
+//				fe = new LDA(trainingSet, labels,componentsRetained);
+//			else if(featureExtractionMode == 2)
+//				fe = new LPP(trainingSet, labels,componentsRetained);
 
 
-
-
-            //use test cases to validate
-            //testingSet   trueLables
-//            ArrayList<projectedFaceMatrix> projectedTrainingSet = fe.getProjectedTrainingSet();
-//            int accurateNum = 0;
-//            for(int i = 0 ; i < testingSet.size(); i ++){
-//                Matrix testCase = fe.getW().transpose().times(testingSet.get(i).minus(fe.getMeanMatrix()));
-//                String result = KNN.assignLabel(projectedTrainingSet.toArray(new projectedTrainingMatrix[0]), testCase, knn_k, metric);
-//
-//                if(result == trueLabels.get(i))
-//                    accurateNum ++;
-//            }
-//            double accuracy = accurateNum / (double)testingSet.size();
-//            System.out.println("The accuracy is "+accuracy);
+            FileManager.convertMatricetoImage(fe.getW(), featureExtractionMode);
 
         }catch(Exception e){
             System.out.println(e.getMessage());
         }
-
 
     }
 
@@ -211,7 +176,7 @@ public class Main {
         }
 
         //trainingSet & respective labels
-        ArrayList<SimpleMatrix> trainingSet = new ArrayList<SimpleMatrix>();
+        ArrayList<Matrix> trainingSet = new ArrayList<Matrix>();
         ArrayList<String> labels = new ArrayList<String>();
 
         Set<String> labelSet = trainMap.keySet();
@@ -221,9 +186,9 @@ public class Main {
             ArrayList<Integer> cases = trainMap.get(label);
             for(int i = 0; i < cases.size(); i ++){
                 String filePath = "faces/"+label+"/"+cases.get(i)+".pgm";
-                SimpleMatrix temp;
+                Matrix temp;
                 try {
-                    temp = FileManager.convertIMGtoMatrix(filePath);
+                    temp = FileManager.convertPGMtoMatrix(filePath);
                     trainingSet.add(vectorize(temp));
                     labels.add(label);
                 } catch (IOException e) {
@@ -234,7 +199,7 @@ public class Main {
         }
 
         //testingSet & respective true labels
-        ArrayList<SimpleMatrix> testingSet = new ArrayList<SimpleMatrix>();
+        ArrayList<Matrix> testingSet = new ArrayList<Matrix>();
         ArrayList<String> trueLabels = new ArrayList<String>();
 
         labelSet = testMap.keySet();
@@ -244,9 +209,9 @@ public class Main {
             ArrayList<Integer> cases = testMap.get(label);
             for(int i = 0; i < cases.size(); i ++){
                 String filePath = "faces/"+label+"/"+cases.get(i)+".pgm";
-                SimpleMatrix temp;
+                Matrix temp;
                 try {
-                    temp = FileManager.convertIMGtoMatrix(filePath);
+                    temp = FileManager.convertPGMtoMatrix(filePath);
                     testingSet.add(vectorize(temp));
                     trueLabels.add(label);
                 } catch (IOException e) {
@@ -258,9 +223,9 @@ public class Main {
 
         //set featureExtraction
         try{
-            TrainingFaces fe = new TrainingFaces(trainingSet, labels,componentsRetained);
+//            TrainingFaces fe = new TrainingFaces(trainingSet, labels,componentsRetained);
 
-            FileManager.convertMatricetoImage(fe.getOutput(), featureExtractionMode);
+//            FileManager_SM.convertMatricetoImage(fe.getOutput(), featureExtractionMode);
 
             //PCA Reconstruction
 //
@@ -336,20 +301,20 @@ public class Main {
 
     //correct
     //Convert a m by n matrix into a m*n by 1 matrix
-    public static SimpleMatrix vectorize(SimpleMatrix input){
-/*        int m = input.numRows();
-        int n = input.numCols();
+    public static Matrix vectorize(Matrix input){
+        int m = input.getRowDimension();
+        int n = input.getColumnDimension();
 
-        SimpleMatrix result = new SimpleMatrix(m*n,1);
+        Matrix result = new Matrix(m*n,1);
         for(int p = 0; p < n; p ++){
             for(int q = 0; q < m; q ++){
                 result.set(p*m+q, 0, input.get(q, p));
             }
         }
-        return result;*/
+        return result;
 
-        input.reshape(input.numRows() * input.numCols(), 1);
-        return input;
+//        input.reshape(input.numRows() * input.numCols(), 1);
+//        return input;
     }
 
 }

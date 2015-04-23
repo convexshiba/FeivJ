@@ -1,14 +1,20 @@
 package muffinc.frog.test.eigenface;
 
-import muffinc.frog.test.Jama.Matrix;
+import org.ejml.simple.SimpleMatrix;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.awt.image.WritableRaster;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -30,9 +36,54 @@ import java.util.Scanner;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * zj45499 (at) gmail (dot) com
  */
-public class FileManager {
-    // Convert PGM to Matrix
-    public static Matrix convertPGMtoMatrix(String address) throws IOException {
+public class FileManager_SM {
+
+    public static class ImageSearcher extends SimpleFileVisitor<Path> {
+        private final PathMatcher matcher;
+        private ArrayList<Path> files = new ArrayList<Path>();
+        private int counter;
+//        private Path dest = Paths.get("/Users/Meth/Dropbox/Thesis/FROG/src/test/resources/copy/");
+
+        ImageSearcher(String pattern) {
+            matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern);
+            counter = 0;
+        }
+
+        void find(Path file) {
+            Path name = file.getFileName();
+            if (matcher.matches(name)) {
+                System.out.println("Matched" + name);
+                files.add(file);
+                counter++;
+            }
+        }
+
+        void done() {
+            System.out.println(counter);
+        }
+
+        @Override
+        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+            find(file);
+            return FileVisitResult.CONTINUE;
+        }
+
+        public List<Path> getPaths() {
+            return files;
+        }
+
+    }
+
+    public void searchForImage(String directory) {
+        final Path rootDir = Paths.get(directory);
+//        final Path
+    }
+
+    public static SimpleMatrix convertIMGtoMatrix(String address) throws IOException {
+        BufferedImage img = ImageIO.read(new File(address));
+        byte[] imageBytes = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
+
+
         FileInputStream fileInputStream = new FileInputStream(address);
         Scanner scan = new Scanner(fileInputStream);
 
@@ -67,12 +118,12 @@ public class FileManager {
             }
         }
 
-        return new Matrix(data2D);
+        return new SimpleMatrix(data2D);
     }
 
     // Convert Matrix to PGM with numbers of row and column
-    public static Matrix normalize(Matrix input){
-        int row = input.getRowDimension();
+    public static SimpleMatrix normalize(SimpleMatrix input){
+        int row = input.numRows();
 
         for(int i = 0; i < row; i ++){
             input.set(i, 0, 0-input.get(i, 0));
@@ -91,7 +142,7 @@ public class FileManager {
 
         }
 
-        Matrix result = new Matrix(112,92);
+        SimpleMatrix result = new SimpleMatrix(112,92);
         for(int p = 0; p < 92; p ++){
             for(int q = 0; q < 112; q ++){
                 double value = input.get(p*112+q, 0);
@@ -104,15 +155,13 @@ public class FileManager {
 
     }
 
-
     //convert matrices to images
-    public static void convertMatricetoImage(Matrix x, int featureMode) throws IOException{
-        int row = x.getRowDimension();
-        int column = x.getColumnDimension();
+    public static void convertMatricetoImage(SimpleMatrix x, int featureMode) throws IOException{
+        int row = x.numRows();
+        int column = x.numCols();
 
         for(int i = 0; i < column; i ++){
-            Matrix eigen = normalize(x.getMatrix(0, row-1, i, i));
-
+            SimpleMatrix eigen = normalize(x.extractVector(false, i));
 
 
             BufferedImage img = new BufferedImage(92,112,BufferedImage.TYPE_BYTE_GRAY);
@@ -136,13 +185,14 @@ public class FileManager {
             if(!file.exists())
                 file.createNewFile();
 
-            ImageIO.write(img, "bmp", file);
+            ImageIO.write(img,"bmp",file);
         }
 
     }
 
+
     //convert single matrix to an image
-    public static void convertToImage(Matrix input, int name) throws IOException{
+    public static void convertToImage(SimpleMatrix input, int name) throws IOException{
         File file = new File(name+" dimensions.bmp");
         if(!file.exists())
             file.createNewFile();
@@ -160,4 +210,14 @@ public class FileManager {
         ImageIO.write(img,"bmp",file);
 
     }
+
+    public static void main(String[] args) {
+        try {
+            SimpleMatrix a = convertIMGtoMatrix("/Users/Meth/Documents/FROG/src/test/faces/s1/1.pgm");
+            normalize(a.extractVector(false, 0)).print();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

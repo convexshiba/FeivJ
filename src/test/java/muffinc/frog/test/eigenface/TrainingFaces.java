@@ -1,6 +1,9 @@
 package muffinc.frog.test.eigenface;
 
-import org.ejml.interfaces.decomposition.EigenDecomposition;
+//import org.ejml.ops.EigenOps;
+//import org.ejml.simple.SimpleEVD;
+//import org.ejml.simple.SimpleMatrix;
+
 import org.ejml.ops.EigenOps;
 import org.ejml.simple.SimpleEVD;
 import org.ejml.simple.SimpleMatrix;
