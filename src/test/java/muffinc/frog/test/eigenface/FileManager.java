@@ -158,6 +158,5 @@ public class FileManager {
         }
 
         ImageIO.write(img,"bmp",file);
-
     }
 }

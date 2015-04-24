@@ -36,7 +36,7 @@ import java.util.Scanner;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * zj45499 (at) gmail (dot) com
  */
-public class FileManager_SM {
+public class FileManager_SimpleMatrix {
 
     public static class ImageSearcher extends SimpleFileVisitor<Path> {
         private final PathMatcher matcher;

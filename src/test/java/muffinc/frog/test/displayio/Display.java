@@ -29,6 +29,7 @@ public class Display {
 
     public static void display(Image image) {
         JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(new FlowLayout());
         frame.getContentPane().add(new JLabel(new ImageIcon(image)));
         frame.pack();

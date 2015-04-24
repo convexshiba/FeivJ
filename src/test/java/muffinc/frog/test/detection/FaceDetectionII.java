@@ -1,5 +1,7 @@
 package muffinc.frog.test.detection;
 
+import muffinc.frog.test.displayio.Display;
+import muffinc.frog.test.helper.FileHelper;
 import org.bytedeco.javacpp.opencv_core;
 import org.bytedeco.javacpp.opencv_core.IplImage;
 import org.bytedeco.javacpp.opencv_objdetect;
@@ -38,6 +40,9 @@ public class FaceDetectionII {
     public static final String CASCADE_FILE =
             "/Users/Meth/Documents/FROG/src/test/resources/xml/haarcascade_frontalface_alt.xml";
 
+    public static final String FILE =
+            "/Users/Meth/Documents/FROG/src/test/resources/testtesttest copy/201404201524468276e.jpg";
+
 
     public static void main(String[] args) throws Exception {
         // This will redirect the OpenCV errors to the Java console to give you
@@ -45,7 +50,7 @@ public class FaceDetectionII {
         new JavaCvErrorCallback();
 
         // Load the original image.
-        IplImage originalImage = cvLoadImage("/Users/Meth/Documents/FROG/src/test/resources/testtesttest copy/201404201524468276e.jpg", 1);
+        IplImage originalImage = cvLoadImage(FILE, 1);
 
         // We need a grayscale image in order to do the recognition, so we
         // create a new image of the same size as the original one.
@@ -55,6 +60,9 @@ public class FaceDetectionII {
         // We convert the original image to grayscale.
         cvCvtColor(originalImage, grayImage, CV_BGR2GRAY);
 
+        // Save greysacle image
+//        cvSaveImage(FileHelper.addNameSuffix(FILE, "grey"), grayImage);
+
         CvMemStorage storage = CvMemStorage.create();
 
         // We instantiate a classifier cascade to be used for detection, using the cascade definition.
@@ -62,7 +70,10 @@ public class FaceDetectionII {
                 cvLoad(CASCADE_FILE));
 
         // We detect the faces.
-        CvSeq faces = cvHaarDetectObjects(grayImage, cascade, storage, 1.1, 1, 0);
+        CvSeq faces = cvHaarDetectObjects(grayImage, cascade, storage, 1.1, 1, CV_HAAR_SCALE_IMAGE);
+
+        // Clear storage.
+        cvClearMemStorage(storage);
 
         //We iterate over the discovered faces and draw yellow rectangles around them.
         for (int i = 0; i < faces.total(); i++) {
@@ -72,7 +83,8 @@ public class FaceDetectionII {
         }
 
         // Save the image to a new file.
-        cvSaveImage("/Users/Meth/Documents/FROG/src/test/resources/testtesttest copy/2011728152657197_123.jpg", originalImage);
+//        cvSaveImage(FileHelper.addNameSuffix(FILE, "detected"), originalImage);
+        Display.display(originalImage.getBufferedImage());
     }
 
 

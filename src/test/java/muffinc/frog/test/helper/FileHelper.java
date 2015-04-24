@@ -1,6 +1,4 @@
-package muffinc.frog.test.eigenface;
-
-import org.ejml.data.DenseMatrix64F;
+package muffinc.frog.test.helper;
 
 /**
  * FROG, a Face Recognition Gallery in Java
@@ -21,26 +19,23 @@ import org.ejml.data.DenseMatrix64F;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * zj45499 (at) gmail (dot) com
  */
-public class FrogEigenfaceImpl implements FrogEigenface {
-    DenseMatrix64F imageMatrix;
+public class FileHelper {
+    public static String addNameSuffix(String oldName, String suffix) {
+        Integer dotIndex = null;
+        for (int i = oldName.length() - 1; i >= 0; i--) {
+            if (oldName.charAt(i) == '.') {
+                dotIndex = i;
+                break;
+            }
+        }
 
-    public FrogEigenfaceImpl(DenseMatrix64F imageMatrix) {
-        this.imageMatrix = imageMatrix;
+        if (dotIndex == null) {
+            throw new IllegalArgumentException(oldName + "is not a valid filename");
+        } else {
+            return oldName.substring(0, dotIndex) + "_" + suffix + oldName.substring(dotIndex);
+        }
     }
 
-    public void addTrainingFace(Face aFace) {
-
-    }
-
-    public void removeTrainingFace(Face aFace) {
-
-    }
-
-    public TrainingFaces getTrainingFaces() {
-        return null;
-    }
-
-    public Face identifyFace(Face aFace) {
-        return null;
+    public static void main(String[] args) {
     }
 }
