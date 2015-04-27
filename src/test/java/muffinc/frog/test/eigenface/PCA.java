@@ -67,6 +67,8 @@ public class PCA {
 		EigenvalueDecomposition feature = XTX.eig();
 		double[] d = feature.getd();
 
+        System.out.println(d.length);
+
 		assert d.length >= K : "number of eigenvalues is less than K";
 		int[] indexes = this.getIndexesOfKEigenvalues(d, K);
 

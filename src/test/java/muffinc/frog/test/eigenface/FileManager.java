@@ -113,8 +113,6 @@ public class FileManager {
         for(int i = 0; i < column; i ++){
             Matrix eigen = normalize(x.getMatrix(0, row-1, i, i));
 
-
-
             BufferedImage img = new BufferedImage(92,112,BufferedImage.TYPE_BYTE_GRAY);
             WritableRaster raster = img.getRaster();
 
@@ -138,7 +136,22 @@ public class FileManager {
 
             ImageIO.write(img, "bmp", file);
         }
+    }
 
+    public static BufferedImage convertVectorToImage(Matrix xCol) {
+        Matrix face = normalize(xCol);
+
+        BufferedImage img = new BufferedImage(92,112, BufferedImage.TYPE_BYTE_GRAY);
+        WritableRaster raster = img.getRaster();
+
+        for(int m = 0; m < 112; m ++ ){
+            for(int n = 0; n < 92; n ++){
+                int value = (int)face.get(m, n);
+                raster.setSample(n,m,0,value);
+            }
+        }
+
+        return img;
     }
 
     //convert single matrix to an image

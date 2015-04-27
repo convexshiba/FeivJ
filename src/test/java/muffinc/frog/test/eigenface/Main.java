@@ -29,6 +29,8 @@ package muffinc.frog.test.eigenface;
 //import static org.bytedeco.javacpp.opencv_objdetect.*;
 
 import muffinc.frog.test.Jama.Matrix;
+import muffinc.frog.test.displayio.Display;
+import muffinc.frog.test.helper.ImageHelper;
 
 import java.io.IOException;
 import java.util.*;
@@ -109,9 +111,9 @@ public class Main {
 //				fe = new LDA(trainingSet, labels,componentsRetained);
 //			else if(featureExtractionMode == 2)
 //				fe = new LPP(trainingSet, labels,componentsRetained);
+            Display.display(FileManager.convertVectorToImage(fe.getMeanMatrix()));
 
-
-            FileManager.convertMatricetoImage(fe.getW(), featureExtractionMode);
+//            FileManager.convertMatricetoImage(fe.getW(), featureExtractionMode);
 
         }catch(Exception e){
             System.out.println(e.getMessage());
