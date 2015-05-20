@@ -2,11 +2,14 @@ package muffinc.frog.test.detection;
 
 import muffinc.frog.test.displayio.Display;
 import muffinc.frog.test.helper.FileHelper;
+import muffinc.frog.test.helper.ImageHelper;
 import org.bytedeco.javacpp.opencv_core;
 import org.bytedeco.javacpp.opencv_core.IplImage;
 import org.bytedeco.javacpp.opencv_objdetect;
 import org.bytedeco.javacv.JavaCvErrorCallback;
 
+
+import java.util.ArrayList;
 
 import static org.bytedeco.javacpp.opencv_core.*;
 import static org.bytedeco.javacpp.opencv_highgui.*;
@@ -87,5 +90,26 @@ public class FaceDetectionII {
         Display.display(originalImage.getBufferedImage());
     }
 
+    public static ArrayList<CvRect> detectFaces(IplImage img) {
+        IplImage greyImg = img.clone();
+        if (img.nChannels() != 1) {
+            greyImg = ImageHelper.toGrey(greyImg);
+        }
+        CvMemStorage storage = CvMemStorage.create();
+
+        CvHaarClassifierCascade cascade = new CvHaarClassifierCascade(cvLoad(CASCADE_FILE));
+
+        CvSeq faces = cvHaarDetectObjects(greyImg, cascade, storage, 1.1, 1, CV_HAAR_SCALE_IMAGE);
+
+        cvClearMemStorage(storage);
+
+        ArrayList<CvRect> rects = new ArrayList<CvRect>();
+
+        for (int i = 0; i < faces.total(); i++) {
+            CvRect rect = new CvRect(cvGetSeqElem(faces, i));
+            rects.add(rect);
+        }
+        return rects;
+    }
 
 }

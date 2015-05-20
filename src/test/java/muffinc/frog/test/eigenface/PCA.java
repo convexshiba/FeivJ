@@ -17,6 +17,8 @@ class projectedTrainingMatrix {
 }
 
 public class PCA {
+    public static final int FACE_WIDTH = 92;
+    public static final int FACE_HEIGHT = 112;
 	ArrayList<Matrix> trainingSet;
 	ArrayList<String> labels;
 	int numOfComponents;

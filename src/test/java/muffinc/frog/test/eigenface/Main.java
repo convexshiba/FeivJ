@@ -29,7 +29,11 @@ package muffinc.frog.test.eigenface;
 //import static org.bytedeco.javacpp.opencv_objdetect.*;
 
 import muffinc.frog.test.Jama.Matrix;
+import muffinc.frog.test.common.Metric;
 import muffinc.frog.test.displayio.Display;
+import muffinc.frog.test.eigenface.metric.CosineDissimilarity;
+import muffinc.frog.test.eigenface.metric.EuclideanDistance;
+import muffinc.frog.test.eigenface.metric.L1Distance;
 import muffinc.frog.test.helper.ImageHelper;
 
 import java.io.IOException;
@@ -63,8 +67,9 @@ public class Main {
 //		test(2,60,2,3,2);
 
         int componentsRetained = 25;
-        int featureExtractionMode = 0;
         int trainNums = 5;
+        int knn_k = 2;
+
 
         //set trainSet and testSet
         HashMap<String, ArrayList<Integer>> trainMap = new HashMap();
@@ -100,20 +105,70 @@ public class Main {
             }
         }
 
+        ArrayList<Matrix> testingSet = new ArrayList<Matrix>();
+        ArrayList<String> trueLabels = new ArrayList<String>();
+
+        labelSet = testMap.keySet();
+        it = labelSet.iterator();
+        while(it.hasNext()){
+            String label = it.next();
+            ArrayList<Integer> cases = testMap.get(label);
+            for(int i = 0; i < cases.size(); i ++){
+                String filePath = "/Users/Meth/Documents/FROG/src/test/faces/"+label+"/"+cases.get(i)+".pgm";
+                Matrix temp;
+                try {
+                    temp = FileManager.convertPGMtoMatrix(filePath);
+                    testingSet.add(vectorize(temp));
+                    trueLabels.add(label);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+
 
         //set featureExtraction
         try{
             PCA fe = new PCA(trainingSet, labels,componentsRetained);
 
-//			if(featureExtractionMode == 0)
-//				fe = new PCA(trainingSet, labels,componentsRetained);
-//			else if(featureExtractionMode == 1)
-//				fe = new LDA(trainingSet, labels,componentsRetained);
-//			else if(featureExtractionMode == 2)
-//				fe = new LPP(trainingSet, labels,componentsRetained);
-            Display.display(FileManager.convertVectorToImage(fe.getMeanMatrix()));
+
+//            Display.display(FileManager.convertVectorToImage(fe.getMeanMatrix()));
 
 //            FileManager.convertMatricetoImage(fe.getW(), featureExtractionMode);
+
+
+            for (int j = 0; j < 3; j++) {
+                int metricType = j;
+                String metricName = "";
+                Metric metric = null;
+                if(metricType == 0) {
+                    metric = new CosineDissimilarity();
+                    metricName = "Cosine";
+                }
+                else if (metricType == 1) {
+                    metric = new L1Distance();
+                    metricName = "L1";
+                }
+                else if (metricType == 2) {
+                    metric = new EuclideanDistance();
+                    metricName = " Euclidean";
+                }
+
+                assert metric != null : "metricType is wrong!";
+
+                ArrayList<projectedTrainingMatrix> projectedTrainingSet = fe.getProjectedTrainingSet();
+                int accurateNum = 0;
+                for(int i = 0 ; i < testingSet.size(); i ++){
+                    Matrix testCase = fe.getW().transpose().times(testingSet.get(i).minus(fe.getMeanMatrix()));
+                    String result = KNN.assignLabel(projectedTrainingSet.toArray(new projectedTrainingMatrix[0]), testCase, knn_k, metric);
+
+                    if(result.equals(trueLabels.get(i)))
+                        accurateNum ++;
+                }
+                double accuracy = accurateNum / (double)testingSet.size();
+                System.out.println("The accuracy of " + metricName + "is "+accuracy);
+            }
 
         }catch(Exception e){
             System.out.println(e.getMessage());

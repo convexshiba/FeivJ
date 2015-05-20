@@ -1,6 +1,6 @@
 package muffinc.frog.test.Jama;
 
-import muffinc.frog.test.Jama.util.Maths;;
+import muffinc.frog.test.Jama.util.Maths;
 
 import java.io.BufferedReader;
 import java.io.PrintWriter;

@@ -1,6 +1,12 @@
 package muffinc.frog.test.helper;
 
+import muffinc.frog.test.eigenface.*;
+import muffinc.frog.test.eigenface.PCA;
+
 import static org.bytedeco.javacpp.opencv_core.*;
+import static org.bytedeco.javacpp.opencv_highgui.*;
+import static org.bytedeco.javacpp.opencv_objdetect.*;
+import static org.bytedeco.javacpp.opencv_imgproc.*;
 
 /**
  * FROG, a Face Recognition Gallery in Java
@@ -47,5 +53,22 @@ public class ImageHelper {
             if(imgTypeInt == enum_ints[i]) return enum_strings[i];
         }
         return "unknown image type";
+    }
+
+    public static IplImage toGrey(IplImage img) {
+        IplImage greyImg = IplImage.create(img.width(), img.height(), IPL_DEPTH_8U, 1);
+        cvCvtColor(img, greyImg, CV_BGR2GRAY);
+        return greyImg;
+    }
+
+    public static IplImage resize(IplImage img) {
+//        IplImage greyImg = toGrey(img);
+//        CvSize size = cvSize(PCA.FACE_WIDTH, PCA.FACE_HEIGHT);
+
+        IplImage resizedImg = IplImage.create(PCA.FACE_WIDTH, PCA.FACE_HEIGHT, IPL_DEPTH_8U, 1);
+
+        cvResize(img, resizedImg);
+
+        return resizedImg;
     }
 }

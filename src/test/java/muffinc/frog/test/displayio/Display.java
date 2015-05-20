@@ -1,5 +1,7 @@
 package muffinc.frog.test.displayio;
 
+import org.bytedeco.javacpp.opencv_core.*;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -43,5 +45,9 @@ public class Display {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void display(IplImage img) {
+        display(img.getBufferedImage());
     }
 }
