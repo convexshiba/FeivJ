@@ -34,4 +34,9 @@ public class People {
         files = new ArrayList<String>();
         fileNums = 0;
     }
+
+    public void addFile(String file) {
+        files.add(file);
+        fileNums++;
+    }
 }
