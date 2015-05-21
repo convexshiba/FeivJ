@@ -26,21 +26,47 @@ import java.io.File;
  */
 public class ImgMatrix {
     public PCA pca;
+    public String peopleName;
+    public People people;
     public File file;
     public Matrix matrix;
     private Matrix projected;
-    double distance = -1;
+    public double distance = -1;
 
+    public ImgMatrix(Matrix projected, String peopleName) {
+        this.peopleName = peopleName;
+        this.projected = projected;
+    }
 
-    public ImgMatrix(Matrix matrix, File file) {
+    public ImgMatrix(File file, Matrix matrix) {
         this.matrix = matrix;
         this.file = file;
     }
 
-    public ImgMatrix(Matrix matrix, File file, PCA pca) {
-        this(matrix, file);
+    public ImgMatrix(File file, Matrix matrix, PCA pca) {
+        this(file, matrix);
         this.pca = pca;
         projected = pca.project(matrix);
+    }
+
+    public People getPeople() {
+        if (people != null) {
+            return people;
+        } else {
+            throw new IllegalAccessError("Please set people First");
+        }
+    }
+
+    public void setPeople(People people) {
+        this.people = people;
+    }
+
+    public PCA getPca() {
+        return pca;
+    }
+
+    public void setPca(PCA pca) {
+        this.pca = pca;
     }
 
     public void project(PCA pca) {

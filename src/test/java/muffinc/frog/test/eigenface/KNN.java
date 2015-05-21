@@ -26,6 +26,7 @@ import java.util.Set;
 
 import muffinc.frog.test.Jama.Matrix;
 import muffinc.frog.test.common.Metric;
+import muffinc.frog.test.object.ImgMatrix;
 
 public class KNN {
 
@@ -77,7 +78,7 @@ public class KNN {
 
         for (int index = 0; index < num; index++) {
             ImgMatrix temp = neighbors[index];
-            String key = temp.label;
+            String key = temp.file.getName();
             if (!map.containsKey(key))
                 map.put(key, 1 / temp.distance);
             else {

@@ -3,7 +3,6 @@ package muffinc.frog.test.object;
 import muffinc.frog.test.Jama.Matrix;
 import muffinc.frog.test.eigenface.Train;
 
-import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -29,7 +28,7 @@ public class People {
 
     public final String name;
 
-    public final ArrayList<File> imgFiles;
+    public final ArrayList<ImgMatrix> imgMatrixes;
 
     public int fileNums;
 
@@ -40,18 +39,18 @@ public class People {
     public People(String name, Train train) {
         this.name = name;
         this.train = train;
-        imgFiles = new ArrayList<File>();
+        imgMatrixes = new ArrayList<ImgMatrix>();
         fileNums = 0;
     }
 
-    public void addFile(File file) {
-        imgFiles.add(file);
+    public void addImgMatrix(ImgMatrix imgMatrix) {
+        imgMatrixes.add(imgMatrix);
         fileNums++;
 
-        recalculateID();
+        recalculateProjected();
     }
 
-    public void recalculateID() {
+    public void recalculateProjected() {
 
     }
 }
