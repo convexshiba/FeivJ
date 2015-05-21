@@ -1,58 +1,10 @@
 package muffinc.frog.test.eigenface;
 import muffinc.frog.test.Jama.EigenvalueDecomposition;
 import muffinc.frog.test.Jama.Matrix;
+import muffinc.frog.test.object.ImgMatrix;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-
-class projectedTrainingMatrix {
-	Matrix matrix;
-	String label;
-	double distance = 0;
-
-    public projectedTrainingMatrix(Matrix m, String l) {
-		this.matrix = m;
-		this.label = l;
-	}
-}
-
-class ImgMatrix {
-    public PCA pca;
-    public File file;
-    public Matrix matrix;
-    private Matrix projected;
-
-
-    public ImgMatrix(Matrix matrix, File file) {
-        this.matrix = matrix;
-        this.file = file;
-    }
-
-    public ImgMatrix(Matrix matrix, File file, PCA pca) {
-        this(matrix, file);
-        this.pca = pca;
-        projected = pca.project(matrix);
-    }
-
-    public void project(PCA pca) {
-        if (!isProjected()) {
-            projected = pca.project(matrix);
-        }
-    }
-
-    public boolean isProjected() {
-        return projected != null;
-    }
-
-    public Matrix getProjected() {
-        if (!isProjected()) {
-            throw new IllegalAccessError("This Matrix has not been projected");
-        } else {
-            return projected;
-        }
-    }
-}
 
 public class PCA {
     public static final int FACE_WIDTH = 92;
@@ -63,7 +15,7 @@ public class PCA {
 	Matrix meanMatrix;
 	// Output
 	Matrix W;
-	ArrayList<projectedTrainingMatrix> projectedTrainingSet;
+	ArrayList<ImgMatrix> projectedTrainingSet;
 
 	public PCA(ArrayList<Matrix> trainingSet, ArrayList<String> labels,
 			   int numOfComponents, Train train) throws Exception {
@@ -80,9 +32,9 @@ public class PCA {
 		this.W = getFeature(this.trainingSet, this.numOfComponents);
 
 		// Construct projectedTrainingMatrix
-		this.projectedTrainingSet = new ArrayList<projectedTrainingMatrix>();
+		this.projectedTrainingSet = new ArrayList<ImgMatrix>();
 		for (int i = 0; i < trainingSet.size(); i++) {
-			projectedTrainingMatrix ptm = new projectedTrainingMatrix(project(trainingSet.get(i)),
+			ImgMatrix ptm = new ImgMatrix(project(trainingSet.get(i)),
                     labels.get(i));
 
 			this.projectedTrainingSet.add(ptm);
@@ -191,7 +143,7 @@ public class PCA {
 		return this.W;
 	}
 
-	public ArrayList<projectedTrainingMatrix> getProjectedTrainingSet() {
+	public ArrayList<ImgMatrix> getProjectedTrainingSet() {
 		return this.projectedTrainingSet;
 	}
 	

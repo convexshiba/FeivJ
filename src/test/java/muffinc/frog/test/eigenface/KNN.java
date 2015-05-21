@@ -29,18 +29,18 @@ import muffinc.frog.test.common.Metric;
 
 public class KNN {
 
-    public static String assignLabel(projectedTrainingMatrix[] trainingSet,Matrix testFace, int K, Metric metric) {
-        projectedTrainingMatrix[] neighbors = findKNN(trainingSet, testFace, K, metric);
+    public static String assignLabel(ImgMatrix[] trainingSet,Matrix testFace, int K, Metric metric) {
+        ImgMatrix[] neighbors = findKNN(trainingSet, testFace, K, metric);
         return classify(neighbors);
     }
 
     // testFace has been projected to the subspace
-    static projectedTrainingMatrix[] findKNN(projectedTrainingMatrix[] trainingSet,Matrix testFace, int K, Metric metric) {
+    static ImgMatrix[] findKNN(ImgMatrix[] trainingSet,Matrix testFace, int K, Metric metric) {
         int NumOfTrainingSet = trainingSet.length;
         assert K <= NumOfTrainingSet : "K is lager than the length of trainingSet!";
 
         // initialization
-        projectedTrainingMatrix[] neighbors = new projectedTrainingMatrix[K];
+        ImgMatrix[] neighbors = new ImgMatrix[K];
         int i;
         for (i = 0; i < K; i++) {
             trainingSet[i].distance = metric.getDistance(trainingSet[i].matrix,
@@ -71,12 +71,12 @@ public class KNN {
     }
 
     // get the class label by using neighbors
-    static String classify(projectedTrainingMatrix[] neighbors) {
+    static String classify(ImgMatrix[] neighbors) {
         HashMap<String, Double> map = new HashMap<String, Double>();
         int num = neighbors.length;
 
         for (int index = 0; index < num; index++) {
-            projectedTrainingMatrix temp = neighbors[index];
+            ImgMatrix temp = neighbors[index];
             String key = temp.label;
             if (!map.containsKey(key))
                 map.put(key, 1 / temp.distance);

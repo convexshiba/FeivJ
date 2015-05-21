@@ -179,11 +179,11 @@ public class Train {
 
                 assert metric != null : "metricType is wrong!";
 
-                ArrayList<projectedTrainingMatrix> projectedTrainingSet = fe.getProjectedTrainingSet();
+                ArrayList<ImgMatrix> projectedTrainingSet = fe.getProjectedTrainingSet();
                 int accurateNum = 0;
                 for(int i = 0 ; i < testingSet.size(); i ++){
                     Matrix testCase = fe.getW().transpose().times(testingSet.get(i).minus(fe.getMeanMatrix()));
-                    String result = KNN.assignLabel(projectedTrainingSet.toArray(new projectedTrainingMatrix[0]), testCase, knn_k, metric);
+                    String result = KNN.assignLabel(projectedTrainingSet.toArray(new ImgMatrix[0]), testCase, knn_k, metric);
 
                     if(result.equals(trueLabels.get(i)))
                         accurateNum ++;
@@ -294,11 +294,11 @@ public class Train {
 
                 assert metric != null : "metricType is wrong!";
 
-                ArrayList<projectedTrainingMatrix> projectedTrainingSet = fe.getProjectedTrainingSet();
+                ArrayList<ImgMatrix> projectedTrainingSet = fe.getProjectedTrainingSet();
                 int accurateNum = 0;
                 for(int i = 0 ; i < testingSet.size(); i ++){
                     Matrix testCase = fe.getW().transpose().times(testingSet.get(i).minus(fe.getMeanMatrix()));
-                    String result = KNN.assignLabel(projectedTrainingSet.toArray(new projectedTrainingMatrix[0]), testCase, knn_k, metric);
+                    String result = KNN.assignLabel(projectedTrainingSet.toArray(new ImgMatrix[0]), testCase, knn_k, metric);
 
                     if(result.equals(trueLabels.get(i)))
                         accurateNum ++;

@@ -1,9 +1,9 @@
-package muffinc.frog.test.eigenface;
+package muffinc.frog.test.object;
 
 import muffinc.frog.test.Jama.Matrix;
+import muffinc.frog.test.eigenface.PCA;
 
 import java.io.File;
-import java.util.ArrayList;
 
 /**
  * FROG, a Face Recognition Gallery in Java
@@ -24,33 +24,40 @@ import java.util.ArrayList;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * zj45499 (at) gmail (dot) com
  */
-public class People {
+public class ImgMatrix {
+    public PCA pca;
+    public File file;
+    public Matrix matrix;
+    private Matrix projected;
+    double distance = -1;
 
-    public final String name;
 
-    public final ArrayList<File> imgFiles;
-
-    public int fileNums;
-
-    public Matrix projectedIDMatrix = null;
-
-    public Train train;
-
-    public People(String name, Train train) {
-        this.name = name;
-        this.train = train;
-        imgFiles = new ArrayList<File>();
-        fileNums = 0;
+    public ImgMatrix(Matrix matrix, File file) {
+        this.matrix = matrix;
+        this.file = file;
     }
 
-    public void addFile(File file) {
-        imgFiles.add(file);
-        fileNums++;
-
-        recalculateID();
+    public ImgMatrix(Matrix matrix, File file, PCA pca) {
+        this(matrix, file);
+        this.pca = pca;
+        projected = pca.project(matrix);
     }
 
-    public void recalculateID() {
+    public void project(PCA pca) {
+        if (!isProjected()) {
+            projected = pca.project(matrix);
+        }
+    }
 
+    public boolean isProjected() {
+        return projected != null;
+    }
+
+    public Matrix getProjected() {
+        if (!isProjected()) {
+            throw new IllegalAccessError("This Matrix has not been projected");
+        } else {
+            return projected;
+        }
     }
 }
