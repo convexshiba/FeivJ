@@ -2,6 +2,7 @@ package muffinc.frog.test.eigenface;
 import muffinc.frog.test.Jama.EigenvalueDecomposition;
 import muffinc.frog.test.Jama.Matrix;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -10,10 +11,47 @@ class projectedTrainingMatrix {
 	String label;
 	double distance = 0;
 
-	public projectedTrainingMatrix(Matrix m, String l) {
+    public projectedTrainingMatrix(Matrix m, String l) {
 		this.matrix = m;
 		this.label = l;
 	}
+}
+
+class ImgMatrix {
+    public PCA pca;
+    public File file;
+    public Matrix matrix;
+    private Matrix projected;
+
+
+    public ImgMatrix(Matrix matrix, File file) {
+        this.matrix = matrix;
+        this.file = file;
+    }
+
+    public ImgMatrix(Matrix matrix, File file, PCA pca) {
+        this(matrix, file);
+        this.pca = pca;
+        projected = pca.project(matrix);
+    }
+
+    public void project(PCA pca) {
+        if (!isProjected()) {
+            projected = pca.project(matrix);
+        }
+    }
+
+    public boolean isProjected() {
+        return projected != null;
+    }
+
+    public Matrix getProjected() {
+        if (!isProjected()) {
+            throw new IllegalAccessError("This Matrix has not been projected");
+        } else {
+            return projected;
+        }
+    }
 }
 
 public class PCA {
@@ -28,7 +66,7 @@ public class PCA {
 	ArrayList<projectedTrainingMatrix> projectedTrainingSet;
 
 	public PCA(ArrayList<Matrix> trainingSet, ArrayList<String> labels,
-			   int numOfComponents) throws Exception {
+			   int numOfComponents, Train train) throws Exception {
 		
 		if(numOfComponents >= trainingSet.size()){
 			throw new Exception("the expected dimensions could not be achieved!");
@@ -44,12 +82,17 @@ public class PCA {
 		// Construct projectedTrainingMatrix
 		this.projectedTrainingSet = new ArrayList<projectedTrainingMatrix>();
 		for (int i = 0; i < trainingSet.size(); i++) {
-			projectedTrainingMatrix ptm = new projectedTrainingMatrix(this.W
-					.transpose().times(trainingSet.get(i).minus(meanMatrix)),
-					labels.get(i));
+			projectedTrainingMatrix ptm = new projectedTrainingMatrix(project(trainingSet.get(i)),
+                    labels.get(i));
+
 			this.projectedTrainingSet.add(ptm);
 		}
 	}
+
+    // calculate projected Matrix
+    public Matrix project(Matrix input) {
+        return W.transpose().times(input.minus(meanMatrix));
+    }
 
 	// extract features, namely W
 	private Matrix getFeature(ArrayList<Matrix> input, int K) {

@@ -1,5 +1,8 @@
 package muffinc.frog.test.eigenface;
 
+import muffinc.frog.test.Jama.Matrix;
+
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -25,18 +28,29 @@ public class People {
 
     public final String name;
 
-    public final ArrayList<String> files;
+    public final ArrayList<File> imgFiles;
 
     public int fileNums;
 
-    public People(String name) {
+    public Matrix projectedIDMatrix = null;
+
+    public Train train;
+
+    public People(String name, Train train) {
         this.name = name;
-        files = new ArrayList<String>();
+        this.train = train;
+        imgFiles = new ArrayList<File>();
         fileNums = 0;
     }
 
-    public void addFile(String file) {
-        files.add(file);
+    public void addFile(File file) {
+        imgFiles.add(file);
         fileNums++;
+
+        recalculateID();
+    }
+
+    public void recalculateID() {
+
     }
 }

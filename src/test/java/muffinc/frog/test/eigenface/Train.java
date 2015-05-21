@@ -34,6 +34,7 @@ import muffinc.frog.test.eigenface.metric.CosineDissimilarity;
 import muffinc.frog.test.eigenface.metric.EuclideanDistance;
 import muffinc.frog.test.eigenface.metric.L1Distance;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -56,13 +57,16 @@ import java.util.*;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * zj45499 (at) gmail (dot) com
  */
+
 public class Train {
 
     public HashMap<String, People> nameTable = new HashMap<String, People>();
 
-    public HashMap<String, People> imgTable = new HashMap<String, People>();
+    public HashMap<File, People> imgTable = new HashMap<File, People>();
 
-    public void associate(String peopleName, String file) {
+    public HashMap<File, ImgMatrix> matrixTable = new HashMap<File, ImgMatrix>();
+
+    public void associate(String peopleName, File file) {
         if (!nameTable.containsKey(peopleName)) {
             throw new IllegalArgumentException("PeopleTable does not contain this people");
         } else {
@@ -82,7 +86,7 @@ public class Train {
         for(int i = 1; i <= 10; i ++ ){
             String label = "s"+i;
 
-            People johnDoe = new People(label);
+            People johnDoe = new People(label, this);
 
             nameTable.put(label, johnDoe);
 
@@ -104,11 +108,16 @@ public class Train {
             for(int i = 0; i < cases.size(); i ++){
                 String filePath = "/Users/Meth/Documents/FROG/src/test/faces/"+label+"/"+cases.get(i)+".pgm";
 
-                associate(label, filePath);
+                File file = new File(filePath);
+
+                associate(label, file);
 
                 Matrix temp;
                 try {
                     temp = FileManager.convertPGMtoMatrix(filePath);
+
+                    matrixTable.put(file, new ImgMatrix(temp, file));
+
                     trainingSet.add(vectorize(temp));
                     labels.add(label);
                 } catch (IOException e) {
@@ -143,7 +152,7 @@ public class Train {
 
         //set featureExtraction
         try{
-            PCA fe = new PCA(trainingSet, labels,componentsRetained);
+            PCA fe = new PCA(trainingSet, labels, componentsRetained, this);
 
 
 //            Display.display(FileManager.convertVectorToImage(fe.getMeanMatrix()));
@@ -186,9 +195,6 @@ public class Train {
         }catch(Exception e){
             System.out.println(e.getMessage());
         }
-
-
-
     }
 
     public static void main2(String args[]) {
@@ -261,7 +267,7 @@ public class Train {
 
         //set featureExtraction
         try{
-            PCA fe = new PCA(trainingSet, labels,componentsRetained);
+            PCA fe = new PCA(trainingSet, labels,componentsRetained, new Train());
 
 
 //            Display.display(FileManager.convertVectorToImage(fe.getMeanMatrix()));
