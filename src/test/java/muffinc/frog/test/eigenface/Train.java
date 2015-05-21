@@ -58,7 +58,7 @@ import java.util.*;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * zj45499 (at) gmail (dot) com
  */
-public class Main {
+public class Train {
     public static void main(String args[]){
         //Test Different Methods
         //Notice that the second parameter which is a measurement of energy percentage does not apply to LDA and LPP
@@ -69,7 +69,6 @@ public class Main {
         int componentsRetained = 25;
         int trainNums = 5;
         int knn_k = 2;
-
 
         //set trainSet and testSet
         HashMap<String, ArrayList<Integer>> trainMap = new HashMap();

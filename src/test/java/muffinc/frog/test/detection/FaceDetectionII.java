@@ -95,6 +95,7 @@ public class FaceDetectionII {
         if (img.nChannels() != 1) {
             greyImg = ImageHelper.toGrey(greyImg);
         }
+
         CvMemStorage storage = CvMemStorage.create();
 
         CvHaarClassifierCascade cascade = new CvHaarClassifierCascade(cvLoad(CASCADE_FILE));
@@ -107,6 +108,7 @@ public class FaceDetectionII {
 
         for (int i = 0; i < faces.total(); i++) {
             CvRect rect = new CvRect(cvGetSeqElem(faces, i));
+            Rect rectEnlarged = new Rect(rect.x(), rect.y(), rect.width(), rect.height());
             rects.add(rect);
         }
         return rects;

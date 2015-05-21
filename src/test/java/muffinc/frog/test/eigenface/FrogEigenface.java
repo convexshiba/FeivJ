@@ -20,12 +20,12 @@ package muffinc.frog.test.eigenface;
  * zj45499 (at) gmail (dot) com
  */
 interface FrogEigenface {
-    public abstract void addTrainingFace(Face aFace);
+    void addTrainingFace(Face aFace);
 
-    public abstract void removeTrainingFace(Face aFace);
+    void removeTrainingFace(Face aFace);
 
-    public abstract TrainingFaces getTrainingFaces();
+    TrainingFaces getTrainingFaces();
 
-    public abstract Face identifyFace(Face aFace);
+    Face identifyFace(Face aFace);
 
 }
