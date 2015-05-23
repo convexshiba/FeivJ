@@ -2,6 +2,7 @@ package muffinc.frog.test.object;
 
 import muffinc.frog.test.Jama.Matrix;
 import muffinc.frog.test.eigenface.PCA;
+import muffinc.frog.test.eigenface.Train;
 
 import java.io.File;
 
@@ -26,19 +27,20 @@ import java.io.File;
  */
 public class ImgMatrix {
     public PCA pca;
+    public Train train;
 //    public String peopleName;
     public People people;
     public File file;
     public Matrix matrix;
     public Matrix vectorized;
     private Matrix projectedVector;
-    public double distance = -1;
+    private double distance = -1;
 
     public ImgMatrix(File file) {
         this.file = file;
     }
 
-    public ImgMatrix(File file, Matrix matrix) {
+    public ImgMatrix(File file, Matrix matrix, Train train) {
         this.matrix = matrix;
         this.file = file;
     }
@@ -76,7 +78,11 @@ public class ImgMatrix {
     }
 
     public double getDistance() {
-        return distance;
+        if (distance == -1) {
+            throw new IllegalAccessError("distance has not been initialized");
+        } else {
+            return distance;
+        }
     }
 
     public void setDistance(double distance) {

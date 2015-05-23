@@ -3,6 +3,7 @@ import muffinc.frog.test.Jama.EigenvalueDecomposition;
 import muffinc.frog.test.Jama.Matrix;
 import muffinc.frog.test.object.ImgMatrix;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -17,6 +18,10 @@ public class PCA {
 	Matrix W;
 	ArrayList<ImgMatrix> projectedTrainingSet;
     Train train;
+
+//    public double infoRetainRatio;
+    private BigDecimal sumOfEigenVal = BigDecimal.ZERO;
+    private BigDecimal sumOfSelected = BigDecimal.ZERO;
 
     public PCA(ArrayList<ImgMatrix> trainingImg, int numOfComponents, Train train) throws Exception {
 
@@ -49,7 +54,7 @@ public class PCA {
         projectedTrainingSet = trainingImg;
     }
 
-
+	@Deprecated
 	public PCA(ArrayList<Matrix> trainingSet, ArrayList<String> labels,
 			   int numOfComponents, Train train) throws Exception {
 
@@ -97,7 +102,6 @@ public class PCA {
 		EigenvalueDecomposition feature = XTX.eig();
 		double[] d = feature.getd();
 
-        System.out.println(d.length);
 
 		assert d.length >= K : "number of eigenvalues is less than K";
 		int[] indexes = this.getIndexesOfKEigenvalues(d, K);
@@ -147,15 +151,25 @@ public class PCA {
 
 	private int[] getIndexesOfKEigenvalues(double[] d, int k) {
 		mix[] mixes = new mix[d.length];
-		int i;
-		for (i = 0; i < d.length; i++)
+		for (int i = 0; i < d.length; i++)
 			mixes[i] = new mix(i, d[i]);
 
 		Arrays.sort(mixes);
 
 		int[] result = new int[k];
-		for (i = 0; i < k; i++)
-			result[i] = mixes[i].index;
+		for (int i = 0; i < k; i++) {
+            result[i] = mixes[i].index;
+
+            // calculate sumOfSelected
+            sumOfSelected = sumOfSelected.add(BigDecimal.valueOf(mixes[i].value));
+        }
+
+        // calculate sumOfEigenVal
+        sumOfEigenVal = sumOfEigenVal.add(sumOfSelected);
+        for (int i = k; i < mixes.length; i++) {
+            sumOfEigenVal = sumOfEigenVal.add(BigDecimal.valueOf(mixes[i].value));
+        }
+
 		return result;
 	}
 
@@ -188,6 +202,14 @@ public class PCA {
 	public ArrayList<Matrix> getTrainingSet(){
 		return this.trainingSet;
 	}
+
+    public double getInfoRatio() {
+//        System.out.println("getInfoRatie: " + sumOfSelected);
+//        System.out.println("getInfoRatie: " + sumOfEigenVal);
+//        System.out.println(Arrays.toString(d));
+
+        return sumOfSelected.divide(sumOfEigenVal, BigDecimal.ROUND_CEILING).doubleValue();
+    }
 	
 	public Matrix reconstruct(int whichImage, int dimensions) throws Exception {
 		if(dimensions > this.numOfComponents)

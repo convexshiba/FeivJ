@@ -44,8 +44,8 @@ public class KNN {
         ImgMatrix[] neighbors = new ImgMatrix[K];
         int i;
         for (i = 0; i < K; i++) {
-            trainingSet[i].distance = metric.getDistance(trainingSet[i].getProjectedVector(),
-                    testFace);
+            trainingSet[i].setDistance(metric.getDistance(trainingSet[i].getProjectedVector(),
+                    testFace));
 //			System.out.println("index: " + i + " distance: "
 //					+ trainingSet[i].distance);
             neighbors[i] = trainingSet[i];
@@ -54,18 +54,18 @@ public class KNN {
         // go through the remaining records in the trainingSet to find K nearest
         // neighbors
         for (i = K; i < NumOfTrainingSet; i++) {
-            trainingSet[i].distance = metric.getDistance(trainingSet[i].getProjectedVector(),
-                    testFace);
+            trainingSet[i].setDistance(metric.getDistance(trainingSet[i].getProjectedVector(),
+                    testFace));
 //			System.out.println("index: " + i + " distance: "
 //					+ trainingSet[i].distance);
 
             int maxIndex = 0;
             for (int j = 0; j < K; j++) {
-                if (neighbors[j].distance > neighbors[maxIndex].distance)
+                if (neighbors[j].getDistance() > neighbors[maxIndex].getDistance())
                     maxIndex = j;
             }
 
-            if (neighbors[maxIndex].distance > trainingSet[i].distance)
+            if (neighbors[maxIndex].getDistance() > trainingSet[i].getDistance())
                 neighbors[maxIndex] = trainingSet[i];
         }
         return neighbors;
@@ -80,10 +80,10 @@ public class KNN {
             ImgMatrix temp = neighbors[index];
             String key = temp.getPeople().name;
             if (!map.containsKey(key))
-                map.put(key, 1 / temp.distance);
+                map.put(key, 1 / temp.getDistance());
             else {
                 double value = map.get(key);
-                value += 1 / temp.distance;
+                value += 1 / temp.getDistance();
                 map.put(key, value);
             }
         }
