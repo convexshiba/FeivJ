@@ -68,11 +68,11 @@ public class Train {
 
     public HashMap<File, ImgMatrix> matrixTable = new HashMap<File, ImgMatrix>();
 
-    public void addImgMatrixtoPp(String peopleName, ImgMatrix imgMatrix) {
+    public void addImgMatrixtoPp(String peopleName, ImgMatrix imgMatrix, boolean isTraingImg) {
         if (!nameTable.containsKey(peopleName)) {
             throw new IllegalArgumentException("PeopleTable does not contain this people, Please create people first");
         } else {
-            nameTable.get(peopleName).addImgMatrix(imgMatrix);
+            nameTable.get(peopleName).addImgMatrix(imgMatrix, isTraingImg);
         }
     }
 
@@ -101,6 +101,9 @@ public class Train {
         ArrayList<Matrix> trainingSet = new ArrayList<Matrix>();
         ArrayList<String> labels = new ArrayList<String>();
 
+
+        ArrayList<ImgMatrix> trainingImgSet = new ArrayList<ImgMatrix>();
+
         Set<String> labelSet = trainMap.keySet();
         Iterator<String> it = labelSet.iterator();
         while(it.hasNext()){
@@ -111,16 +114,15 @@ public class Train {
 
                 File file = new File(filePath);
 
-
                 Matrix temp;
                 try {
                     temp = FileManager.convertPGMtoMatrix(filePath);
 
                     ImgMatrix imgMatrix = new ImgMatrix(file, temp);
-
                     matrixTable.put(file, imgMatrix);
-
-                    addImgMatrixtoPp(label, imgMatrix);
+                    addImgMatrixtoPp(label, imgMatrix, true);
+                    imgMatrix.setVectorized(vectorize(temp));
+                    trainingImgSet.add(imgMatrix);
 
                     trainingSet.add(vectorize(temp));
                     labels.add(label);
@@ -134,6 +136,8 @@ public class Train {
         ArrayList<Matrix> testingSet = new ArrayList<Matrix>();
         ArrayList<String> trueLabels = new ArrayList<String>();
 
+        ArrayList<ImgMatrix> testingImgSet = new ArrayList<ImgMatrix>();
+
         labelSet = testMap.keySet();
         it = labelSet.iterator();
         while(it.hasNext()){
@@ -141,9 +145,18 @@ public class Train {
             ArrayList<Integer> cases = testMap.get(label);
             for(int i = 0; i < cases.size(); i ++){
                 String filePath = "/Users/Meth/Documents/FROG/src/test/faces/"+label+"/"+cases.get(i)+".pgm";
+                File file = new File(filePath);
                 Matrix temp;
                 try {
                     temp = FileManager.convertPGMtoMatrix(filePath);
+
+
+                    ImgMatrix imgMatrix = new ImgMatrix(file, temp);
+                    matrixTable.put(file, imgMatrix);
+                    addImgMatrixtoPp(label, imgMatrix, false);
+                    imgMatrix.setVectorized(vectorize(temp));
+                    testingImgSet.add(imgMatrix);
+
                     testingSet.add(vectorize(temp));
                     trueLabels.add(label);
                 } catch (IOException e) {
@@ -156,13 +169,15 @@ public class Train {
 
         //set featureExtraction
         try{
-            PCA fe = new PCA(trainingSet, labels, componentsRetained, this);
+
+            PCA newFe = new PCA(trainingImgSet, componentsRetained, this);
+
+//            PCA fe = new PCA(trainingSet, labels, componentsRetained, this);
 
 
 //            Display.display(FileManager.convertVectorToImage(fe.getMeanMatrix()));
 
 //            FileManager.convertMatricetoImage(fe.getW(), featureExtractionMode);
-
 
             for (int j = 0; j < 3; j++) {
                 int metricType = j;
@@ -183,21 +198,34 @@ public class Train {
 
                 assert metric != null : "metricType is wrong!";
 
-                ArrayList<ImgMatrix> projectedTrainingSet = fe.getProjectedTrainingSet();
-                int accurateNum = 0;
-                for(int i = 0 ; i < testingSet.size(); i ++){
-                    Matrix testCase = fe.getW().transpose().times(testingSet.get(i).minus(fe.getMeanMatrix()));
-                    String result = KNN.assignLabel(projectedTrainingSet.toArray(new ImgMatrix[0]), testCase, knn_k, metric);
+                ArrayList<ImgMatrix> projectedTrainingSet = newFe.getProjectedTrainingSet();
 
-                    if(result.equals(trueLabels.get(i)))
-                        accurateNum ++;
+                int accurateNum = 0;
+
+                for (ImgMatrix testImg : testingImgSet) {
+                    testImg.setProjectedVector(newFe.project(testImg.getVectorized()));
+                    String result = KNN.assignLabel(projectedTrainingSet.toArray(new ImgMatrix[0]), testImg.getProjectedVector(), knn_k, metric);
+
+                    if (result.equals(testImg.people.name)) {
+                        accurateNum++;
+                    }
                 }
+
+
+//                for(int i = 0 ; i < testingSet.size(); i ++){
+//                    Matrix testCase = fe.getW().transpose().times(testingSet.get(i).minus(fe.getMeanMatrix()));
+//                    String result = KNN.assignLabel(projectedTrainingSet.toArray(new ImgMatrix[0]), testCase, knn_k, metric);
+//
+//                    if(result.equals(trueLabels.get(i)))
+//                        accurateNum ++;
+//                }
+
                 double accuracy = accurateNum / (double)testingSet.size();
                 System.out.println("The accuracy of " + metricName + "is "+accuracy);
             }
 
         }catch(Exception e){
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 

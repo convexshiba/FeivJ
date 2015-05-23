@@ -26,16 +26,16 @@ import java.io.File;
  */
 public class ImgMatrix {
     public PCA pca;
-    public String peopleName;
+//    public String peopleName;
     public People people;
     public File file;
     public Matrix matrix;
-    private Matrix projected;
+    public Matrix vectorized;
+    private Matrix projectedVector;
     public double distance = -1;
 
-    public ImgMatrix(Matrix projected, String peopleName) {
-        this.peopleName = peopleName;
-        this.projected = projected;
+    public ImgMatrix(File file) {
+        this.file = file;
     }
 
     public ImgMatrix(File file, Matrix matrix) {
@@ -43,10 +43,44 @@ public class ImgMatrix {
         this.file = file;
     }
 
-    public ImgMatrix(File file, Matrix matrix, PCA pca) {
-        this(file, matrix);
-        this.pca = pca;
-        projected = pca.project(matrix);
+    public Matrix getVectorized() {
+        return vectorized;
+    }
+
+    public void setVectorized(Matrix vectorized) {
+        this.vectorized = vectorized;
+    }
+
+    public Matrix getMatrix() {
+        return matrix;
+    }
+
+    public void setMatrix(Matrix matrix) {
+        this.matrix = matrix;
+    }
+
+    public boolean isProjected() {
+        return projectedVector != null;
+    }
+
+    public Matrix getProjectedVector() {
+        if (!isProjected()) {
+            throw new IllegalAccessError("This Matrix has not been projectedVector");
+        } else {
+            return projectedVector;
+        }
+    }
+
+    public void setProjectedVector(Matrix projectedVector) {
+        this.projectedVector = projectedVector;
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(double distance) {
+        this.distance = distance;
     }
 
     public People getPeople() {
@@ -71,19 +105,7 @@ public class ImgMatrix {
 
     public void project(PCA pca) {
         if (!isProjected()) {
-            projected = pca.project(matrix);
-        }
-    }
-
-    public boolean isProjected() {
-        return projected != null;
-    }
-
-    public Matrix getProjected() {
-        if (!isProjected()) {
-            throw new IllegalAccessError("This Matrix has not been projected");
-        } else {
-            return projected;
+            projectedVector = pca.project(matrix);
         }
     }
 }

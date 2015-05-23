@@ -26,9 +26,13 @@ import java.util.ArrayList;
  */
 public class People {
 
+    public boolean isTrain = false;
+
+    public ArrayList<ImgMatrix> trainingSet = new ArrayList<ImgMatrix>();
+
     public final String name;
 
-    public final ArrayList<ImgMatrix> imgMatrixes;
+    public final ArrayList<ImgMatrix> imgMatrices;
 
     public int fileNums;
 
@@ -39,14 +43,18 @@ public class People {
     public People(String name, Train train) {
         this.name = name;
         this.train = train;
-        imgMatrixes = new ArrayList<ImgMatrix>();
+        imgMatrices = new ArrayList<ImgMatrix>();
         fileNums = 0;
     }
 
-    public void addImgMatrix(ImgMatrix imgMatrix) {
-        imgMatrixes.add(imgMatrix);
+    public void addImgMatrix(ImgMatrix imgMatrix, boolean isTrainImg) {
+        imgMatrices.add(imgMatrix);
+        imgMatrix.setPeople(this);
         fileNums++;
-
+        if (isTrainImg) {
+            trainingSet.add(imgMatrix);
+            isTrain = true;
+        }
         recalculateProjected();
     }
 

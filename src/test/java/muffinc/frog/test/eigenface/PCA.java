@@ -16,37 +16,47 @@ public class PCA {
 	// Output
 	Matrix W;
 	ArrayList<ImgMatrix> projectedTrainingSet;
+    Train train;
 
-    public PCA(ArrayList<ImgMatrix> imgMatrices, int numOfComponents, Train train) throws Exception {
+    public PCA(ArrayList<ImgMatrix> trainingImg, int numOfComponents, Train train) throws Exception {
 
-        if(numOfComponents >= trainingSet.size()){
-            throw new Exception("the expected dimensions could not be achieved!");
+		if(numOfComponents >= trainingImg.size()){
+			throw new Exception("the expected dimensions could not be achieved!");
+		}
+
+        trainingSet = new ArrayList<Matrix>();
+        labels = new ArrayList<String>();
+
+        for (ImgMatrix imgMatrix : trainingImg) {
+            trainingSet.add(imgMatrix.getVectorized());
+            labels.add(imgMatrix.people.name);
         }
 
+		this.numOfComponents = numOfComponents;
+        this.train = train;
 
-        this.trainingSet = trainingSet;
-        this.labels = labels;
-        this.numOfComponents = numOfComponents;
+		this.meanMatrix = getMean(this.trainingSet);
+		this.W = getFeature(this.trainingSet, this.numOfComponents);
 
-        this.meanMatrix = getMean(this.trainingSet);
-        this.W = getFeature(this.trainingSet, this.numOfComponents);
+		// Construct projectedTrainingMatrix
+		this.projectedTrainingSet = new ArrayList<ImgMatrix>();
+		for (int i = 0; i < trainingSet.size(); i++) {
+//			ImgMatrix ptm = new ImgMatrix(project(trainingSet.get(i)), labels.get(i));
+            trainingImg.get(i).setProjectedVector(project(trainingImg.get(i).getVectorized()));
 
-        // Construct projectedTrainingMatrix
-        this.projectedTrainingSet = new ArrayList<ImgMatrix>();
-        for (int i = 0; i < trainingSet.size(); i++) {
-			ImgMatrix ptm = new ImgMatrix(project(trainingSet.get(i)), labels.get(i));
-
-            this.projectedTrainingSet.add(ptm);
-        }
+//			this.projectedTrainingSet.add(tr);
+		}
+        projectedTrainingSet = trainingImg;
     }
+
 
 	public PCA(ArrayList<Matrix> trainingSet, ArrayList<String> labels,
 			   int numOfComponents, Train train) throws Exception {
-		
+
 		if(numOfComponents >= trainingSet.size()){
 			throw new Exception("the expected dimensions could not be achieved!");
 		}
-		
+
 		this.trainingSet = trainingSet;
 		this.labels = labels;
 		this.numOfComponents = numOfComponents;
@@ -57,10 +67,10 @@ public class PCA {
 		// Construct projectedTrainingMatrix
 		this.projectedTrainingSet = new ArrayList<ImgMatrix>();
 		for (int i = 0; i < trainingSet.size(); i++) {
-			ImgMatrix ptm = new ImgMatrix(project(trainingSet.get(i)), labels.get(i));
+//			ImgMatrix ptm = new ImgMatrix(project(trainingSet.get(i)), labels.get(i));
 
 //            ImgMatrix ptm = new ImgMatrix()
-			this.projectedTrainingSet.add(ptm);
+//			this.projectedTrainingSet.add(ptm);
 		}
 	}
 
