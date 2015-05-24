@@ -24,13 +24,14 @@ import java.util.ArrayList;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * zj45499 (at) gmail (dot) com
  */
-public class People {
+public class Human {
+    public TrainingEngine trainingEngine;
+
+    public final String name;
 
     public boolean isTrain = false;
 
     public ArrayList<ImgMatrix> trainingSet = new ArrayList<ImgMatrix>();
-
-    public final String name;
 
     public final ArrayList<ImgMatrix> imgMatrices;
 
@@ -38,9 +39,7 @@ public class People {
 
     private Matrix idMatrix = null;
 
-    public TrainingEngine trainingEngine;
-
-    public People(String name, TrainingEngine trainingEngine) {
+    public Human(String name, TrainingEngine trainingEngine) {
         this.name = name;
         this.trainingEngine = trainingEngine;
         imgMatrices = new ArrayList<ImgMatrix>();
@@ -49,21 +48,23 @@ public class People {
 
     public void addImg(ImgMatrix imgMatrix) {
         imgMatrices.add(imgMatrix);
-        imgMatrix.setPeople(this);
+        // already set in HumanFactory
+//        imgMatrix.setHuman(this);
         fileNums++;
+//        calculateID();
     }
 
     public void addTrainImg(ImgMatrix imgMatrix) {
         isTrain = true;
         imgMatrices.add(imgMatrix);
-        imgMatrix.setPeople(this);
+        // already set in HumanFactory
+//        imgMatrix.setHuman(this);
         fileNums++;
         trainingSet.add(imgMatrix);
-//        recalculateMean();
     }
 
     public void calculateID() {
-        Matrix sum = new Matrix(TrainingEngine.COMPONENT_NAM, 1, 0);
+        Matrix sum = new Matrix(TrainingEngine.COMPONENT_NUMBER, 1, 0);
         for (ImgMatrix imgMatrix : imgMatrices) {
             sum.plusEquals(imgMatrix.getProjectedVector());
         }

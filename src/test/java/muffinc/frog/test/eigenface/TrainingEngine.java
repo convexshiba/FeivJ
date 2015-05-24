@@ -7,7 +7,7 @@ import muffinc.frog.test.eigenface.metric.EuclideanDistance;
 import muffinc.frog.test.eigenface.metric.L1Distance;
 import muffinc.frog.test.helper.Writer;
 import muffinc.frog.test.object.ImgMatrix;
-import muffinc.frog.test.object.People;
+import muffinc.frog.test.object.Human;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,15 +36,13 @@ import java.util.*;
 public class TrainingEngine {
 
 
-    public static final int COMPONENT_NAM = 18;
+    public static final int COMPONENT_NUMBER = 18;
     public static final double THRESHOLD = 3000;
     public static final int METRIC_COSINE = 0;
     public static final int METRIC_L1D = 1;
     public static final int METRIC_EUCILDEAN = 2;
 
-    public HashMap<String, People> nameTable = new HashMap<String, People>();
-
-    public HashMap<File, ImgMatrix> matrixTable = new HashMap<File, ImgMatrix>();
+    public HumanFactory humanFactory;
 
     private int componentsRetained;
     private int trainNums;
@@ -72,6 +70,8 @@ public class TrainingEngine {
         this.trainNums = trainNums;
         this.knn_k = knn_k;
 
+        humanFactory = new HumanFactory(this);
+
         //set trainSet and testSet
         trainMap = new HashMap<String, ArrayList<Integer>>();
         testMap = new HashMap<String, ArrayList<Integer>>();
@@ -79,9 +79,12 @@ public class TrainingEngine {
         for(int i = 1; i <= 10; i ++ ){
             String label = "s"+i;
 
-            People people = new People(label, this);
+//            Human human = new Human(label, this);
+//
+//            humanFactory.nameTable.put(label, human);
+            humanFactory.newHuman(label);
 
-            nameTable.put(label, people);
+
 
             ArrayList<Integer> train = generateTrainNums(trainNums);
             ArrayList<Integer> test = generateTestNums(train);
@@ -111,9 +114,11 @@ public class TrainingEngine {
                     temp = FileManager.convertPGMtoMatrix(filePath);
 
                     ImgMatrix imgMatrix = new ImgMatrix(file, temp, this);
-                    matrixTable.put(file, imgMatrix);
-                    nameTable.get(label).addTrainImg(imgMatrix);
-//                    addImgMatrixtoPp(label, imgMatrix, true);
+//                    humanFactory.imgMatrixTable.put(file, imgMatrix);
+//                    humanFactory.nameTable.get(label).addTrainImg(imgMatrix);
+                    humanFactory.addTrainImgToHuman(imgMatrix, label);
+
+
                     imgMatrix.setVectorized(vectorize(temp));
                     trainingImgSet.add(imgMatrix);
 
@@ -144,9 +149,9 @@ public class TrainingEngine {
                     temp = FileManager.convertPGMtoMatrix(filePath);
 
                     ImgMatrix imgMatrix = new ImgMatrix(file, temp, this);
-                    matrixTable.put(file, imgMatrix);
-                    nameTable.get(label).addImg(imgMatrix);
-//                    addImgMatrixtoPp(label, imgMatrix, false);
+//                    humanFactory.imgMatrixTable.put(file, imgMatrix);
+//                    humanFactory.nameTable.get(label).addImg(imgMatrix);
+                    humanFactory.addImgToHuman(imgMatrix, label);
                     imgMatrix.setVectorized(vectorize(temp));
                     testingImgSet.add(imgMatrix);
 
@@ -195,7 +200,7 @@ public class TrainingEngine {
 
                     String result = new KNN().assignLabel(projectedTrainingSet.toArray(new ImgMatrix[0]), testImg.getProjectedVector(), knn_k, metric);
 
-                    if (result.equals(testImg.people.name)) {
+                    if (result.equals(testImg.human.name)) {
                         accurateNum++;
                     }
                 }
@@ -240,10 +245,10 @@ public class TrainingEngine {
 
                     String result = new ThresholdID().assignLabel(projectedTrainingSet.toArray(new ImgMatrix[0]), testImg.getProjectedVector(), THRESHOLD, metric);
 
-                    if (result.equals(testImg.people.name)) {
+                    if (result.equals(testImg.human.name)) {
                         accurateNum++;
                     } else {
-                        System.out.println(result + " should be IDed as " + testImg.people.name);
+                        System.out.println(result + " should be IDed as " + testImg.human.name);
                     }
                 }
 
@@ -384,7 +389,7 @@ public class TrainingEngine {
 
         for (double i = 1; i < 51; i++) {
             System.out.println(i);
-            TrainingEngine trainingEngine1 = new TrainingEngine(COMPONENT_NAM, 5, 2);
+            TrainingEngine trainingEngine1 = new TrainingEngine(COMPONENT_NUMBER, 5, 2);
 
             writer.write(i);
             writer.write(",");
@@ -407,9 +412,9 @@ public class TrainingEngine {
 
 
             System.out.println(i);
-            TrainingEngine trainingEngine1 = new TrainingEngine(COMPONENT_NAM, 5, 2);
+            TrainingEngine trainingEngine1 = new TrainingEngine(COMPONENT_NUMBER, 5, 2);
 
-            for (People p : trainingEngine1.nameTable.values()) {
+            for (Human p : trainingEngine1.humanFactory.nameTable.values()) {
                 writer.write(p.name + ",");
                 double sum = 0;
                 for (ImgMatrix imgMatrix : p.imgMatrices) {
@@ -426,10 +431,10 @@ public class TrainingEngine {
 
     @Deprecated
     public void addImgMatrixtoPp(String peopleName, ImgMatrix imgMatrix, boolean isTraingImg) {
-        if (!nameTable.containsKey(peopleName)) {
+        if (!humanFactory.nameTable.containsKey(peopleName)) {
             throw new IllegalArgumentException("PeopleTable does not contain this people, Please create people first");
         } else {
-            nameTable.get(peopleName).addTrainImg(imgMatrix);
+            humanFactory.nameTable.get(peopleName).addTrainImg(imgMatrix);
         }
     }
 

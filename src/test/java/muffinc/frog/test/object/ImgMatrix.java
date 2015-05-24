@@ -29,7 +29,7 @@ public class ImgMatrix {
     public PCA pca;
     public TrainingEngine trainingEngine;
 //    public String peopleName;
-    public People people;
+    public Human human;
     public File file;
     public Matrix matrix;
     public Matrix vectorized;
@@ -89,16 +89,16 @@ public class ImgMatrix {
         this.distance = distance;
     }
 
-    public People getPeople() {
-        if (people != null) {
-            return people;
+    public Human getHuman() {
+        if (human != null) {
+            return human;
         } else {
             throw new IllegalAccessError("Please set people First");
         }
     }
 
-    public void setPeople(People people) {
-        this.people = people;
+    public void setHuman(Human human) {
+        this.human = human;
     }
 
     public PCA getPca() {

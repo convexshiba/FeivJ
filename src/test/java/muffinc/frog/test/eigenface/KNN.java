@@ -78,7 +78,7 @@ public class KNN{
 
         for (int index = 0; index < num; index++) {
             ImgMatrix temp = neighbors[index];
-            String key = temp.getPeople().name;
+            String key = temp.getHuman().name;
             if (!map.containsKey(key))
                 map.put(key, 1 / temp.getDistance());
             else {

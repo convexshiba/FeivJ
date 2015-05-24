@@ -2,7 +2,7 @@ package muffinc.frog.test.eigenface;
 import muffinc.frog.test.Jama.EigenvalueDecomposition;
 import muffinc.frog.test.Jama.Matrix;
 import muffinc.frog.test.object.ImgMatrix;
-import muffinc.frog.test.object.People;
+import muffinc.frog.test.object.Human;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ public class PCA {
 
         for (ImgMatrix imgMatrix : trainingImg) {
             trainingSet.add(imgMatrix.getVectorized());
-            labels.add(imgMatrix.people.name);
+            labels.add(imgMatrix.human.name);
         }
 
 		this.numOfComponents = numOfComponents;
@@ -59,7 +59,7 @@ public class PCA {
             imgMatrix.setProjectedVector(project(imgMatrix.getVectorized()));
         }
 
-        for (People p : trainingEngine.nameTable.values()) {
+        for (Human p : trainingEngine.humanFactory.nameTable.values()) {
             p.calculateID();
         }
 

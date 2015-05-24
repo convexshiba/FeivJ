@@ -49,14 +49,14 @@ public class ThresholdID{
         } else {
             return "New Person";
         }
-        return nearest.getPeople().name;
+        return nearest.getHuman().name;
 
     }
 
     @Deprecated
     private static String getSmallest(ArrayList<ImgMatrix> neibors) {
         if (neibors.size() == 1) {
-            return neibors.get(0).getPeople().name;
+            return neibors.get(0).getHuman().name;
         } else if (neibors.size() == 0) {
             System.out.println("People Not Found");
         } else {

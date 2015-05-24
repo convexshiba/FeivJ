@@ -23,13 +23,8 @@ import java.util.Scanner;
  */
 public class Stdio {
 
-    Scanner in;
-
-    public Stdio() {
-        in = new Scanner(System.in);
-    }
-
-    public String nextStr() {
+    public static String readStr() {
+        Scanner in = new Scanner(System.in);
         return in.next();
     }
 
