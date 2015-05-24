@@ -64,6 +64,9 @@ import java.util.*;
 
 public class Train {
 
+
+    public static final int COMPONANT_NUM = 18;
+
     public HashMap<String, People> nameTable = new HashMap<String, People>();
 
 //    public HashMap<File, People> imgTable = new HashMap<File, People>();
@@ -226,7 +229,10 @@ public class Train {
                 int accurateNum = 0;
 
                 for (ImgMatrix testImg : testingImgSet) {
-                    testImg.setProjectedVector(pca.project(testImg.getVectorized()));
+
+                    // testImg will be project in PCA
+//                    testImg.setProjectedVector(pca.project(testImg.getVectorized()));
+
                     String result = KNN.assignLabel(projectedTrainingSet.toArray(new ImgMatrix[0]), testImg.getProjectedVector(), knn_k, metric);
 
                     if (result.equals(testImg.people.name)) {
@@ -373,28 +379,19 @@ public class Train {
 
     public static void main(String args[]){
 
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("/Users/Meth/Documents/FROG/src/test/data/metrics.csv"));
+        Train train1 = new Train(COMPONANT_NUM, 5, 2);
 
-            writer.write("time,cos,L1,Eulidean\n");
-            for (int i = 1; i < 51; i++) {
-                long time1 = System.currentTimeMillis();
-                System.out.println(i);
-                Train train1 = new Train(18, 5, 2);
-                train1.testAccuracy();
 
-                double[] accracies = train1.testAccuracy();
-                writer.write(String.valueOf(i) + ",");
-                writer.write(Arrays.toString(accracies).substring(1, Arrays.toString(accracies).length() - 1));
-                writer.newLine();
-
-                System.out.println("used time:" + String.valueOf((System.currentTimeMillis() - time1)));
+        for (People p : train1.nameTable.values()) {
+            for (ImgMatrix imgMatrix : p.imgMatrices) {
+                if (imgMatrix.isProjected()) {
+                    System.out.println("projected");
+                } else {
+                    System.out.println("not projected" + "people : " + p.name + "  " + imgMatrix.file.getPath());
+                }
             }
-            writer.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+
     }
 
     public void addImgMatrixtoPp(String peopleName, ImgMatrix imgMatrix, boolean isTraingImg) {

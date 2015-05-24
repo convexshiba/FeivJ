@@ -55,10 +55,10 @@ public class People {
             trainingSet.add(imgMatrix);
             isTrain = true;
         }
-        recalculateProjected();
+        recalculateMean();
     }
 
-    public void recalculateProjected() {
+    public void recalculateMean() {
 
     }
 }

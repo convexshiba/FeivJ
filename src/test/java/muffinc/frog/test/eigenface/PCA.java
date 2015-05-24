@@ -1,8 +1,10 @@
 package muffinc.frog.test.eigenface;
 import muffinc.frog.test.Jama.EigenvalueDecomposition;
 import muffinc.frog.test.Jama.Matrix;
+import muffinc.frog.test.helper.Writer;
 import muffinc.frog.test.object.ImgMatrix;
 
+import java.io.BufferedWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,6 +54,12 @@ public class PCA {
 //			this.projectedTrainingSet.add(tr);
 		}
         projectedTrainingSet = trainingImg;
+
+        // project testImg
+        for (ImgMatrix imgMatrix : train.testingImgSet) {
+            imgMatrix.setProjectedVector(project(imgMatrix.getVectorized()));
+        }
+
     }
 
 	@Deprecated
