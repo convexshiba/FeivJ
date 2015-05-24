@@ -44,8 +44,6 @@ public class TrainingEngine {
 
     public HashMap<String, People> nameTable = new HashMap<String, People>();
 
-//    public HashMap<File, People> imgTable = new HashMap<File, People>();
-
     public HashMap<File, ImgMatrix> matrixTable = new HashMap<File, ImgMatrix>();
 
     private int componentsRetained;
@@ -169,19 +167,6 @@ public class TrainingEngine {
 
     }
 
-    public static Metric getMetric(int i) {
-        switch (i) {
-            case METRIC_COSINE:
-                return new CosineDissimilarity();
-            case METRIC_L1D:
-                return new L1Distance();
-            case METRIC_EUCILDEAN:
-                return new EuclideanDistance();
-            default:
-                throw new IllegalArgumentException("Please use a valid Metric");
-        }
-    }
-
     public double[] testKNNAccuracy() {
         //test featureExtraction
         double[] accuracies = new double[3];
@@ -215,14 +200,6 @@ public class TrainingEngine {
                     }
                 }
 
-
-//                for(int i = 0 ; i < testingSet.size(); i ++){
-//                    Matrix testCase = fe.getW().transpose().times(testingSet.get(i).minus(fe.getMeanMatrix()));
-//                    String result = KNN.assignLabel(projectedTrainingSet.toArray(new ImgMatrix[0]), testCase, knn_k, metric);
-//
-//                    if(result.equals(trueLabels.get(i)))
-//                        accurateNum ++;
-//                }
 
                 double accuracy = accurateNum / (double)testingSet.size();
                 System.out.println("The accuracy of " + metricName + "is "+accuracy);
@@ -270,14 +247,6 @@ public class TrainingEngine {
                     }
                 }
 
-
-//                for(int i = 0 ; i < testingSet.size(); i ++){
-//                    Matrix testCase = fe.getW().transpose().times(testingSet.get(i).minus(fe.getMeanMatrix()));
-//                    String result = KNN.assignLabel(projectedTrainingSet.toArray(new ImgMatrix[0]), testCase, knn_k, metric);
-//
-//                    if(result.equals(trueLabels.get(i)))
-//                        accurateNum ++;
-//                }
 
                 double accuracy = accurateNum / (double)testingSet.size();
                 System.out.println("The accuracy of " + metricName + "is "+accuracy);
@@ -485,6 +454,7 @@ public class TrainingEngine {
      * knn_k: number of K for KNN algorithm
      *
      * */
+    @Deprecated
     static double test(int metricType, int componentsRetained, int featureExtractionMode, int trainNums, int knn_k){
         //determine which metric is used
         //metric
@@ -617,6 +587,19 @@ public class TrainingEngine {
         }
 
         return -1;
+    }
+
+    public static Metric getMetric(int i) {
+        switch (i) {
+            case METRIC_COSINE:
+                return new CosineDissimilarity();
+            case METRIC_L1D:
+                return new L1Distance();
+            case METRIC_EUCILDEAN:
+                return new EuclideanDistance();
+            default:
+                throw new IllegalArgumentException("Please use a valid Metric");
+        }
     }
 
     static ArrayList<Integer> generateTrainNums(int trainNum){
