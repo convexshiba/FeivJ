@@ -23,7 +23,6 @@ import muffinc.frog.test.common.Metric;
  * zj45499 (at) gmail (dot) com
  */
 public class EuclideanDistance implements Metric {
-
     @Override
     public double getDistance(Matrix m1, Matrix m2) {
         assert m1.getRowDimension() == m2.getRowDimension();

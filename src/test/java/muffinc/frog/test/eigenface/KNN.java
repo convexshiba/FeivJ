@@ -28,15 +28,15 @@ import muffinc.frog.test.Jama.Matrix;
 import muffinc.frog.test.common.Metric;
 import muffinc.frog.test.object.ImgMatrix;
 
-public class KNN {
+public class KNN{
 
-    public static String assignLabel(ImgMatrix[] trainingSet,Matrix testFace, int K, Metric metric) {
+    public String assignLabel(ImgMatrix[] trainingSet,Matrix testFace, int K, Metric metric) {
         ImgMatrix[] neighbors = findKNN(trainingSet, testFace, K, metric);
         return classify(neighbors);
     }
 
     // testFace has been projected to the subspace
-    static ImgMatrix[] findKNN(ImgMatrix[] trainingSet,Matrix testFace, int K, Metric metric) {
+    private static ImgMatrix[] findKNN(ImgMatrix[] trainingSet,Matrix testFace, int K, Metric metric) {
         int NumOfTrainingSet = trainingSet.length;
         assert K <= NumOfTrainingSet : "K is lager than the length of trainingSet!";
 
@@ -72,7 +72,7 @@ public class KNN {
     }
 
     // get the class label by using neighbors
-    static String classify(ImgMatrix[] neighbors) {
+    private static String classify(ImgMatrix[] neighbors) {
         HashMap<String, Double> map = new HashMap<String, Double>();
         int num = neighbors.length;
 

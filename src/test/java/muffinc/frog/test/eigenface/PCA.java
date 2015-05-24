@@ -1,10 +1,9 @@
 package muffinc.frog.test.eigenface;
 import muffinc.frog.test.Jama.EigenvalueDecomposition;
 import muffinc.frog.test.Jama.Matrix;
-import muffinc.frog.test.helper.Writer;
 import muffinc.frog.test.object.ImgMatrix;
+import muffinc.frog.test.object.People;
 
-import java.io.BufferedWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,13 +18,13 @@ public class PCA {
 	// Output
 	Matrix W;
 	ArrayList<ImgMatrix> projectedTrainingSet;
-    Train train;
+    TrainingEngine trainingEngine;
 
 //    public double infoRetainRatio;
     private BigDecimal sumOfEigenVal = BigDecimal.ZERO;
     private BigDecimal sumOfSelected = BigDecimal.ZERO;
 
-    public PCA(ArrayList<ImgMatrix> trainingImg, int numOfComponents, Train train) throws Exception {
+    public PCA(ArrayList<ImgMatrix> trainingImg, int numOfComponents, TrainingEngine trainingEngine) throws Exception {
 
 		if(numOfComponents >= trainingImg.size()){
 			throw new Exception("the expected dimensions could not be achieved!");
@@ -40,7 +39,7 @@ public class PCA {
         }
 
 		this.numOfComponents = numOfComponents;
-        this.train = train;
+        this.trainingEngine = trainingEngine;
 
 		this.meanMatrix = getMean(this.trainingSet);
 		this.W = getFeature(this.trainingSet, this.numOfComponents);
@@ -56,15 +55,20 @@ public class PCA {
         projectedTrainingSet = trainingImg;
 
         // project testImg
-        for (ImgMatrix imgMatrix : train.testingImgSet) {
+        for (ImgMatrix imgMatrix : trainingEngine.testingImgSet) {
             imgMatrix.setProjectedVector(project(imgMatrix.getVectorized()));
         }
+
+        for (People p : trainingEngine.nameTable.values()) {
+            p.calculateID();
+        }
+
 
     }
 
 	@Deprecated
 	public PCA(ArrayList<Matrix> trainingSet, ArrayList<String> labels,
-			   int numOfComponents, Train train) throws Exception {
+			   int numOfComponents, TrainingEngine trainingEngine) throws Exception {
 
 		if(numOfComponents >= trainingSet.size()){
 			throw new Exception("the expected dimensions could not be achieved!");

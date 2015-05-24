@@ -2,7 +2,7 @@ package muffinc.frog.test.object;
 
 import muffinc.frog.test.Jama.Matrix;
 import muffinc.frog.test.eigenface.PCA;
-import muffinc.frog.test.eigenface.Train;
+import muffinc.frog.test.eigenface.TrainingEngine;
 
 import java.io.File;
 
@@ -27,7 +27,7 @@ import java.io.File;
  */
 public class ImgMatrix {
     public PCA pca;
-    public Train train;
+    public TrainingEngine trainingEngine;
 //    public String peopleName;
     public People people;
     public File file;
@@ -40,7 +40,7 @@ public class ImgMatrix {
         this.file = file;
     }
 
-    public ImgMatrix(File file, Matrix matrix, Train train) {
+    public ImgMatrix(File file, Matrix matrix, TrainingEngine trainingEngine) {
         this.matrix = matrix;
         this.file = file;
     }

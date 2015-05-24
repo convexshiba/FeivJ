@@ -25,16 +25,27 @@ import java.io.IOException;
  */
 public class Writer {
 
-    String location;
+    String path;
     BufferedWriter writer;
     Object origin;
 
     public Writer(String filename, Object o) {
         try {
-            location = "/Users/Meth/Documents/FROG/src/test/data/" + filename;
-            writer = new BufferedWriter(new FileWriter(location));
+            path = "/Users/Meth/Documents/FROG/src/test/data/" + filename;
+            writer = new BufferedWriter(new FileWriter(path));
             origin = o;
             System.out.println("Writer created in "+o.getClass().toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Writer(String filename) {
+        try {
+            path = "/Users/Meth/Documents/FROG/src/test/data/" + filename;
+            writer = new BufferedWriter(new FileWriter(path));
+
+            System.out.println("Writer created in a static class");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -63,7 +74,7 @@ public class Writer {
     public void close() {
         try {
             writer.close();
-            System.out.println("Write Successful at " + location);
+            System.out.println("Write Successful at " + path);
         } catch (IOException e) {
             e.printStackTrace();
         }

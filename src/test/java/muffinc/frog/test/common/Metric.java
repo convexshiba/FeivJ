@@ -21,7 +21,6 @@ import muffinc.frog.test.Jama.Matrix;
  * zj45499 (at) gmail (dot) com
  */
 public interface Metric {
-
     /**
      * Gets distance of two matrices according the implemented metric method.
      *

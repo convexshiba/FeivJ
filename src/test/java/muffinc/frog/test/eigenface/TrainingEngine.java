@@ -1,44 +1,15 @@
 package muffinc.frog.test.eigenface;
 
-//import muffinc.frog.test.helper.ImageHelper;
-//import org.bytedeco.javacpp.opencv_core.*;
-//import org.bytedeco.javacpp.opencv_highgui.*;
-//
-//import javax.imageio.ImageIO;
-//import java.awt.image.BufferedImage;
-//import java.io.File;
-//import java.io.IOException;
-//import java.util.*;
-//import javax.swing.*;
-//
-//import static org.bytedeco.javacpp.opencv_core.*;
-//import static org.bytedeco.javacpp.opencv_highgui.*;
-//import static org.bytedeco.javacpp.opencv_objdetect.*;
-//import static org.bytedeco.javacpp.opencv_imgproc.*;
-//
-//
-//import org.bytedeco.javacv.*;
-//import org.bytedeco.javacpp.opencv_imgproc.*;
-//import org.bytedeco.javacpp.*;
-//import org.bytedeco.javacpp.indexer.*;
-//import org.ejml.simple.SimpleMatrix;
-//
-//import static org.bytedeco.javacpp.opencv_core.*;
-//import static org.bytedeco.javacpp.opencv_imgproc.*;
-//import static org.bytedeco.javacpp.opencv_calib3d.*;
-//import static org.bytedeco.javacpp.opencv_objdetect.*;
-
 import muffinc.frog.test.Jama.Matrix;
 import muffinc.frog.test.common.Metric;
 import muffinc.frog.test.eigenface.metric.CosineDissimilarity;
 import muffinc.frog.test.eigenface.metric.EuclideanDistance;
 import muffinc.frog.test.eigenface.metric.L1Distance;
+import muffinc.frog.test.helper.Writer;
 import muffinc.frog.test.object.ImgMatrix;
 import muffinc.frog.test.object.People;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
@@ -62,10 +33,14 @@ import java.util.*;
  * zj45499 (at) gmail (dot) com
  */
 
-public class Train {
+public class TrainingEngine {
 
 
-    public static final int COMPONANT_NUM = 18;
+    public static final int COMPONENT_NAM = 18;
+    public static final double THRESHOLD = 3000;
+    public static final int METRIC_COSINE = 0;
+    public static final int METRIC_L1D = 1;
+    public static final int METRIC_EUCILDEAN = 2;
 
     public HashMap<String, People> nameTable = new HashMap<String, People>();
 
@@ -93,7 +68,7 @@ public class Train {
     ArrayList<ImgMatrix> testingImgSet = new ArrayList<ImgMatrix>();
 
 
-    public Train(int componentsRetained, int trainNums, int knn_k) {
+    public TrainingEngine(int componentsRetained, int trainNums, int knn_k) {
         componentsRetained = 18;
         this.componentsRetained = componentsRetained;
         this.trainNums = trainNums;
@@ -139,7 +114,8 @@ public class Train {
 
                     ImgMatrix imgMatrix = new ImgMatrix(file, temp, this);
                     matrixTable.put(file, imgMatrix);
-                    addImgMatrixtoPp(label, imgMatrix, true);
+                    nameTable.get(label).addTrainImg(imgMatrix);
+//                    addImgMatrixtoPp(label, imgMatrix, true);
                     imgMatrix.setVectorized(vectorize(temp));
                     trainingImgSet.add(imgMatrix);
 
@@ -169,10 +145,10 @@ public class Train {
                 try {
                     temp = FileManager.convertPGMtoMatrix(filePath);
 
-
                     ImgMatrix imgMatrix = new ImgMatrix(file, temp, this);
                     matrixTable.put(file, imgMatrix);
-                    addImgMatrixtoPp(label, imgMatrix, false);
+                    nameTable.get(label).addImg(imgMatrix);
+//                    addImgMatrixtoPp(label, imgMatrix, false);
                     imgMatrix.setVectorized(vectorize(temp));
                     testingImgSet.add(imgMatrix);
 
@@ -186,13 +162,27 @@ public class Train {
 
         try {
             pca = new PCA(trainingImgSet, componentsRetained, this);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
 
-    public double[] testAccuracy() {
+    public static Metric getMetric(int i) {
+        switch (i) {
+            case METRIC_COSINE:
+                return new CosineDissimilarity();
+            case METRIC_L1D:
+                return new L1Distance();
+            case METRIC_EUCILDEAN:
+                return new EuclideanDistance();
+            default:
+                throw new IllegalArgumentException("Please use a valid Metric");
+        }
+    }
+
+    public double[] testKNNAccuracy() {
         //test featureExtraction
         double[] accuracies = new double[3];
         try{
@@ -205,24 +195,9 @@ public class Train {
 //            FileManager.convertMatricetoImage(fe.getW(), featureExtractionMode);
 
 
-            for (int j = 0; j < 3; j++) {
-                int metricType = j;
-                String metricName = "";
-                Metric metric = null;
-                if(metricType == 0) {
-                    metric = new CosineDissimilarity();
-                    metricName = "Cosine";
-                }
-                else if (metricType == 1) {
-                    metric = new L1Distance();
-                    metricName = "L1";
-                }
-                else if (metricType == 2) {
-                    metric = new EuclideanDistance();
-                    metricName = " Euclidean";
-                }
-
-                assert metric != null : "metricType is wrong!";
+            for (int metrictype = 0; metrictype < 3; metrictype++) {
+                Metric metric = getMetric(metrictype);
+                String metricName = metric.getClass().getSimpleName();
 
                 ArrayList<ImgMatrix> projectedTrainingSet = pca.getProjectedTrainingSet();
 
@@ -233,7 +208,7 @@ public class Train {
                     // testImg will be project in PCA
 //                    testImg.setProjectedVector(pca.project(testImg.getVectorized()));
 
-                    String result = KNN.assignLabel(projectedTrainingSet.toArray(new ImgMatrix[0]), testImg.getProjectedVector(), knn_k, metric);
+                    String result = new KNN().assignLabel(projectedTrainingSet.toArray(new ImgMatrix[0]), testImg.getProjectedVector(), knn_k, metric);
 
                     if (result.equals(testImg.people.name)) {
                         accurateNum++;
@@ -250,8 +225,63 @@ public class Train {
 //                }
 
                 double accuracy = accurateNum / (double)testingSet.size();
-//                System.out.println("The accuracy of " + metricName + "is "+accuracy);
-                accuracies[j] = accuracy;
+                System.out.println("The accuracy of " + metricName + "is "+accuracy);
+                accuracies[metrictype] = accuracy;
+            }
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return accuracies;
+    }
+
+    public double testThresholdAccuracy() {
+        //test featureExtraction
+        double accuracies = Double.NaN;
+        try{
+
+//            PCA fe = new PCA(trainingSet, labels, componentsRetained, this);
+
+
+//            Display.display(FileManager.convertVectorToImage(fe.getMeanMatrix()));
+
+//            FileManager.convertMatricetoImage(fe.getW(), featureExtractionMode);
+
+
+            for (int metrictype = 2; metrictype < 3; metrictype++) {
+                Metric metric = getMetric(metrictype);
+                String metricName = metric.getClass().getSimpleName();
+
+                ArrayList<ImgMatrix> projectedTrainingSet = pca.getProjectedTrainingSet();
+
+                int accurateNum = 0;
+
+                for (ImgMatrix testImg : testingImgSet) {
+
+                    // testImg will be project in PCA
+//                    testImg.setProjectedVector(pca.project(testImg.getVectorized()));
+
+                    String result = new ThresholdID().assignLabel(projectedTrainingSet.toArray(new ImgMatrix[0]), testImg.getProjectedVector(), THRESHOLD, metric);
+
+                    if (result.equals(testImg.people.name)) {
+                        accurateNum++;
+                    } else {
+                        System.out.println(result + " should be IDed as " + testImg.people.name);
+                    }
+                }
+
+
+//                for(int i = 0 ; i < testingSet.size(); i ++){
+//                    Matrix testCase = fe.getW().transpose().times(testingSet.get(i).minus(fe.getMeanMatrix()));
+//                    String result = KNN.assignLabel(projectedTrainingSet.toArray(new ImgMatrix[0]), testCase, knn_k, metric);
+//
+//                    if(result.equals(trueLabels.get(i)))
+//                        accurateNum ++;
+//                }
+
+                double accuracy = accurateNum / (double)testingSet.size();
+                System.out.println("The accuracy of " + metricName + "is "+accuracy);
+                accuracies = accuracy;
             }
 
         }catch(Exception e){
@@ -331,7 +361,7 @@ public class Train {
 
         //set featureExtraction
         try{
-            PCA fe = new PCA(trainingSet, labels,componentsRetained, new Train(10, 5, 2));
+            PCA fe = new PCA(trainingSet, labels,componentsRetained, new TrainingEngine(10, 5, 2));
 
 
 //            Display.display(FileManager.convertVectorToImage(fe.getMeanMatrix()));
@@ -362,7 +392,7 @@ public class Train {
                 int accurateNum = 0;
                 for(int i = 0 ; i < testingSet.size(); i ++){
                     Matrix testCase = fe.getW().transpose().times(testingSet.get(i).minus(fe.getMeanMatrix()));
-                    String result = KNN.assignLabel(projectedTrainingSet.toArray(new ImgMatrix[0]), testCase, knn_k, metric);
+                    String result = new KNN().assignLabel(projectedTrainingSet.toArray(new ImgMatrix[0]), testCase, knn_k, metric);
 
                     if(result.equals(trueLabels.get(i)))
                         accurateNum ++;
@@ -379,26 +409,58 @@ public class Train {
 
     public static void main(String args[]){
 
-        Train train1 = new Train(COMPONANT_NUM, 5, 2);
+        Writer writer = new Writer("Threshold3000Accuracy.csv");
+        writer.write("time,accuracy\n");
 
 
-        for (People p : train1.nameTable.values()) {
-            for (ImgMatrix imgMatrix : p.imgMatrices) {
-                if (imgMatrix.isProjected()) {
-                    System.out.println("projected");
-                } else {
-                    System.out.println("not projected" + "people : " + p.name + "  " + imgMatrix.file.getPath());
+        for (double i = 1; i < 51; i++) {
+            System.out.println(i);
+            TrainingEngine trainingEngine1 = new TrainingEngine(COMPONENT_NAM, 5, 2);
+
+            writer.write(i);
+            writer.write(",");
+            writer.write(trainingEngine1.testThresholdAccuracy());
+            writer.newLine();
+        }
+        writer.close();
+    }
+
+
+    public static void findnWriteThreshold() {
+
+        Metric metric = getMetric(METRIC_EUCILDEAN);
+
+        Writer writer = new Writer("Threshold.csv");
+
+        writer.write("Name, Max_Distance\n");
+
+        for (int i = 1; i < 16; i++) {
+
+
+            System.out.println(i);
+            TrainingEngine trainingEngine1 = new TrainingEngine(COMPONENT_NAM, 5, 2);
+
+            for (People p : trainingEngine1.nameTable.values()) {
+                writer.write(p.name + ",");
+                double sum = 0;
+                for (ImgMatrix imgMatrix : p.imgMatrices) {
+                    sum += metric.getDistance(p.getIdMatrix(), imgMatrix.getProjectedVector());
                 }
+                writer.write(sum / p.fileNums);
+                writer.newLine();
             }
         }
+        writer.close();
 
     }
 
+
+    @Deprecated
     public void addImgMatrixtoPp(String peopleName, ImgMatrix imgMatrix, boolean isTraingImg) {
         if (!nameTable.containsKey(peopleName)) {
             throw new IllegalArgumentException("PeopleTable does not contain this people, Please create people first");
         } else {
-            nameTable.get(peopleName).addImgMatrix(imgMatrix, isTraingImg);
+            nameTable.get(peopleName).addTrainImg(imgMatrix);
         }
     }
 

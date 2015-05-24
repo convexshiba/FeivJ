@@ -1,7 +1,7 @@
 package muffinc.frog.test.object;
 
 import muffinc.frog.test.Jama.Matrix;
-import muffinc.frog.test.eigenface.Train;
+import muffinc.frog.test.eigenface.TrainingEngine;
 
 import java.util.ArrayList;
 
@@ -36,29 +36,45 @@ public class People {
 
     public int fileNums;
 
-    public Matrix projectedIDMatrix = null;
+    private Matrix idMatrix = null;
 
-    public Train train;
+    public TrainingEngine trainingEngine;
 
-    public People(String name, Train train) {
+    public People(String name, TrainingEngine trainingEngine) {
         this.name = name;
-        this.train = train;
+        this.trainingEngine = trainingEngine;
         imgMatrices = new ArrayList<ImgMatrix>();
         fileNums = 0;
     }
 
-    public void addImgMatrix(ImgMatrix imgMatrix, boolean isTrainImg) {
+    public void addImg(ImgMatrix imgMatrix) {
         imgMatrices.add(imgMatrix);
         imgMatrix.setPeople(this);
         fileNums++;
-        if (isTrainImg) {
-            trainingSet.add(imgMatrix);
-            isTrain = true;
-        }
-        recalculateMean();
     }
 
-    public void recalculateMean() {
+    public void addTrainImg(ImgMatrix imgMatrix) {
+        isTrain = true;
+        imgMatrices.add(imgMatrix);
+        imgMatrix.setPeople(this);
+        fileNums++;
+        trainingSet.add(imgMatrix);
+//        recalculateMean();
+    }
 
+    public void calculateID() {
+        Matrix sum = new Matrix(TrainingEngine.COMPONENT_NAM, 1, 0);
+        for (ImgMatrix imgMatrix : imgMatrices) {
+            sum.plusEquals(imgMatrix.getProjectedVector());
+        }
+        idMatrix = sum.timesEquals(1 / ((double) imgMatrices.size()));
+    }
+
+    public Matrix getIdMatrix() {
+        if (idMatrix != null) {
+            return idMatrix;
+        } else {
+            throw new IllegalAccessError(name + "'s idMatrix has not been calculated");
+        }
     }
 }
