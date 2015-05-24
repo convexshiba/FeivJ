@@ -19,5 +19,5 @@ package muffinc.frog.test.eigenface;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * zj45499 (at) gmail (dot) com
  */
-public class PeopleLibrary {
+public class PeopleFactory {
 }
