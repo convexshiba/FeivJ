@@ -1,12 +1,12 @@
 package muffinc.frog.test.eigenface;
 import muffinc.frog.test.Jama.EigenvalueDecomposition;
 import muffinc.frog.test.Jama.Matrix;
-import muffinc.frog.test.Jama.util.JamaUtils;
 import muffinc.frog.test.common.Metric;
 import muffinc.frog.test.eigenface.metric.EuclideanDistance;
 import muffinc.frog.test.object.ImgMatrix;
 import muffinc.frog.test.object.Human;
 
+import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,7 +51,7 @@ public class PCA {
 		this.projectedTrainingSet = new ArrayList<ImgMatrix>();
 		for (int i = 0; i < trainingSet.size(); i++) {
 //			ImgMatrix ptm = new ImgMatrix(project(trainingSet.get(i)), labels.get(i));
-            trainingImg.get(i).setProjectedVector(project(trainingImg.get(i).getVectorized()));
+            trainingImg.get(i).setIdMatrix(project(trainingImg.get(i).getVectorized()));
 
             // setIsFace for trainingImg
 //            setAndReturnIsFace(trainingImg.get(i));
@@ -62,7 +62,7 @@ public class PCA {
 
         // project testImg
         for (ImgMatrix imgMatrix : trainingEngine.testingImgSet) {
-            imgMatrix.setProjectedVector(project(imgMatrix.getVectorized()));
+            imgMatrix.setIdMatrix(project(imgMatrix.getVectorized()));
 
             // setIsFace for testImg
 //            setAndReturnIsFace(imgMatrix);
@@ -107,26 +107,20 @@ public class PCA {
     }
 
     // returns the reconstructed Matrix as a col Matrix
-	public Matrix reconstruct(Matrix idMatrix) {
-//        Matrix reconstedMatrix = new Matrix(FACE_HEIGHT * FACE_WIDTH, 1);
-//        double[] eigenVals = idMatrix.getRowPackedCopy();
-//
-//        for (int i = 0; i < getW().getColumnDimension(); i++) {
-//            reconstedMatrix.plusEquals(getW().getMatrix(0, getW().getRowDimension() - 1, i, i)).times(eigenVals[i]);
-//        }
-//        return reconstedMatrix.plus(getMeanMatrix());
+	public BufferedImage reconstBufferImg(Matrix idMatrix) {
+		Matrix restoredMatrix = getW().times(idMatrix).plus(getMeanMatrix());
+        return FileManager.convertColMatrixToImage(restoredMatrix);
+    }
 
-//        Matrix weights = idMatrix;
-        Matrix eigen = this.getW().getMatrix(0, FACE_HEIGHT * FACE_WIDTH - 1, 0, TrainingEngine.COMPONENT_NUMBER - 1);
-        return eigen.times(idMatrix).plus(this.getMeanMatrix());
-
+    public Matrix reconstMatrix(Matrix idMatrix) {
+        return getW().times(idMatrix).plus(getMeanMatrix());
     }
 
     public boolean setAndReturnIsFace(ImgMatrix imgMatrix) {
-        Matrix reconstructed = reconstruct(imgMatrix.getProjectedVector());
+        Matrix reconstructed = reconstMatrix(imgMatrix.getIdMatrix());
         Matrix adjustedInput = imgMatrix.getVectorized().minus(getMeanMatrix());
         Metric metric = new EuclideanDistance();
-        imgMatrix.setIsFace(metric.getDistance(reconstructed, imgMatrix.getProjectedVector()) > TrainingEngine.IS_FACE_THRESHOLD);
+        imgMatrix.setIsFace(metric.getDistance(reconstructed, imgMatrix.getIdMatrix()) > TrainingEngine.IS_FACE_THRESHOLD);
         return imgMatrix.isFace();
     }
 
@@ -261,7 +255,7 @@ public class PCA {
 		if(dimensions > this.numOfComponents)
 			throw new Exception("dimensions should be smaller than the number of components");
 		
-		Matrix afterPCA = this.projectedTrainingSet.get(whichImage).getProjectedVector().getMatrix(0, dimensions - 1, 0, 0);
+		Matrix afterPCA = this.projectedTrainingSet.get(whichImage).getIdMatrix().getMatrix(0, dimensions - 1, 0, 0);
 		Matrix eigen = this.getW().getMatrix(0, 10304-1, 0, dimensions - 1);
 		return eigen.times(afterPCA).plus(this.getMeanMatrix());
 		

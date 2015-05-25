@@ -44,7 +44,7 @@ public class KNN{
         ImgMatrix[] neighbors = new ImgMatrix[K];
         int i;
         for (i = 0; i < K; i++) {
-            trainingSet[i].setDistance(metric.getDistance(trainingSet[i].getProjectedVector(),
+            trainingSet[i].setDistance(metric.getDistance(trainingSet[i].getIdMatrix(),
                     testFace));
 //			System.out.println("index: " + i + " distance: "
 //					+ trainingSet[i].distance);
@@ -54,7 +54,7 @@ public class KNN{
         // go through the remaining records in the trainingSet to find K nearest
         // neighbors
         for (i = K; i < NumOfTrainingSet; i++) {
-            trainingSet[i].setDistance(metric.getDistance(trainingSet[i].getProjectedVector(),
+            trainingSet[i].setDistance(metric.getDistance(trainingSet[i].getIdMatrix(),
                     testFace));
 //			System.out.println("index: " + i + " distance: "
 //					+ trainingSet[i].distance);

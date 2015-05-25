@@ -139,20 +139,35 @@ public class FileManager {
     }
 
     public static BufferedImage convertColMatrixToImage(Matrix xCol) {
-        Matrix face = normalize(xCol);
+//        Matrix face = normalize(xCol);
+//
+//        BufferedImage img = new BufferedImage(92,112, BufferedImage.TYPE_BYTE_GRAY);
+//        WritableRaster raster = img.getRaster();
+//
+//        for(int m = 0; m < 112; m ++ ){
+//            for(int n = 0; n < 92; n ++){
+//                int value = (int)face.get(m, n);
+//                raster.setSample(n,m,0,value);
+//            }
+//        }
+//
+//        return img;
 
-        BufferedImage img = new BufferedImage(92,112, BufferedImage.TYPE_BYTE_GRAY);
+        BufferedImage img = new BufferedImage(PCA.FACE_WIDTH, PCA.FACE_HEIGHT, BufferedImage.TYPE_BYTE_GRAY);
         WritableRaster raster = img.getRaster();
 
         for(int m = 0; m < 112; m ++ ){
             for(int n = 0; n < 92; n ++){
-                int value = (int)face.get(m, n);
+                int value = (int)xCol.get(n*112+m, 0);
                 raster.setSample(n,m,0,value);
             }
         }
 
         return img;
+
     }
+
+
 
     //convert single matrix to an image
     public static void convertToImage(Matrix input, int name) throws IOException{

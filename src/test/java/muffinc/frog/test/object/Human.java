@@ -66,7 +66,7 @@ public class Human {
     public void calculateID() {
         Matrix sum = new Matrix(TrainingEngine.COMPONENT_NUMBER, 1, 0);
         for (ImgMatrix imgMatrix : imgMatrices) {
-            sum.plusEquals(imgMatrix.getProjectedVector());
+            sum.plusEquals(imgMatrix.getIdMatrix());
         }
         idMatrix = sum.timesEquals(1 / ((double) imgMatrices.size()));
     }

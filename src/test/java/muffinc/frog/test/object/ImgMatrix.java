@@ -34,7 +34,7 @@ public class ImgMatrix {
     public Matrix matrix;
     public Matrix vectorized;
     private boolean isFace;
-    private Matrix projectedVector;
+    private Matrix idMatrix;
     private double distance = -1;
 
     public ImgMatrix(File file) {
@@ -63,19 +63,19 @@ public class ImgMatrix {
     }
 
     public boolean isProjected() {
-        return projectedVector != null;
+        return idMatrix != null;
     }
 
-    public Matrix getProjectedVector() {
+    public Matrix getIdMatrix() {
         if (!isProjected()) {
-            throw new IllegalAccessError("This Matrix has not been projectedVector");
+            throw new IllegalAccessError("This Matrix has not been idMatrix");
         } else {
-            return projectedVector;
+            return idMatrix;
         }
     }
 
-    public void setProjectedVector(Matrix projectedVector) {
-        this.projectedVector = projectedVector;
+    public void setIdMatrix(Matrix idMatrix) {
+        this.idMatrix = idMatrix;
     }
 
     public double getDistance() {
@@ -112,7 +112,7 @@ public class ImgMatrix {
 
     public void project(PCA pca) {
         if (!isProjected()) {
-            projectedVector = pca.project(matrix);
+            idMatrix = pca.project(matrix);
         }
     }
 

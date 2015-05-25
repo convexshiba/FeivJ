@@ -38,7 +38,7 @@ public class Identification {
         ImgMatrix nearest = null;
 
         for (int i = 0; i < trainingSet.length; i++) {
-            trainingSet[i].setDistance(metric.getDistance(testFace, trainingSet[i].getProjectedVector()));
+            trainingSet[i].setDistance(metric.getDistance(testFace, trainingSet[i].getIdMatrix()));
             if (trainingSet[i].getDistance() < smallest) {
                 nearest = trainingSet[i];
                 smallest = trainingSet[i].getDistance();

@@ -37,7 +37,7 @@ import java.util.*;
 public class TrainingEngine {
 
 
-    public static final int COMPONENT_NUMBER = 30;
+    public static final int COMPONENT_NUMBER = 22;
     public static final double ID_THRESHOLD = 3000;
     public static final double IS_FACE_THRESHOLD = 200;
     public static final int METRIC_COSINE = 0;
@@ -201,9 +201,9 @@ public class TrainingEngine {
                 for (ImgMatrix testImg : testingImgSet) {
 
                     // testImg will be project in PCA
-//                    testImg.setProjectedVector(pca.project(testImg.getVectorized()));
+//                    testImg.setIdMatrix(pca.project(testImg.getVectorized()));
 
-                    String result = new KNN().assignLabel(projectedTrainingSet.toArray(new ImgMatrix[0]), testImg.getProjectedVector(), knn_k, metric);
+                    String result = new KNN().assignLabel(projectedTrainingSet.toArray(new ImgMatrix[0]), testImg.getIdMatrix(), knn_k, metric);
 
                     if (result.equals(testImg.human.name)) {
                         accurateNum++;
@@ -246,9 +246,9 @@ public class TrainingEngine {
                 for (ImgMatrix testImg : testingImgSet) {
 
                     // testImg will be project in PCA
-//                    testImg.setProjectedVector(pca.project(testImg.getVectorized()));
+//                    testImg.setIdMatrix(pca.project(testImg.getVectorized()));
 
-                    String result = new Identification().assignLabel(projectedTrainingSet.toArray(new ImgMatrix[0]), testImg.getProjectedVector(), ID_THRESHOLD, metric);
+                    String result = new Identification().assignLabel(projectedTrainingSet.toArray(new ImgMatrix[0]), testImg.getIdMatrix(), ID_THRESHOLD, metric);
 
                     if (result.equals(testImg.human.name)) {
                         accurateNum++;
@@ -391,9 +391,9 @@ public class TrainingEngine {
         TrainingEngine engine = new TrainingEngine();
 //        engine.testKNNAccuracy();
 
-        ImgMatrix test = engine.humanFactory.imgMatrixTable.values().toArray(new ImgMatrix[1])[1];
+        ImgMatrix test = engine.humanFactory.imgMatrixTable.values().toArray(new ImgMatrix[1])[5];
         Display.display(test);
-        Display.display(FileManager.convertColMatrixToImage(engine.pca.reconstruct(test.getProjectedVector())));
+        Display.display(engine.pca.reconstBufferImg(test.getIdMatrix()));
 
 //        for (ImgMatrix imgMatrix : engine.humanFactory.imgMatrixTable.values()) {
 //            System.out.println(imgMatrix.isFace());
@@ -419,7 +419,7 @@ public class TrainingEngine {
                 writer.write(p.name + ",");
                 double sum = 0;
                 for (ImgMatrix imgMatrix : p.imgMatrices) {
-                    sum += metric.getDistance(p.getIdMatrix(), imgMatrix.getProjectedVector());
+                    sum += metric.getDistance(p.getIdMatrix(), imgMatrix.getIdMatrix());
                 }
                 writer.write(sum / p.fileNums);
                 writer.newLine();
