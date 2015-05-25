@@ -2,6 +2,7 @@ package muffinc.frog.test.eigenface;
 
 import muffinc.frog.test.Jama.Matrix;
 import muffinc.frog.test.common.Metric;
+import muffinc.frog.test.displayio.Display;
 import muffinc.frog.test.eigenface.metric.CosineDissimilarity;
 import muffinc.frog.test.eigenface.metric.EuclideanDistance;
 import muffinc.frog.test.eigenface.metric.L1Distance;
@@ -36,8 +37,9 @@ import java.util.*;
 public class TrainingEngine {
 
 
-    public static final int COMPONENT_NUMBER = 18;
-    public static final double THRESHOLD = 3000;
+    public static final int COMPONENT_NUMBER = 30;
+    public static final double ID_THRESHOLD = 3000;
+    public static final double IS_FACE_THRESHOLD = 200;
     public static final int METRIC_COSINE = 0;
     public static final int METRIC_L1D = 1;
     public static final int METRIC_EUCILDEAN = 2;
@@ -63,9 +65,12 @@ public class TrainingEngine {
 
     ArrayList<ImgMatrix> testingImgSet = new ArrayList<ImgMatrix>();
 
+    public TrainingEngine() {
+        this(COMPONENT_NUMBER, 5, 2);
+    }
+
 
     public TrainingEngine(int componentsRetained, int trainNums, int knn_k) {
-        componentsRetained = 18;
         this.componentsRetained = componentsRetained;
         this.trainNums = trainNums;
         this.knn_k = knn_k;
@@ -180,7 +185,7 @@ public class TrainingEngine {
 //            PCA fe = new PCA(trainingSet, labels, componentsRetained, this);
 
 
-//            Display.display(FileManager.convertVectorToImage(fe.getMeanMatrix()));
+//            Display.display(FileManager.convertColMatrixToImage(fe.getMeanMatrix()));
 
 //            FileManager.convertMatricetoImage(fe.getW(), featureExtractionMode);
 
@@ -225,7 +230,7 @@ public class TrainingEngine {
 //            PCA fe = new PCA(trainingSet, labels, componentsRetained, this);
 
 
-//            Display.display(FileManager.convertVectorToImage(fe.getMeanMatrix()));
+//            Display.display(FileManager.convertColMatrixToImage(fe.getMeanMatrix()));
 
 //            FileManager.convertMatricetoImage(fe.getW(), featureExtractionMode);
 
@@ -243,7 +248,7 @@ public class TrainingEngine {
                     // testImg will be project in PCA
 //                    testImg.setProjectedVector(pca.project(testImg.getVectorized()));
 
-                    String result = new ThresholdID().assignLabel(projectedTrainingSet.toArray(new ImgMatrix[0]), testImg.getProjectedVector(), THRESHOLD, metric);
+                    String result = new Identification().assignLabel(projectedTrainingSet.toArray(new ImgMatrix[0]), testImg.getProjectedVector(), ID_THRESHOLD, metric);
 
                     if (result.equals(testImg.human.name)) {
                         accurateNum++;
@@ -338,7 +343,7 @@ public class TrainingEngine {
             PCA fe = new PCA(trainingSet, labels,componentsRetained, new TrainingEngine(10, 5, 2));
 
 
-//            Display.display(FileManager.convertVectorToImage(fe.getMeanMatrix()));
+//            Display.display(FileManager.convertColMatrixToImage(fe.getMeanMatrix()));
 
 //            FileManager.convertMatricetoImage(fe.getW(), featureExtractionMode);
 
@@ -381,22 +386,18 @@ public class TrainingEngine {
 
     }
 
-    public static void main(String args[]){
+    public static void main(String args[]) {
 
-        Writer writer = new Writer("Threshold3000Accuracy.csv");
-        writer.write("time,accuracy\n");
+        TrainingEngine engine = new TrainingEngine();
+//        engine.testKNNAccuracy();
 
+        ImgMatrix test = engine.humanFactory.imgMatrixTable.values().toArray(new ImgMatrix[1])[1];
+        Display.display(test);
+        Display.display(FileManager.convertColMatrixToImage(engine.pca.reconstruct(test.getProjectedVector())));
 
-        for (double i = 1; i < 51; i++) {
-            System.out.println(i);
-            TrainingEngine trainingEngine1 = new TrainingEngine(COMPONENT_NUMBER, 5, 2);
-
-            writer.write(i);
-            writer.write(",");
-            writer.write(trainingEngine1.testThresholdAccuracy());
-            writer.newLine();
-        }
-        writer.close();
+//        for (ImgMatrix imgMatrix : engine.humanFactory.imgMatrixTable.values()) {
+//            System.out.println(imgMatrix.isFace());
+//        }
     }
 
 

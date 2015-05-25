@@ -26,8 +26,7 @@ import java.util.ArrayList;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * zj45499 (at) gmail (dot) com
  */
-public class ThresholdID{
-//    public static final double THRESHOLD = 3000;
+public class Identification {
 
     public String assignLabel(ImgMatrix[] trainingSet, Matrix testFace, double threshold, Metric metric) {
         return findString(trainingSet, testFace, threshold, metric);
@@ -35,6 +34,7 @@ public class ThresholdID{
 
     private static String findString(ImgMatrix[] trainingSet, Matrix testFace,double threshold, Metric metric) {
         double smallest = Double.MAX_VALUE;
+        double biggest = Double.MIN_VALUE;
         ImgMatrix nearest = null;
 
         for (int i = 0; i < trainingSet.length; i++) {

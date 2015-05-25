@@ -111,14 +111,14 @@ public class FileManager {
         int column = x.getColumnDimension();
 
         for(int i = 0; i < column; i ++){
-            Matrix eigen = normalize(x.getMatrix(0, row-1, i, i));
+            Matrix imgMatrix = normalize(x.getMatrix(0, row-1, i, i));
 
             BufferedImage img = new BufferedImage(92,112,BufferedImage.TYPE_BYTE_GRAY);
             WritableRaster raster = img.getRaster();
 
             for(int m = 0; m < 112; m ++ ){
                 for(int n = 0; n < 92; n ++){
-                    int value = (int)eigen.get(m, n);
+                    int value = (int)imgMatrix.get(m, n);
                     raster.setSample(n,m,0,value);
                 }
             }
@@ -138,7 +138,7 @@ public class FileManager {
         }
     }
 
-    public static BufferedImage convertVectorToImage(Matrix xCol) {
+    public static BufferedImage convertColMatrixToImage(Matrix xCol) {
         Matrix face = normalize(xCol);
 
         BufferedImage img = new BufferedImage(92,112, BufferedImage.TYPE_BYTE_GRAY);

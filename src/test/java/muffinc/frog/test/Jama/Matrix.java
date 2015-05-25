@@ -74,15 +74,15 @@ public class Matrix implements Cloneable, java.io.Serializable {
    Constructors
  * ------------------------ */
 
-   /** Construct an m-by-n matrix of zeros. 
-   @param m    Number of rows.
-   @param n    Number of colums.
+   /** Construct an rows-by-cols matrix of zeros.
+   @param rows    Number of rows.
+   @param cols    Number of colums.
    */
 
-   public Matrix (int m, int n) {
-      this.m = m;
-      this.n = n;
-      A = new double[m][n];
+   public Matrix (int rows, int cols) {
+      this.m = rows;
+      this.n = cols;
+      A = new double[rows][cols];
    }
 
    /** Construct an m-by-n constant matrix.

@@ -1,6 +1,9 @@
 package muffinc.frog.test.eigenface;
 import muffinc.frog.test.Jama.EigenvalueDecomposition;
 import muffinc.frog.test.Jama.Matrix;
+import muffinc.frog.test.Jama.util.JamaUtils;
+import muffinc.frog.test.common.Metric;
+import muffinc.frog.test.eigenface.metric.EuclideanDistance;
 import muffinc.frog.test.object.ImgMatrix;
 import muffinc.frog.test.object.Human;
 
@@ -50,6 +53,9 @@ public class PCA {
 //			ImgMatrix ptm = new ImgMatrix(project(trainingSet.get(i)), labels.get(i));
             trainingImg.get(i).setProjectedVector(project(trainingImg.get(i).getVectorized()));
 
+            // setIsFace for trainingImg
+//            setAndReturnIsFace(trainingImg.get(i));
+
 //			this.projectedTrainingSet.add(tr);
 		}
         projectedTrainingSet = trainingImg;
@@ -57,6 +63,10 @@ public class PCA {
         // project testImg
         for (ImgMatrix imgMatrix : trainingEngine.testingImgSet) {
             imgMatrix.setProjectedVector(project(imgMatrix.getVectorized()));
+
+            // setIsFace for testImg
+//            setAndReturnIsFace(imgMatrix);
+
         }
 
         for (Human p : trainingEngine.humanFactory.nameTable.values()) {
@@ -96,8 +106,32 @@ public class PCA {
         return W.transpose().times(input.minus(meanMatrix));
     }
 
+    // returns the reconstructed Matrix as a col Matrix
+	public Matrix reconstruct(Matrix idMatrix) {
+//        Matrix reconstedMatrix = new Matrix(FACE_HEIGHT * FACE_WIDTH, 1);
+//        double[] eigenVals = idMatrix.getRowPackedCopy();
+//
+//        for (int i = 0; i < getW().getColumnDimension(); i++) {
+//            reconstedMatrix.plusEquals(getW().getMatrix(0, getW().getRowDimension() - 1, i, i)).times(eigenVals[i]);
+//        }
+//        return reconstedMatrix.plus(getMeanMatrix());
+
+//        Matrix weights = idMatrix;
+        Matrix eigen = this.getW().getMatrix(0, FACE_HEIGHT * FACE_WIDTH - 1, 0, TrainingEngine.COMPONENT_NUMBER - 1);
+        return eigen.times(idMatrix).plus(this.getMeanMatrix());
+
+    }
+
+    public boolean setAndReturnIsFace(ImgMatrix imgMatrix) {
+        Matrix reconstructed = reconstruct(imgMatrix.getProjectedVector());
+        Matrix adjustedInput = imgMatrix.getVectorized().minus(getMeanMatrix());
+        Metric metric = new EuclideanDistance();
+        imgMatrix.setIsFace(metric.getDistance(reconstructed, imgMatrix.getProjectedVector()) > TrainingEngine.IS_FACE_THRESHOLD);
+        return imgMatrix.isFace();
+    }
+
 	// extract features, namely W
-	private Matrix getFeature(ArrayList<Matrix> input, int K) {
+	private Matrix getFeature(ArrayList<Matrix> input, int componantNum) {
 		int i, j;
 
 		int row = input.get(0).getRowDimension();
@@ -115,8 +149,8 @@ public class PCA {
 		double[] d = feature.getd();
 
 
-		assert d.length >= K : "number of eigenvalues is less than K";
-		int[] indexes = this.getIndexesOfKEigenvalues(d, K);
+		assert d.length >= componantNum : "number of eigenvalues is less than componantNum";
+		int[] indexes = this.getIndexesOfKEigenvalues(d, componantNum);
 
 		Matrix eigenVectors = X.times(feature.getV());
 		Matrix selectedEigenVectors = eigenVectors.getMatrix(0,
@@ -227,7 +261,7 @@ public class PCA {
 		if(dimensions > this.numOfComponents)
 			throw new Exception("dimensions should be smaller than the number of components");
 		
-		Matrix afterPCA = this.projectedTrainingSet.get(whichImage).matrix.getMatrix(0, dimensions-1, 0, 0);
+		Matrix afterPCA = this.projectedTrainingSet.get(whichImage).getProjectedVector().getMatrix(0, dimensions - 1, 0, 0);
 		Matrix eigen = this.getW().getMatrix(0, 10304-1, 0, dimensions - 1);
 		return eigen.times(afterPCA).plus(this.getMeanMatrix());
 		

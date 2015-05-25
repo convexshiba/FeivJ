@@ -1,5 +1,6 @@
 package muffinc.frog.test.displayio;
 
+import muffinc.frog.test.object.ImgMatrix;
 import org.bytedeco.javacpp.opencv_core.*;
 
 import javax.imageio.ImageIO;
@@ -29,6 +30,7 @@ import java.io.IOException;
  */
 public class Display {
 
+
     public static void display(Image image) {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -49,5 +51,10 @@ public class Display {
 
     public static void display(IplImage img) {
         display(img.getBufferedImage());
+    }
+
+
+    public static void display(ImgMatrix imgMatrix) {
+        display(imgMatrix.file.getAbsolutePath());
     }
 }

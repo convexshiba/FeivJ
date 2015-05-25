@@ -33,6 +33,7 @@ public class ImgMatrix {
     public File file;
     public Matrix matrix;
     public Matrix vectorized;
+    private boolean isFace;
     private Matrix projectedVector;
     private double distance = -1;
 
@@ -113,5 +114,13 @@ public class ImgMatrix {
         if (!isProjected()) {
             projectedVector = pca.project(matrix);
         }
+    }
+
+    public boolean isFace() {
+        return isFace;
+    }
+
+    public void setIsFace(boolean isFace) {
+        this.isFace = isFace;
     }
 }
