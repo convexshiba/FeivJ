@@ -54,7 +54,7 @@ public class PCA {
             trainingImg.get(i).setIdMatrix(project(trainingImg.get(i).getVectorized()));
 
             // setIsFace for trainingImg
-//            setAndReturnIsFace(trainingImg.get(i));
+            setAndReturnIsFace(trainingImg.get(i));
 
 //			this.projectedTrainingSet.add(tr);
 		}
@@ -65,7 +65,7 @@ public class PCA {
             imgMatrix.setIdMatrix(project(imgMatrix.getVectorized()));
 
             // setIsFace for testImg
-//            setAndReturnIsFace(imgMatrix);
+            setAndReturnIsFace(imgMatrix);
 
         }
 
@@ -117,10 +117,9 @@ public class PCA {
     }
 
     public boolean setAndReturnIsFace(ImgMatrix imgMatrix) {
-        Matrix reconstructed = reconstMatrix(imgMatrix.getIdMatrix());
-        Matrix adjustedInput = imgMatrix.getVectorized().minus(getMeanMatrix());
-        Metric metric = new EuclideanDistance();
-        imgMatrix.setIsFace(metric.getDistance(reconstructed, imgMatrix.getIdMatrix()) > TrainingEngine.IS_FACE_THRESHOLD);
+		Matrix reconstructedVector = TrainingEngine.vectorize(reconstMatrix(imgMatrix.getIdMatrix()));
+        boolean isFace = TrainingEngine.IS_FACE_THRESHOLD > new EuclideanDistance().getDistance(reconstructedVector, imgMatrix.getVectorized());
+        imgMatrix.setIsFace(isFace);
         return imgMatrix.isFace();
     }
 

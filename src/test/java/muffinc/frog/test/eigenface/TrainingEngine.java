@@ -39,7 +39,7 @@ public class TrainingEngine {
 
     public static final int COMPONENT_NUMBER = 22;
     public static final double ID_THRESHOLD = 3000;
-    public static final double IS_FACE_THRESHOLD = 200;
+    public static final double IS_FACE_THRESHOLD = 3500;
     public static final int METRIC_COSINE = 0;
     public static final int METRIC_L1D = 1;
     public static final int METRIC_EUCILDEAN = 2;
@@ -389,15 +389,37 @@ public class TrainingEngine {
     public static void main(String args[]) {
 
         TrainingEngine engine = new TrainingEngine();
-//        engine.testKNNAccuracy();
 
-        ImgMatrix test = engine.humanFactory.imgMatrixTable.values().toArray(new ImgMatrix[1])[5];
-        Display.display(test);
-        Display.display(engine.pca.reconstBufferImg(test.getIdMatrix()));
+        for (ImgMatrix imgMatrix : engine.humanFactory.imgMatrixTable.values()) {
+            if (!imgMatrix.isFace()) {
+                System.out.println(imgMatrix.file.getAbsolutePath() + " is found not to be a Face");
+            }
+        }
 
-//        for (ImgMatrix imgMatrix : engine.humanFactory.imgMatrixTable.values()) {
-//            System.out.println(imgMatrix.isFace());
-//        }
+
+    }
+
+
+    public static void findIsFaceThreshold() {
+
+
+        Writer writer = new Writer("isFaceTHreshold.csv");
+        writer.write("imgName, distance between face and reconstructed\n");
+
+        for (int i = 0; i < 6; i++) {
+            TrainingEngine engine = new TrainingEngine();
+
+            for (ImgMatrix imgMatrix : engine.humanFactory.imgMatrixTable.values()) {
+                writer.write(imgMatrix.getHuman().name + " " + imgMatrix.file.getName() + ",");
+                Matrix reconstr = engine.pca.reconstMatrix(imgMatrix.getIdMatrix());
+                Metric metric = getMetric(2);
+                double distance = metric.getDistance(vectorize(reconstr), imgMatrix.getVectorized());
+                writer.write(distance);
+                writer.newLine();
+            }
+        }
+
+        writer.close();
     }
 
 
