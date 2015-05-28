@@ -123,6 +123,12 @@ public class PCA {
         return imgMatrix.isFace();
     }
 
+	public boolean isMatrixFace(Matrix matrix) {
+        Matrix recon = TrainingEngine.vectorize(reconstMatrix(project(TrainingEngine.vectorize(matrix))));
+
+        return TrainingEngine.IS_FACE_THRESHOLD > new EuclideanDistance().getDistance(recon, TrainingEngine.vectorize(matrix));
+    }
+
 	// extract features, namely W
 	private Matrix getFeature(ArrayList<Matrix> input, int componantNum) {
 		int i, j;
@@ -234,7 +240,6 @@ public class PCA {
 	}
 	
 	public Matrix getMeanMatrix() {
-		// TODO Auto-generated method stub
 		return meanMatrix;
 	}
 	

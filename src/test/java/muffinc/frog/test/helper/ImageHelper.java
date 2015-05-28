@@ -1,5 +1,7 @@
 package muffinc.frog.test.helper;
 
+import muffinc.frog.test.Jama.Matrix;
+import muffinc.frog.test.displayio.Display;
 import muffinc.frog.test.eigenface.*;
 import muffinc.frog.test.eigenface.PCA;
 
@@ -28,32 +30,6 @@ import static org.bytedeco.javacpp.opencv_imgproc.*;
  * zj45499 (at) gmail (dot) com
  */
 public class ImageHelper {
-    public static String getImgType(int imgTypeInt)
-    {
-        int numImgTypes = 35; // 7 base types, with five channel options each (none or C1, ..., C4)
-
-        int enum_ints[] = {CV_8U,  CV_8UC1,  CV_8UC2,  CV_8UC3,  CV_8UC4,
-                CV_8S,  CV_8SC1,  CV_8SC2,  CV_8SC3,  CV_8SC4,
-                CV_16U, CV_16UC1, CV_16UC2, CV_16UC3, CV_16UC4,
-                CV_16S, CV_16SC1, CV_16SC2, CV_16SC3, CV_16SC4,
-                CV_32S, CV_32SC1, CV_32SC2, CV_32SC3, CV_32SC4,
-                CV_32F, CV_32FC1, CV_32FC2, CV_32FC3, CV_32FC4,
-                CV_64F, CV_64FC1, CV_64FC2, CV_64FC3, CV_64FC4};
-
-        String enum_strings[] = {"CV_8U",  "CV_8UC1",  "CV_8UC2",  "CV_8UC3",  "CV_8UC4",
-                "CV_8S",  "CV_8SC1",  "CV_8SC2",  "CV_8SC3",  "CV_8SC4",
-                "CV_16U", "CV_16UC1", "CV_16UC2", "CV_16UC3", "CV_16UC4",
-                "CV_16S", "CV_16SC1", "CV_16SC2", "CV_16SC3", "CV_16SC4",
-                "CV_32S", "CV_32SC1", "CV_32SC2", "CV_32SC3", "CV_32SC4",
-                "CV_32F", "CV_32FC1", "CV_32FC2", "CV_32FC3", "CV_32FC4",
-                "CV_64F", "CV_64FC1", "CV_64FC2", "CV_64FC3", "CV_64FC4"};
-
-        for(int i=0; i<numImgTypes; i++)
-        {
-            if(imgTypeInt == enum_ints[i]) return enum_strings[i];
-        }
-        return "unknown image type";
-    }
 
     public static IplImage toGrey(IplImage img) {
         IplImage greyImg = IplImage.create(img.width(), img.height(), IPL_DEPTH_8U, 1);
@@ -69,6 +45,19 @@ public class ImageHelper {
 
         cvResize(img, resizedImg);
 
+        Display.display(resizedImg);
+
         return resizedImg;
+    }
+
+    public static Matrix getMatrixFromGrey(IplImage img) {
+        CvMat mat = img.asCvMat();
+        double[][] array = new double[img.height()][img.width()];
+        for (int i = 0; i < mat.height(); i++) {
+            for (int j = 0; j < mat.width(); j++) {
+                array[i][j] = cvGet2D(mat, i, j).get(0);
+            }
+        }
+        return new Matrix(array);
     }
 }

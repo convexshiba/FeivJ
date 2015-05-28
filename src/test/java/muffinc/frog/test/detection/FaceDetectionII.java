@@ -1,6 +1,8 @@
 package muffinc.frog.test.detection;
 
+import muffinc.frog.test.Jama.Matrix;
 import muffinc.frog.test.displayio.Display;
+import muffinc.frog.test.eigenface.TrainingEngine;
 import muffinc.frog.test.helper.FileHelper;
 import muffinc.frog.test.helper.ImageHelper;
 import org.bytedeco.javacpp.opencv_core;
@@ -44,7 +46,7 @@ public class FaceDetectionII {
             "/Users/Meth/Documents/FROG/src/test/resources/xml/haarcascade_frontalface_alt.xml";
 
     public static final String FILE =
-            "/Users/Meth/Documents/FROG/src/test/resources/testtesttest copy/201404201524468276e.jpg";
+            "/Users/Meth/Documents/FROG/src/test/resources/testtesttest/20100417135258.jpg";
 
 
     public static void main(String[] args) throws Exception {
@@ -81,13 +83,55 @@ public class FaceDetectionII {
         //We iterate over the discovered faces and draw yellow rectangles around them.
         for (int i = 0; i < faces.total(); i++) {
             CvRect r = new CvRect(cvGetSeqElem(faces, i));
-            cvRectangle(originalImage, cvPoint(r.x(), r.y()),
-                    cvPoint(r.x() + r.width(), r.y() + r.height()), CvScalar.YELLOW, 1, CV_AA, 0);
+
+            r = growRect(r);
+            TrainingEngine trainingEngine = new TrainingEngine();
+
+
+            if (isRectFace(r, grayImage, trainingEngine)) {
+                cvRectangle(originalImage, cvPoint(r.x(), r.y()),
+                        cvPoint(r.x() + r.width(), r.y() + r.height()), CvScalar.YELLOW, 1, CV_AA, 0);
+                System.out.println("Face!");
+            } else {
+                System.out.println("No face");
+            }
+
         }
 
         // Save the image to a new file.
 //        cvSaveImage(FileHelper.addNameSuffix(FILE, "detected"), originalImage);
-        Display.display(originalImage.getBufferedImage());
+        Display.display(originalImage);
+
+    }
+
+
+    public static CvRect growRect(CvRect cvRect) {
+        int x = cvRect.x();
+        int y = cvRect.y();
+        int h_temp = cvRect.height();
+        int w_temp = cvRect.width();
+
+        x -= w_temp * 0.15;
+        y -= h_temp * 0.35;
+        h_temp *= 1.55;
+        w_temp *= 1.25;
+
+        return cvRect(x, y, w_temp, h_temp);
+    }
+
+    // TODO filter out non-face CvRect, Following code is wrong.
+    public static boolean isRectFace(CvRect cvRect, IplImage img, TrainingEngine trainingEngine) {
+        cvSetImageROI(img, cvRect);
+
+        IplImage newImg = cvCreateImage(cvGetSize(img), img.depth(), img.nChannels());
+        cvCopy(img, newImg);
+        cvResetImageROI(img);
+
+//        Display.display(newImg);
+
+        Matrix matrix = ImageHelper.getMatrixFromGrey(ImageHelper.resize(newImg));
+
+        return trainingEngine.pca.isMatrixFace(matrix);
     }
 
     public static ArrayList<CvRect> detectFaces(IplImage img) {

@@ -10,6 +10,7 @@ import muffinc.frog.test.helper.Writer;
 import muffinc.frog.test.object.ImgMatrix;
 import muffinc.frog.test.object.Human;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -174,6 +175,10 @@ public class TrainingEngine {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+    }
+
+    public void addBufferedImage(BufferedImage bufferedImage) {
 
     }
 

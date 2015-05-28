@@ -26,8 +26,8 @@ import java.io.File;
  * zj45499 (at) gmail (dot) com
  */
 public class ImgMatrix {
-    public PCA pca;
-    public TrainingEngine trainingEngine;
+//    public PCA pca;
+//    public TrainingEngine trainingEngine;
 //    public String peopleName;
     public Human human;
     public File file;
@@ -36,6 +36,8 @@ public class ImgMatrix {
     private boolean isFace;
     private Matrix idMatrix;
     private double distance = -1;
+
+    private boolean isScaned;
 
     public ImgMatrix(File file) {
         this.file = file;
@@ -102,13 +104,13 @@ public class ImgMatrix {
         this.human = human;
     }
 
-    public PCA getPca() {
-        return pca;
-    }
-
-    public void setPca(PCA pca) {
-        this.pca = pca;
-    }
+//    public PCA getPca() {
+//        return pca;
+//    }
+//
+//    public void setPca(PCA pca) {
+//        this.pca = pca;
+//    }
 
     public void project(PCA pca) {
         if (!isProjected()) {
