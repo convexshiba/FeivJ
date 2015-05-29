@@ -52,10 +52,8 @@ public class FaceDetection {
     public static final String FILE =
             "/Users/Meth/Documents/FROG/src/test/resources/iph/IMG_0129.jpeg";
 
-
-    public static ArrayList<CvRect> detectFaces(File file) {
-
-        IplImage greyImg = cvLoadImage(file.getAbsolutePath(), 1);
+    public static ArrayList<CvRect> detectFaces(IplImage img) {
+        IplImage greyImg = img.clone();
         if (greyImg.nChannels() != 1) {
             greyImg = ImageHelper.toGrey(greyImg);
         }
@@ -76,6 +74,10 @@ public class FaceDetection {
             rects.add(rect);
         }
         return rects;
+    }
+
+    public static ArrayList<CvRect> detectFaces(File file) {
+        return detectFaces(cvLoadImage(file.getAbsolutePath(), 1));
     }
 
 
