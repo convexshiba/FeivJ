@@ -2,6 +2,7 @@ package muffinc.frog.test.eigenface;
 import muffinc.frog.test.Jama.EigenvalueDecomposition;
 import muffinc.frog.test.Jama.Matrix;
 import muffinc.frog.test.common.Metric;
+import muffinc.frog.test.displayio.Display;
 import muffinc.frog.test.eigenface.metric.EuclideanDistance;
 import muffinc.frog.test.object.ImgMatrix;
 import muffinc.frog.test.object.Human;
@@ -125,6 +126,9 @@ public class PCA {
 
 	public boolean isMatrixFace(Matrix matrix) {
         Matrix recon = TrainingEngine.vectorize(reconstMatrix(project(TrainingEngine.vectorize(matrix))));
+		BufferedImage image = reconstBufferImg(project(TrainingEngine.vectorize(matrix)));
+        System.out.println(new EuclideanDistance().getDistance(recon, TrainingEngine.vectorize(matrix)));
+        Display.display(image);
 
         return TrainingEngine.IS_FACE_THRESHOLD > new EuclideanDistance().getDistance(recon, TrainingEngine.vectorize(matrix));
     }

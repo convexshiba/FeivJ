@@ -2,6 +2,7 @@ package muffinc.frog.test.detection;
 
 import muffinc.frog.test.Jama.Matrix;
 import muffinc.frog.test.displayio.Display;
+import muffinc.frog.test.eigenface.FileManager;
 import muffinc.frog.test.eigenface.TrainingEngine;
 import muffinc.frog.test.helper.FileHelper;
 import muffinc.frog.test.helper.ImageHelper;
@@ -11,6 +12,7 @@ import org.bytedeco.javacpp.opencv_objdetect;
 import org.bytedeco.javacv.JavaCvErrorCallback;
 
 
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import static org.bytedeco.javacpp.opencv_core.*;
@@ -46,7 +48,7 @@ public class FaceDetectionII {
             "/Users/Meth/Documents/FROG/src/test/resources/xml/haarcascade_frontalface_alt.xml";
 
     public static final String FILE =
-            "/Users/Meth/Documents/FROG/src/test/resources/testtesttest/20100417135258.jpg";
+            "/Users/Meth/Documents/FROG/src/test/resources/iph/IMG_0126.jpeg";
 
 
     public static void main(String[] args) throws Exception {
@@ -87,6 +89,12 @@ public class FaceDetectionII {
             r = growRect(r);
             TrainingEngine trainingEngine = new TrainingEngine();
 
+//            cvRectangle(originalImage, cvPoint(r.x(), r.y()),
+//                        cvPoint(r.x() + r.width(), r.y() + r.height()), CvScalar.YELLOW, 1, CV_AA, 0);
+
+            cvSetImageROI(grayImage, r);
+            cvSaveImage(FileHelper.addNameSuffix(FILE, "cropped" + i), grayImage);
+            cvResetImageROI(grayImage);
 
             if (isRectFace(r, grayImage, trainingEngine)) {
                 cvRectangle(originalImage, cvPoint(r.x(), r.y()),
@@ -111,25 +119,26 @@ public class FaceDetectionII {
         int h_temp = cvRect.height();
         int w_temp = cvRect.width();
 
-        x -= w_temp * 0.15;
-        y -= h_temp * 0.35;
-        h_temp *= 1.55;
-        w_temp *= 1.25;
+        x -= w_temp * 0.03;
+        y -= h_temp * 0.2;
+        h_temp *= 1.3;
+        w_temp *= 1.05;
 
         return cvRect(x, y, w_temp, h_temp);
     }
 
     // TODO filter out non-face CvRect, Following code is wrong.
     public static boolean isRectFace(CvRect cvRect, IplImage img, TrainingEngine trainingEngine) {
-        cvSetImageROI(img, cvRect);
 
-        IplImage newImg = cvCreateImage(cvGetSize(img), img.depth(), img.nChannels());
+        cvSetImageROI(img, cvRect);
+        IplImage newImg = cvCreateImage(cvGetSize(img), IPL_DEPTH_8U, 1);
         cvCopy(img, newImg);
         cvResetImageROI(img);
 
 //        Display.display(newImg);
-
         Matrix matrix = ImageHelper.getMatrixFromGrey(ImageHelper.resize(newImg));
+        BufferedImage image = FileManager.convertColMatrixToImage(TrainingEngine.vectorize(matrix));
+        Display.display(image);
 
         return trainingEngine.pca.isMatrixFace(matrix);
     }
@@ -152,7 +161,6 @@ public class FaceDetectionII {
 
         for (int i = 0; i < faces.total(); i++) {
             CvRect rect = new CvRect(cvGetSeqElem(faces, i));
-            Rect rectEnlarged = new Rect(rect.x(), rect.y(), rect.width(), rect.height());
             rects.add(rect);
         }
         return rects;

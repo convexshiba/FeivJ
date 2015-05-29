@@ -6,14 +6,21 @@ import muffinc.frog.test.displayio.Display;
 import muffinc.frog.test.eigenface.metric.CosineDissimilarity;
 import muffinc.frog.test.eigenface.metric.EuclideanDistance;
 import muffinc.frog.test.eigenface.metric.L1Distance;
+import muffinc.frog.test.helper.ImageHelper;
 import muffinc.frog.test.helper.Writer;
 import muffinc.frog.test.object.ImgMatrix;
 import muffinc.frog.test.object.Human;
+import org.bytedeco.javacpp.opencv_core.*;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+
+import static org.bytedeco.javacpp.opencv_core.*;
+import static org.bytedeco.javacpp.opencv_highgui.*;
+import static org.bytedeco.javacpp.opencv_objdetect.*;
+import static org.bytedeco.javacpp.opencv_imgproc.*;
 
 /**
  * FROG, a Face Recognition Gallery in Java
@@ -38,7 +45,7 @@ import java.util.*;
 public class TrainingEngine {
 
 
-    public static final int COMPONENT_NUMBER = 22;
+    public static final int COMPONENT_NUMBER = 18;
     public static final double ID_THRESHOLD = 3000;
     public static final double IS_FACE_THRESHOLD = 3500;
     public static final int METRIC_COSINE = 0;
@@ -395,13 +402,31 @@ public class TrainingEngine {
 
         TrainingEngine engine = new TrainingEngine();
 
-        for (ImgMatrix imgMatrix : engine.humanFactory.imgMatrixTable.values()) {
-            if (!imgMatrix.isFace()) {
-                System.out.println(imgMatrix.file.getAbsolutePath() + " is found not to be a Face");
-            }
-        }
+//        for (ImgMatrix imgMatrix : engine.humanFactory.imgMatrixTable.values()) {
+//            if (!imgMatrix.isFace()) {
+//                System.out.println(imgMatrix.file.getAbsolutePath() + " is found not to be a Face");
+//            } else {
+//                System.out.println("is Face");
+//            }
+//        }
+//
+//        ImgMatrix test = engine.humanFactory.imgMatrixTable.values().toArray(new ImgMatrix[1])[0];
+//
+//        BufferedImage image = engine.pca.reconstBufferImg(test.getIdMatrix());
+
+        ImgMatrix imgMatrix = new ImgMatrix(new File("/Users/Meth/Documents/FROG/src/test/resources/untitled folder/00079fa001d_931230_cropped0.tif"));
 
 
+        IplImage iplImage = cvLoadImage(imgMatrix.file.getAbsolutePath());
+        Matrix m = ImageHelper.getMatrixFromGrey(ImageHelper.resize(ImageHelper.toGrey(iplImage)));
+
+        BufferedImage img = FileManager.convertColMatrixToImage(TrainingEngine.vectorize(m));
+
+        Display.display(img);
+
+
+        BufferedImage img2 = engine.pca.reconstBufferImg(engine.pca.project(TrainingEngine.vectorize(m)));
+        Display.display(img2);
     }
 
 
