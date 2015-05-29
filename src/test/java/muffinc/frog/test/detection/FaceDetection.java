@@ -1,13 +1,27 @@
 package muffinc.frog.test.detection;
 
+import muffinc.frog.test.Jama.Matrix;
+import muffinc.frog.test.displayio.Display;
+import muffinc.frog.test.eigenface.FileManager;
+import muffinc.frog.test.eigenface.TrainingEngine;
+import muffinc.frog.test.helper.FileHelper;
+import muffinc.frog.test.helper.ImageHelper;
+import org.bytedeco.javacpp.opencv_core;
 import org.bytedeco.javacpp.opencv_core.IplImage;
-import org.bytedeco.javacv.CanvasFrame;
+import org.bytedeco.javacpp.opencv_objdetect;
+import org.bytedeco.javacv.JavaCvErrorCallback;
 
-import javax.swing.*;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.util.ArrayList;
 
 import static org.bytedeco.javacpp.opencv_core.*;
 import static org.bytedeco.javacpp.opencv_highgui.*;
 import static org.bytedeco.javacpp.opencv_objdetect.*;
+import static org.bytedeco.javacpp.opencv_imgproc.*;
+
+
 
 /**
  * FROG, a Face Recognition Gallery in Java
@@ -30,60 +44,126 @@ import static org.bytedeco.javacpp.opencv_objdetect.*;
  */
 public class FaceDetection {
 
+    // The cascade definition to be used for detection.
+    public static final String CASCADE_FILE =
+            "/Users/Meth/Documents/FROG/src/test/resources/xml/haarcascade_frontalface_alt.xml";
 
-    public static final String XML_FILE =
-            "/Users/Meth/Dropbox/Thesis/FROG/src/test/resources/xml/haarcascade_frontalface_default.xml";
+    @Deprecated
+    public static final String FILE =
+            "/Users/Meth/Documents/FROG/src/test/resources/iph/IMG_0129.jpeg";
 
-    public static void main(String[] args) {
-        long total = 0;
-        for (int i = 1; i >= 1; i--) {
-            IplImage img = cvLoadImage("/Users/Meth/Dropbox/Thesis/FROG/src/test/resources/FERET2/00728fa010_941201.tif");
-            long t1 = System.currentTimeMillis();
-            detect(img);
-            total += System.currentTimeMillis() - t1;
+
+    public static ArrayList<CvRect> detectFaces(File file) {
+
+        IplImage greyImg = cvLoadImage(file.getAbsolutePath(), 1);
+        if (greyImg.nChannels() != 1) {
+            greyImg = ImageHelper.toGrey(greyImg);
         }
-        System.out.println(total / 200);
-    }
-
-    public static void detect(IplImage img) {
-        CvHaarClassifierCascade cascade =
-                new CvHaarClassifierCascade(cvLoad(XML_FILE));
 
         CvMemStorage storage = CvMemStorage.create();
 
-        CvSeq sign = cvHaarDetectObjects(
-                img,
-                cascade,
-                storage,
-                1.5,
-                3,
-                CV_HAAR_DO_CANNY_PRUNING);
+        CvHaarClassifierCascade cascade = new CvHaarClassifierCascade(cvLoad(CASCADE_FILE));
+
+        CvSeq faces = cvHaarDetectObjects(greyImg, cascade, storage, 1.1, 1, CV_HAAR_SCALE_IMAGE);
 
         cvClearMemStorage(storage);
 
-        System.out.println("sign = " + sign.total());
+        ArrayList<CvRect> rects = new ArrayList<>();
 
-        // Total Detected Faces
-        int totalFaces = sign.total();
-
-        // Tag all faces
-        for (int i = 0; i < totalFaces; i++) {
-            CvRect rect = new CvRect(cvGetSeqElem(sign, i));
-            cvRectangle(
-                    img,
-                    cvPoint(rect.x(), rect.y()),
-                    cvPoint(rect.width() + rect.x(), rect.height() + rect.y()),
-                    CvScalar.RED,
-                    2,
-                    CV_AA,
-                    0);
+        for (int i = 0; i < faces.total(); i++) {
+            CvRect rect = new CvRect(cvGetSeqElem(faces, i));
+            rect = growRect(rect);
+            rects.add(rect);
         }
-        CanvasFrame canvas = new CanvasFrame("LuckyFrame");
-        canvas.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        canvas.showImage(img);
-        canvas.pack();
-//        cvShowImage("Detection Result", img);
-//        cvWaitKey(0);
+        return rects;
+    }
+
+
+    @Deprecated
+    public static void main(String[] args) throws Exception {
+        // This will redirect the OpenCV errors to the Java console to give you
+        // feedback about any problems that may occur.
+        new JavaCvErrorCallback();
+
+        // Load the original image.
+        IplImage originalImage = cvLoadImage(FILE, 1);
+
+        // We need a grayscale image in order to do the recognition, so we
+        // create a new image of the same size as the original one.
+        IplImage grayImage = IplImage.create(originalImage.width(),
+                originalImage.height(), IPL_DEPTH_8U, 1);
+
+        // We convert the original image to grayscale.
+        cvCvtColor(originalImage, grayImage, CV_BGR2GRAY);
+
+        // Save greysacle image
+//        cvSaveImage(FileHelper.addNameSuffix(FILE, "grey"), grayImage);
+
+        CvMemStorage storage = CvMemStorage.create();
+
+        // We instantiate a classifier cascade to be used for detection, using the cascade definition.
+        CvHaarClassifierCascade cascade = new CvHaarClassifierCascade(
+                cvLoad(CASCADE_FILE));
+
+        // We detect the faces.
+        CvSeq faces = cvHaarDetectObjects(grayImage, cascade, storage, 1.1, 1, CV_HAAR_SCALE_IMAGE);
+
+        // Clear storage.
+        cvClearMemStorage(storage);
+
+        //We iterate over the discovered faces and draw yellow rectangles around them.
+        for (int i = 0; i < faces.total(); i++) {
+            CvRect r = new CvRect(cvGetSeqElem(faces, i));
+
+            r = growRect(r);
+            TrainingEngine trainingEngine = new TrainingEngine();
+
+//            cvRectangle(originalImage, cvPoint(r.x(), r.y()),
+//                        cvPoint(r.x() + r.width(), r.y() + r.height()), CvScalar.YELLOW, 1, CV_AA, 0);
+
+            cvSetImageROI(grayImage, r);
+            cvSaveImage(FileHelper.addNameSuffix(FILE, "cropped" + i), grayImage);
+            cvResetImageROI(grayImage);
+
+            cvRectangle(originalImage, cvPoint(r.x(), r.y()),
+                    cvPoint(r.x() + r.width(), r.y() + r.height()), CvScalar.YELLOW, 1, CV_AA, 0);
+        }
+
+        // Save the image to a new file.
+//        cvSaveImage(FileHelper.addNameSuffix(FILE, "detected"), originalImage);
+        Display.display(originalImage);
+
+    }
+
+
+    public static CvRect growRect(CvRect cvRect) {
+        int x = cvRect.x();
+        int y = cvRect.y();
+        int h_temp = cvRect.height();
+        int w_temp = cvRect.width();
+
+        x -= w_temp * 0;
+        y -= h_temp * 0.2;
+        h_temp *= 1.3;
+        w_temp *= 1;
+
+        return cvRect(x, y, w_temp, h_temp);
+    }
+
+    @Deprecated
+    public static boolean isRectFace(CvRect cvRect, IplImage img, TrainingEngine trainingEngine) {
+
+        cvSetImageROI(img, cvRect);
+        IplImage newImg = cvCreateImage(cvGetSize(img), IPL_DEPTH_8U, 1);
+        cvCopy(img, newImg);
+        cvResetImageROI(img);
+
+//        Display.display(newImg);
+        Matrix matrix = ImageHelper.getMatrixFromGrey(ImageHelper.resize(newImg));
+        BufferedImage image = FileManager.convertColMatrixToImage(TrainingEngine.vectorize(matrix));
+        Display.display(image);
+
+        return trainingEngine.pca.isMatrixFace(matrix);
     }
 
 }

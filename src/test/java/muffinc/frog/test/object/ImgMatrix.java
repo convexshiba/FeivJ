@@ -1,10 +1,19 @@
 package muffinc.frog.test.object;
 
 import muffinc.frog.test.Jama.Matrix;
+import muffinc.frog.test.detection.FaceDetection;
 import muffinc.frog.test.eigenface.PCA;
 import muffinc.frog.test.eigenface.TrainingEngine;
+import org.bytedeco.javacpp.opencv_core;
+import org.bytedeco.javacpp.opencv_core.*;
 
 import java.io.File;
+import java.util.ArrayList;
+
+import static org.bytedeco.javacpp.opencv_core.*;
+import static org.bytedeco.javacpp.opencv_highgui.*;
+import static org.bytedeco.javacpp.opencv_objdetect.*;
+import static org.bytedeco.javacpp.opencv_imgproc.*;
 
 /**
  * FROG, a Face Recognition Gallery in Java
@@ -36,6 +45,8 @@ public class ImgMatrix {
     private boolean isFace;
     private Matrix idMatrix;
     private double distance = -1;
+    private boolean detected = false;
+    private ArrayList<CvRect> cvRects = null;
 
     private boolean isScaned;
 
@@ -124,5 +135,33 @@ public class ImgMatrix {
 
     public void setIsFace(boolean isFace) {
         this.isFace = isFace;
+    }
+
+    public IplImage toIplImage() {
+        return cvLoadImage(file.getAbsolutePath());
+    }
+
+    public boolean isDetected() {
+        return detected;
+    }
+
+    public boolean hasFace() {
+        if (!isDetected()) {
+            throw new IllegalAccessError(file.getAbsolutePath() + "has not be Detected");
+        } else {
+            return cvRects.size() != 0;
+        }
+    }
+
+    public void detectFace() {
+        cvRects = FaceDetection.detectFaces(file);
+    }
+
+    public void removeCvRect(CvRect cvRect) {
+        if (cvRects.remove(cvRect)) {
+            System.out.println("cvRect has been successfully removed");
+        } else {
+            System.out.println("Does not contain CvRect");
+        }
     }
 }

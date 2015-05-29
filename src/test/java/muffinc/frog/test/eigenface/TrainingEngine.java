@@ -414,19 +414,40 @@ public class TrainingEngine {
 //
 //        BufferedImage image = engine.pca.reconstBufferImg(test.getIdMatrix());
 
-        ImgMatrix imgMatrix = new ImgMatrix(new File("/Users/Meth/Documents/FROG/src/test/resources/untitled folder/00079fa001d_931230_cropped0.tif"));
+        ImgMatrix img1 = new ImgMatrix(new File("/Users/Meth/Documents/FROG/src/test/resources/iph/IMG_0125_cropped0.jpeg"));
+        ImgMatrix img2 = new ImgMatrix(new File("/Users/Meth/Documents/FROG/src/test/resources/iph/IMG_0126_cropped3.jpeg"));
+        ImgMatrix img3 = new ImgMatrix(new File("/Users/Meth/Documents/FROG/src/test/resources/iph/IMG_0127_cropped0.jpeg"));
+        ImgMatrix img4 = new ImgMatrix(new File("/Users/Meth/Documents/FROG/src/test/resources/iph/IMG_0128_cropped0.jpeg"));
+        ImgMatrix img5 = new ImgMatrix(new File("/Users/Meth/Documents/FROG/src/test/resources/iph/IMG_0129_cropped0.jpeg"));
+
+        Matrix m1 = ImageHelper.getMatrixFromGrey(ImageHelper.resize(ImageHelper.toGrey(img1.toIplImage())));
+        Matrix m2 = ImageHelper.getMatrixFromGrey(ImageHelper.resize(ImageHelper.toGrey(img2.toIplImage())));
+        Matrix m3 = ImageHelper.getMatrixFromGrey(ImageHelper.resize(ImageHelper.toGrey(img3.toIplImage())));
+        Matrix m4 = ImageHelper.getMatrixFromGrey(ImageHelper.resize(ImageHelper.toGrey(img4.toIplImage())));
+        Matrix m5 = ImageHelper.getMatrixFromGrey(ImageHelper.resize(ImageHelper.toGrey(img5.toIplImage())));
+
+        Metric metric = new EuclideanDistance();
+
+        Matrix id1 = engine.pca.project(TrainingEngine.vectorize(m1));
+        Matrix id2 = engine.pca.project(TrainingEngine.vectorize(m2));
+        Matrix id3 = engine.pca.project(TrainingEngine.vectorize(m3));
+        Matrix id4 = engine.pca.project(TrainingEngine.vectorize(m4));
+        Matrix id5 = engine.pca.project(TrainingEngine.vectorize(m5));
+
+        ArrayList<Matrix> list = new ArrayList<>();
+        list.add(id1);
+        list.add(id2);
+        list.add(id3);
+        list.add(id4);
+        list.add(id5);
+
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                System.out.println(metric.getDistance(list.get(i), list.get(j)));
+            }
+        }
 
 
-        IplImage iplImage = cvLoadImage(imgMatrix.file.getAbsolutePath());
-        Matrix m = ImageHelper.getMatrixFromGrey(ImageHelper.resize(ImageHelper.toGrey(iplImage)));
-
-        BufferedImage img = FileManager.convertColMatrixToImage(TrainingEngine.vectorize(m));
-
-        Display.display(img);
-
-
-        BufferedImage img2 = engine.pca.reconstBufferImg(engine.pca.project(TrainingEngine.vectorize(m)));
-        Display.display(img2);
     }
 
 
