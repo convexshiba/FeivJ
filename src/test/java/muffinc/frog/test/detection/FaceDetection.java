@@ -15,6 +15,7 @@ import org.bytedeco.javacv.JavaCvErrorCallback;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import static org.bytedeco.javacpp.opencv_core.*;
 import static org.bytedeco.javacpp.opencv_highgui.*;
@@ -50,9 +51,9 @@ public class FaceDetection {
 
     @Deprecated
     public static final String FILE =
-            "/Users/Meth/Documents/FROG/src/test/resources/iph/IMG_0129.jpeg";
+            "/Users/Meth/Documents/FROG/src/test/resources/testtesttest copy/1280px-Solvay_conference_1927.jpg";
 
-    public static ArrayList<CvRect> detectFaces(IplImage img) {
+    public static LinkedList<CvRect> detectFaces(IplImage img) {
         IplImage greyImg = img.clone();
         if (greyImg.nChannels() != 1) {
             greyImg = ImageHelper.toGrey(greyImg);
@@ -66,7 +67,7 @@ public class FaceDetection {
 
         cvClearMemStorage(storage);
 
-        ArrayList<CvRect> rects = new ArrayList<>();
+        LinkedList<CvRect> rects = new LinkedList<>();
 
         for (int i = 0; i < faces.total(); i++) {
             CvRect rect = new CvRect(cvGetSeqElem(faces, i));
@@ -76,7 +77,7 @@ public class FaceDetection {
         return rects;
     }
 
-    public static ArrayList<CvRect> detectFaces(File file) {
+    public static LinkedList<CvRect> detectFaces(File file) {
         return detectFaces(cvLoadImage(file.getAbsolutePath(), 1));
     }
 
@@ -113,19 +114,20 @@ public class FaceDetection {
         // Clear storage.
         cvClearMemStorage(storage);
 
+
         //We iterate over the discovered faces and draw yellow rectangles around them.
         for (int i = 0; i < faces.total(); i++) {
             CvRect r = new CvRect(cvGetSeqElem(faces, i));
 
             r = growRect(r);
-            TrainingEngine trainingEngine = new TrainingEngine();
+//            TrainingEngine trainingEngine = new TrainingEngine();
 
 //            cvRectangle(originalImage, cvPoint(r.x(), r.y()),
 //                        cvPoint(r.x() + r.width(), r.y() + r.height()), CvScalar.YELLOW, 1, CV_AA, 0);
 
-            cvSetImageROI(grayImage, r);
-            cvSaveImage(FileHelper.addNameSuffix(FILE, "cropped" + i), grayImage);
-            cvResetImageROI(grayImage);
+            CvFont font = new CvFont();
+            cvInitFont(font, CV_FONT_HERSHEY_SIMPLEX, 1, 1, 0, 2, CV_AA);
+            cvPutText(originalImage, String.valueOf(i + 1), cvPoint(r.x() - 20, r.y() + 10), font, CvScalar.MAGENTA);
 
             cvRectangle(originalImage, cvPoint(r.x(), r.y()),
                     cvPoint(r.x() + r.width(), r.y() + r.height()), CvScalar.YELLOW, 1, CV_AA, 0);

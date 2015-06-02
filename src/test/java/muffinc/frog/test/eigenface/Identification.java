@@ -2,7 +2,7 @@ package muffinc.frog.test.eigenface;
 
 import muffinc.frog.test.Jama.Matrix;
 import muffinc.frog.test.common.Metric;
-import muffinc.frog.test.object.ImgMatrix;
+import muffinc.frog.test.object.FrogTrainImg;
 
 import java.util.ArrayList;
 
@@ -28,14 +28,14 @@ import java.util.ArrayList;
  */
 public class Identification {
 
-    public String assignLabel(ImgMatrix[] trainingSet, Matrix testFace, double threshold, Metric metric) {
+    public String assignLabel(FrogTrainImg[] trainingSet, Matrix testFace, double threshold, Metric metric) {
         return findString(trainingSet, testFace, threshold, metric);
     }
 
-    private static String findString(ImgMatrix[] trainingSet, Matrix testFace,double threshold, Metric metric) {
+    private static String findString(FrogTrainImg[] trainingSet, Matrix testFace,double threshold, Metric metric) {
         double smallest = Double.MAX_VALUE;
         double biggest = Double.MIN_VALUE;
-        ImgMatrix nearest = null;
+        FrogTrainImg nearest = null;
 
         for (int i = 0; i < trainingSet.length; i++) {
             trainingSet[i].setDistance(metric.getDistance(testFace, trainingSet[i].getIdMatrix()));
@@ -54,7 +54,7 @@ public class Identification {
     }
 
     @Deprecated
-    private static String getSmallest(ArrayList<ImgMatrix> neibors) {
+    private static String getSmallest(ArrayList<FrogTrainImg> neibors) {
         if (neibors.size() == 1) {
             return neibors.get(0).getHuman().name;
         } else if (neibors.size() == 0) {

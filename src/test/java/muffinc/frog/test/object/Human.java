@@ -31,9 +31,9 @@ public class Human {
 
     public boolean isTrain = false;
 
-    public ArrayList<ImgMatrix> trainingSet = new ArrayList<ImgMatrix>();
+    public ArrayList<FrogTrainImg> trainingSet = new ArrayList<FrogTrainImg>();
 
-    public final ArrayList<ImgMatrix> imgMatrices;
+    public final ArrayList<FrogTrainImg> imgMatrices;
 
     public int fileNums;
 
@@ -42,31 +42,31 @@ public class Human {
     public Human(String name, TrainingEngine trainingEngine) {
         this.name = name;
         this.trainingEngine = trainingEngine;
-        imgMatrices = new ArrayList<ImgMatrix>();
+        imgMatrices = new ArrayList<FrogTrainImg>();
         fileNums = 0;
     }
 
-    public void addImg(ImgMatrix imgMatrix) {
-        imgMatrices.add(imgMatrix);
+    public void addImg(FrogTrainImg frogTrainImg) {
+        imgMatrices.add(frogTrainImg);
         // already set in HumanFactory
 //        imgMatrix.setHuman(this);
         fileNums++;
 //        calculateID();
     }
 
-    public void addTrainImg(ImgMatrix imgMatrix) {
+    public void addTrainImg(FrogTrainImg frogTrainImg) {
         isTrain = true;
-        imgMatrices.add(imgMatrix);
+        imgMatrices.add(frogTrainImg);
         // already set in HumanFactory
 //        imgMatrix.setHuman(this);
         fileNums++;
-        trainingSet.add(imgMatrix);
+        trainingSet.add(frogTrainImg);
     }
 
     public void calculateID() {
         Matrix sum = new Matrix(TrainingEngine.COMPONENT_NUMBER, 1, 0);
-        for (ImgMatrix imgMatrix : imgMatrices) {
-            sum.plusEquals(imgMatrix.getIdMatrix());
+        for (FrogTrainImg frogTrainImg : imgMatrices) {
+            sum.plusEquals(frogTrainImg.getIdMatrix());
         }
         idMatrix = sum.timesEquals(1 / ((double) imgMatrices.size()));
     }

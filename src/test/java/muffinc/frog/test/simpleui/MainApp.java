@@ -40,6 +40,7 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        trainingEngine = new TrainingEngine();
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/simpleui/SimplePane.fxml"));
 
@@ -57,12 +58,6 @@ public class MainApp extends Application {
 
     public static void main(String[] args) {
         launch(args);
-    }
-
-    public void launchEngine() {
-        trainingEngine = new TrainingEngine();
-
-        simplePeopleObservableList.addAll(trainingEngine.humanFactory.nameTable.values().stream().map(SimplePeople::new).collect(Collectors.toList()));
     }
 
     public ObservableList<SimplePeople> getSimplePeopleObservableList() {

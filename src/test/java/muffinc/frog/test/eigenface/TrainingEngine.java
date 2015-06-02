@@ -2,25 +2,17 @@ package muffinc.frog.test.eigenface;
 
 import muffinc.frog.test.Jama.Matrix;
 import muffinc.frog.test.common.Metric;
-import muffinc.frog.test.displayio.Display;
 import muffinc.frog.test.eigenface.metric.CosineDissimilarity;
 import muffinc.frog.test.eigenface.metric.EuclideanDistance;
 import muffinc.frog.test.eigenface.metric.L1Distance;
-import muffinc.frog.test.helper.ImageHelper;
 import muffinc.frog.test.helper.Writer;
-import muffinc.frog.test.object.ImgMatrix;
+import muffinc.frog.test.object.FrogTrainImg;
 import muffinc.frog.test.object.Human;
-import org.bytedeco.javacpp.opencv_core.*;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-
-import static org.bytedeco.javacpp.opencv_core.*;
-import static org.bytedeco.javacpp.opencv_highgui.*;
-import static org.bytedeco.javacpp.opencv_objdetect.*;
-import static org.bytedeco.javacpp.opencv_imgproc.*;
 
 /**
  * FROG, a Face Recognition Gallery in Java
@@ -66,18 +58,66 @@ public class TrainingEngine {
     ArrayList<Matrix> trainingSet = new ArrayList<Matrix>();
     ArrayList<String> labels = new ArrayList<String>();
 
-    ArrayList<ImgMatrix> trainingImgSet = new ArrayList<ImgMatrix>();
+    ArrayList<FrogTrainImg> trainingImgSet = new ArrayList<>();
 
     ArrayList<Matrix> testingSet = new ArrayList<Matrix>();
     ArrayList<String> trueLabels = new ArrayList<String>();
 
-    ArrayList<ImgMatrix> testingImgSet = new ArrayList<ImgMatrix>();
+    ArrayList<FrogTrainImg> testingImgSet = new ArrayList<FrogTrainImg>();
+
+//    public TrainingEngine() {
+//        this(COMPONENT_NUMBER, 5, 2);
+//    }
+
 
     public TrainingEngine() {
-        this(COMPONENT_NUMBER, 5, 2);
+
+        OUTER:
+        for (int people = 1; people < 41; people++) {
+            for (int index = 1; index < 11; index++) {
+                String filePath = "/Users/Meth/Documents/FROG/src/test/faces/s" + people + "/" + index + ".pgm";
+
+                File file = new File(filePath);
+
+                try {
+                    Matrix temp = FileManager.convertPGMtoMatrix(filePath);
+
+                    FrogTrainImg frogTrainImg = new FrogTrainImg(file, temp, this);
+
+                    frogTrainImg.setVectorized(vectorize(temp));
+                    trainingImgSet.add(frogTrainImg);
+
+                    if(trainingImgSet.size() == 200) {
+                        break OUTER;
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        try {
+            pca = new PCA(trainingImgSet, COMPONENT_NUMBER, this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        humanFactory = new HumanFactory(this);
     }
 
+    public FrogTrainImg addImg(File file) {
+        if (!humanFactory.frogImgTable.containsKey(file)) {
 
+            FrogTrainImg frogTrainImg = new FrogTrainImg(file);
+            humanFactory.frogImgTable.put(file, frogTrainImg);
+            return frogTrainImg;
+
+        } else {
+            return humanFactory.frogImgTable.get(file);
+        }
+    }
+
+    @Deprecated
     public TrainingEngine(int componentsRetained, int trainNums, int knn_k) {
         this.componentsRetained = componentsRetained;
         this.trainNums = trainNums;
@@ -110,7 +150,7 @@ public class TrainingEngine {
         labels = new ArrayList<String>();
 
 
-        trainingImgSet = new ArrayList<ImgMatrix>();
+        trainingImgSet = new ArrayList<FrogTrainImg>();
 
         Set<String> labelSet = trainMap.keySet();
         Iterator<String> it = labelSet.iterator();
@@ -126,14 +166,14 @@ public class TrainingEngine {
                 try {
                     temp = FileManager.convertPGMtoMatrix(filePath);
 
-                    ImgMatrix imgMatrix = new ImgMatrix(file, temp, this);
-//                    humanFactory.imgMatrixTable.put(file, imgMatrix);
+                    FrogTrainImg frogTrainImg = new FrogTrainImg(file, temp, this);
+//                    humanFactory.frogImgTable.put(file, imgMatrix);
 //                    humanFactory.nameTable.get(label).addTrainImg(imgMatrix);
-                    humanFactory.addTrainImgToHuman(imgMatrix, label);
+                    humanFactory.addTrainImgToHuman(frogTrainImg, label);
 
 
-                    imgMatrix.setVectorized(vectorize(temp));
-                    trainingImgSet.add(imgMatrix);
+                    frogTrainImg.setVectorized(vectorize(temp));
+                    trainingImgSet.add(frogTrainImg);
 
                     trainingSet.add(vectorize(temp));
                     labels.add(label);
@@ -147,7 +187,7 @@ public class TrainingEngine {
         testingSet = new ArrayList<Matrix>();
         trueLabels = new ArrayList<String>();
 
-        testingImgSet = new ArrayList<ImgMatrix>();
+        testingImgSet = new ArrayList<FrogTrainImg>();
 
         labelSet = testMap.keySet();
         it = labelSet.iterator();
@@ -161,12 +201,12 @@ public class TrainingEngine {
                 try {
                     temp = FileManager.convertPGMtoMatrix(filePath);
 
-                    ImgMatrix imgMatrix = new ImgMatrix(file, temp, this);
-//                    humanFactory.imgMatrixTable.put(file, imgMatrix);
+                    FrogTrainImg frogTrainImg = new FrogTrainImg(file, temp, this);
+//                    humanFactory.frogImgTable.put(file, imgMatrix);
 //                    humanFactory.nameTable.get(label).addImg(imgMatrix);
-                    humanFactory.addImgToHuman(imgMatrix, label);
-                    imgMatrix.setVectorized(vectorize(temp));
-                    testingImgSet.add(imgMatrix);
+                    humanFactory.addImgToHuman(frogTrainImg, label);
+                    frogTrainImg.setVectorized(vectorize(temp));
+                    testingImgSet.add(frogTrainImg);
 
                     testingSet.add(vectorize(temp));
                     trueLabels.add(label);
@@ -206,16 +246,16 @@ public class TrainingEngine {
                 Metric metric = getMetric(metrictype);
                 String metricName = metric.getClass().getSimpleName();
 
-                ArrayList<ImgMatrix> projectedTrainingSet = pca.getProjectedTrainingSet();
+                ArrayList<FrogTrainImg> projectedTrainingSet = pca.getProjectedTrainingSet();
 
                 int accurateNum = 0;
 
-                for (ImgMatrix testImg : testingImgSet) {
+                for (FrogTrainImg testImg : testingImgSet) {
 
                     // testImg will be project in PCA
 //                    testImg.setIdMatrix(pca.project(testImg.getVectorized()));
 
-                    String result = new KNN().assignLabel(projectedTrainingSet.toArray(new ImgMatrix[0]), testImg.getIdMatrix(), knn_k, metric);
+                    String result = new KNN().assignLabel(projectedTrainingSet.toArray(new FrogTrainImg[0]), testImg.getIdMatrix(), knn_k, metric);
 
                     if (result.equals(testImg.human.name)) {
                         accurateNum++;
@@ -251,16 +291,16 @@ public class TrainingEngine {
                 Metric metric = getMetric(metrictype);
                 String metricName = metric.getClass().getSimpleName();
 
-                ArrayList<ImgMatrix> projectedTrainingSet = pca.getProjectedTrainingSet();
+                ArrayList<FrogTrainImg> projectedTrainingSet = pca.getProjectedTrainingSet();
 
                 int accurateNum = 0;
 
-                for (ImgMatrix testImg : testingImgSet) {
+                for (FrogTrainImg testImg : testingImgSet) {
 
                     // testImg will be project in PCA
 //                    testImg.setIdMatrix(pca.project(testImg.getVectorized()));
 
-                    String result = new Identification().assignLabel(projectedTrainingSet.toArray(new ImgMatrix[0]), testImg.getIdMatrix(), ID_THRESHOLD, metric);
+                    String result = new Identification().assignLabel(projectedTrainingSet.toArray(new FrogTrainImg[0]), testImg.getIdMatrix(), ID_THRESHOLD, metric);
 
                     if (result.equals(testImg.human.name)) {
                         accurateNum++;
@@ -379,11 +419,11 @@ public class TrainingEngine {
 
                 assert metric != null : "metricType is wrong!";
 
-                ArrayList<ImgMatrix> projectedTrainingSet = fe.getProjectedTrainingSet();
+                ArrayList<FrogTrainImg> projectedTrainingSet = fe.getProjectedTrainingSet();
                 int accurateNum = 0;
                 for(int i = 0 ; i < testingSet.size(); i ++){
                     Matrix testCase = fe.getW().transpose().times(testingSet.get(i).minus(fe.getMeanMatrix()));
-                    String result = new KNN().assignLabel(projectedTrainingSet.toArray(new ImgMatrix[0]), testCase, knn_k, metric);
+                    String result = new KNN().assignLabel(projectedTrainingSet.toArray(new FrogTrainImg[0]), testCase, knn_k, metric);
 
                     if(result.equals(trueLabels.get(i)))
                         accurateNum ++;
@@ -402,7 +442,7 @@ public class TrainingEngine {
 
         TrainingEngine engine = new TrainingEngine();
 
-//        for (ImgMatrix imgMatrix : engine.humanFactory.imgMatrixTable.values()) {
+//        for (ImgMatrix imgMatrix : engine.humanFactory.frogImgTable.values()) {
 //            if (!imgMatrix.isFace()) {
 //                System.out.println(imgMatrix.file.getAbsolutePath() + " is found not to be a Face");
 //            } else {
@@ -410,42 +450,42 @@ public class TrainingEngine {
 //            }
 //        }
 //
-//        ImgMatrix test = engine.humanFactory.imgMatrixTable.values().toArray(new ImgMatrix[1])[0];
+//        ImgMatrix test = engine.humanFactory.frogImgTable.values().toArray(new ImgMatrix[1])[0];
 //
 //        BufferedImage image = engine.pca.reconstBufferImg(test.getIdMatrix());
 
-        ImgMatrix img1 = new ImgMatrix(new File("/Users/Meth/Documents/FROG/src/test/resources/iph/IMG_0125_cropped0.jpeg"));
-        ImgMatrix img2 = new ImgMatrix(new File("/Users/Meth/Documents/FROG/src/test/resources/iph/IMG_0126_cropped3.jpeg"));
-        ImgMatrix img3 = new ImgMatrix(new File("/Users/Meth/Documents/FROG/src/test/resources/iph/IMG_0127_cropped0.jpeg"));
-        ImgMatrix img4 = new ImgMatrix(new File("/Users/Meth/Documents/FROG/src/test/resources/iph/IMG_0128_cropped0.jpeg"));
-        ImgMatrix img5 = new ImgMatrix(new File("/Users/Meth/Documents/FROG/src/test/resources/iph/IMG_0129_cropped0.jpeg"));
-
-        Matrix m1 = ImageHelper.getMatrixFromGrey(ImageHelper.resize(ImageHelper.toGrey(img1.toIplImage())));
-        Matrix m2 = ImageHelper.getMatrixFromGrey(ImageHelper.resize(ImageHelper.toGrey(img2.toIplImage())));
-        Matrix m3 = ImageHelper.getMatrixFromGrey(ImageHelper.resize(ImageHelper.toGrey(img3.toIplImage())));
-        Matrix m4 = ImageHelper.getMatrixFromGrey(ImageHelper.resize(ImageHelper.toGrey(img4.toIplImage())));
-        Matrix m5 = ImageHelper.getMatrixFromGrey(ImageHelper.resize(ImageHelper.toGrey(img5.toIplImage())));
-
-        Metric metric = new EuclideanDistance();
-
-        Matrix id1 = engine.pca.project(TrainingEngine.vectorize(m1));
-        Matrix id2 = engine.pca.project(TrainingEngine.vectorize(m2));
-        Matrix id3 = engine.pca.project(TrainingEngine.vectorize(m3));
-        Matrix id4 = engine.pca.project(TrainingEngine.vectorize(m4));
-        Matrix id5 = engine.pca.project(TrainingEngine.vectorize(m5));
-
-        ArrayList<Matrix> list = new ArrayList<>();
-        list.add(id1);
-        list.add(id2);
-        list.add(id3);
-        list.add(id4);
-        list.add(id5);
-
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                System.out.println(metric.getDistance(list.get(i), list.get(j)));
-            }
-        }
+//        ImgMatrix img1 = new ImgMatrix(new File("/Users/Meth/Documents/FROG/src/test/resources/iph/IMG_0125_cropped0.jpeg"));
+//        ImgMatrix img2 = new ImgMatrix(new File("/Users/Meth/Documents/FROG/src/test/resources/iph/IMG_0126_cropped3.jpeg"));
+//        ImgMatrix img3 = new ImgMatrix(new File("/Users/Meth/Documents/FROG/src/test/resources/iph/IMG_0127_cropped0.jpeg"));
+//        ImgMatrix img4 = new ImgMatrix(new File("/Users/Meth/Documents/FROG/src/test/resources/iph/IMG_0128_cropped0.jpeg"));
+//        ImgMatrix img5 = new ImgMatrix(new File("/Users/Meth/Documents/FROG/src/test/resources/iph/IMG_0129_cropped0.jpeg"));
+//
+//        Matrix m1 = ImageHelper.getMatrixFromGrey(ImageHelper.resize(ImageHelper.toGrey(img1.toIplImage())));
+//        Matrix m2 = ImageHelper.getMatrixFromGrey(ImageHelper.resize(ImageHelper.toGrey(img2.toIplImage())));
+//        Matrix m3 = ImageHelper.getMatrixFromGrey(ImageHelper.resize(ImageHelper.toGrey(img3.toIplImage())));
+//        Matrix m4 = ImageHelper.getMatrixFromGrey(ImageHelper.resize(ImageHelper.toGrey(img4.toIplImage())));
+//        Matrix m5 = ImageHelper.getMatrixFromGrey(ImageHelper.resize(ImageHelper.toGrey(img5.toIplImage())));
+//
+//        Metric metric = new EuclideanDistance();
+//
+//        Matrix id1 = engine.pca.project(TrainingEngine.vectorize(m1));
+//        Matrix id2 = engine.pca.project(TrainingEngine.vectorize(m2));
+//        Matrix id3 = engine.pca.project(TrainingEngine.vectorize(m3));
+//        Matrix id4 = engine.pca.project(TrainingEngine.vectorize(m4));
+//        Matrix id5 = engine.pca.project(TrainingEngine.vectorize(m5));
+//
+//        ArrayList<Matrix> list = new ArrayList<>();
+//        list.add(id1);
+//        list.add(id2);
+//        list.add(id3);
+//        list.add(id4);
+//        list.add(id5);
+//
+//        for (int i = 0; i < 4; i++) {
+//            for (int j = 0; j < 4; j++) {
+//                System.out.println(metric.getDistance(list.get(i), list.get(j)));
+//            }
+//        }
 
 
     }
@@ -460,11 +500,11 @@ public class TrainingEngine {
         for (int i = 0; i < 6; i++) {
             TrainingEngine engine = new TrainingEngine();
 
-            for (ImgMatrix imgMatrix : engine.humanFactory.imgMatrixTable.values()) {
-                writer.write(imgMatrix.getHuman().name + " " + imgMatrix.file.getName() + ",");
-                Matrix reconstr = engine.pca.reconstMatrix(imgMatrix.getIdMatrix());
+            for (FrogTrainImg frogTrainImg : engine.humanFactory.frogImgTable.values()) {
+                writer.write(frogTrainImg.getHuman().name + " " + frogTrainImg.file.getName() + ",");
+                Matrix reconstr = engine.pca.reconstMatrix(frogTrainImg.getIdMatrix());
                 Metric metric = getMetric(2);
-                double distance = metric.getDistance(vectorize(reconstr), imgMatrix.getVectorized());
+                double distance = metric.getDistance(vectorize(reconstr), frogTrainImg.getVectorized());
                 writer.write(distance);
                 writer.newLine();
             }
@@ -491,8 +531,8 @@ public class TrainingEngine {
             for (Human p : trainingEngine1.humanFactory.nameTable.values()) {
                 writer.write(p.name + ",");
                 double sum = 0;
-                for (ImgMatrix imgMatrix : p.imgMatrices) {
-                    sum += metric.getDistance(p.getIdMatrix(), imgMatrix.getIdMatrix());
+                for (FrogTrainImg frogTrainImg : p.imgMatrices) {
+                    sum += metric.getDistance(p.getIdMatrix(), frogTrainImg.getIdMatrix());
                 }
                 writer.write(sum / p.fileNums);
                 writer.newLine();
@@ -504,11 +544,11 @@ public class TrainingEngine {
 
 
     @Deprecated
-    public void addImgMatrixtoPp(String peopleName, ImgMatrix imgMatrix, boolean isTraingImg) {
+    public void addImgMatrixtoPp(String peopleName, FrogTrainImg frogTrainImg, boolean isTraingImg) {
         if (!humanFactory.nameTable.containsKey(peopleName)) {
             throw new IllegalArgumentException("PeopleTable does not contain this people, Please create people first");
         } else {
-            humanFactory.nameTable.get(peopleName).addTrainImg(imgMatrix);
+            humanFactory.nameTable.get(peopleName).addTrainImg(frogTrainImg);
         }
     }
 

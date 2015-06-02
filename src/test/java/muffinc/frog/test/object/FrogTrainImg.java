@@ -1,19 +1,19 @@
 package muffinc.frog.test.object;
 
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.metadata.Metadata;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import muffinc.frog.test.Jama.Matrix;
 import muffinc.frog.test.detection.FaceDetection;
 import muffinc.frog.test.eigenface.PCA;
 import muffinc.frog.test.eigenface.TrainingEngine;
-import org.bytedeco.javacpp.opencv_core;
 import org.bytedeco.javacpp.opencv_core.*;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.LinkedList;
 
-import static org.bytedeco.javacpp.opencv_core.*;
 import static org.bytedeco.javacpp.opencv_highgui.*;
-import static org.bytedeco.javacpp.opencv_objdetect.*;
-import static org.bytedeco.javacpp.opencv_imgproc.*;
 
 /**
  * FROG, a Face Recognition Gallery in Java
@@ -34,7 +34,7 @@ import static org.bytedeco.javacpp.opencv_imgproc.*;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * zj45499 (at) gmail (dot) com
  */
-public class ImgMatrix {
+public class FrogTrainImg {
 //    public PCA pca;
 //    public TrainingEngine trainingEngine;
 //    public String peopleName;
@@ -45,18 +45,26 @@ public class ImgMatrix {
     private boolean isFace;
     private Matrix idMatrix;
     private double distance = -1;
-    private boolean detected = false;
-    private ArrayList<CvRect> cvRects = null;
+//    private boolean detected = false;
+    public IntegerProperty detectedFaces = new SimpleIntegerProperty(-1);
+    private LinkedList<CvRect> cvRects = null;
+    private Metadata metadata = null;
 
     private boolean isScaned;
 
-    public ImgMatrix(File file) {
+    public FrogTrainImg(File file) {
         this.file = file;
+        try {
+            metadata = ImageMetadataReader.readMetadata(file);
+        } catch (Exception  e) {
+//            e.printStackTrace();
+            metadata = new Metadata();
+        }
     }
 
-    public ImgMatrix(File file, Matrix matrix, TrainingEngine trainingEngine) {
+    public FrogTrainImg(File file, Matrix matrix, TrainingEngine trainingEngine) {
+        this(file);
         this.matrix = matrix;
-        this.file = file;
     }
 
     public Matrix getVectorized() {
@@ -115,14 +123,6 @@ public class ImgMatrix {
         this.human = human;
     }
 
-//    public PCA getPca() {
-//        return pca;
-//    }
-//
-//    public void setPca(PCA pca) {
-//        this.pca = pca;
-//    }
-
     public void project(PCA pca) {
         if (!isProjected()) {
             idMatrix = pca.project(matrix);
@@ -142,7 +142,7 @@ public class ImgMatrix {
     }
 
     public boolean isDetected() {
-        return detected;
+        return detectedFaces.toString().equals("-1");
     }
 
     public boolean hasFace() {
@@ -153,12 +153,18 @@ public class ImgMatrix {
         }
     }
 
-    public void detectFace() {
-        cvRects = FaceDetection.detectFaces(file);
+    public int faceNumber() {
+        return cvRects.size();
     }
 
-    public void removeCvRect(CvRect cvRect) {
-        if (cvRects.remove(cvRect)) {
+    public void detectFace() {
+        cvRects = FaceDetection.detectFaces(file);
+        detectedFaces.setValue(cvRects.size());
+        System.out.println("detectFace() found " + cvRects.size() + " faces");
+    }
+
+    public void removeCvRect(int index) {
+        if (cvRects.remove(cvRects.get(index))) {
             System.out.println("cvRect has been successfully removed");
         } else {
             System.out.println("Does not contain CvRect");

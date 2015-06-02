@@ -1,6 +1,6 @@
 package muffinc.frog.test.displayio;
 
-import muffinc.frog.test.object.ImgMatrix;
+import muffinc.frog.test.object.FrogTrainImg;
 import org.bytedeco.javacpp.opencv_core.*;
 
 import javax.imageio.ImageIO;
@@ -54,7 +54,7 @@ public class Display {
     }
 
 
-    public static void display(ImgMatrix imgMatrix) {
-        display(imgMatrix.file.getAbsolutePath());
+    public static void display(FrogTrainImg frogTrainImg) {
+        display(frogTrainImg.file.getAbsolutePath());
     }
 }

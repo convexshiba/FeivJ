@@ -7,8 +7,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.stage.FileChooser;
 
+import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 /**
@@ -44,13 +47,16 @@ public class SimplePaneController implements Initializable{
     @FXML
     private TableColumn<SimplePeople, String> c3;
 
+
     @FXML
-    private Button trainButton;
+    private Button addFileButton;
 
     @FXML
     private ScrollPane scrollPane;
 
     private MainApp mainApp;
+
+    private FileChooser fileChooser = new FileChooser();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -67,18 +73,25 @@ public class SimplePaneController implements Initializable{
 
     @FXML
     public void trainButtonPushed() {
+    }
+
+    @FXML
+    public void addFilePushed() {
+//        String[] extensions = {"jpeg", "jpg", "pgm"};
+//        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Image Files", );
+//        fileChooser.getExtensionFilters().add(extFilter);
+
+        File file = fileChooser.showOpenDialog(addFileButton.getScene().getWindow());
+//        System.out.println(file.getAbsolutePath() + " was chosen");
+
+        mainApp.trainingEngine.addImg(file);
+
         if (mainApp.trainingEngine == null) {
-            mainApp.launchEngine();
             simplePeopleTableView.setItems(mainApp.getSimplePeopleObservableList());
 
             c1.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
             c2.setCellValueFactory(cellData -> cellData.getValue().fileNumsProperty().asObject());
             c3.setCellValueFactory(cellDate -> cellDate.getValue().fileAddressProperty());
         }
-    }
-
-    @FXML
-    public void handleDelete() {
-
     }
 }

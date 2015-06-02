@@ -5,8 +5,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import muffinc.frog.test.eigenface.TrainingEngine;
 
 public class Main extends Application {
+    TrainingEngine engine = null;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -15,6 +17,8 @@ public class Main extends Application {
         primaryStage.setScene(new Scene(root, 1000, 650));
         primaryStage.setResizable(false);
         primaryStage.show();
+
+        engine = new TrainingEngine();
     }
 
 

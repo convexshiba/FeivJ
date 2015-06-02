@@ -1,7 +1,6 @@
 package muffinc.frog.test.eigenface;
 
-import muffinc.frog.test.helper.Stdio;
-import muffinc.frog.test.object.ImgMatrix;
+import muffinc.frog.test.object.FrogTrainImg;
 import muffinc.frog.test.object.Human;
 
 import java.io.File;
@@ -31,29 +30,29 @@ public class HumanFactory {
 
     public HashMap<String, Human> nameTable;
 
-    public HashMap<File, ImgMatrix> imgMatrixTable;
+    public HashMap<File, FrogTrainImg> frogImgTable;
 
     public HumanFactory(TrainingEngine engine) {
         this.engine = engine;
         nameTable = new HashMap<String, Human>();
-        imgMatrixTable = new HashMap<File, ImgMatrix>();
+        frogImgTable = new HashMap<File, FrogTrainImg>();
     }
 
     public boolean hasHuman(String name) {
         return nameTable.containsKey(name);
     }
 
-    public boolean hasImgMatrix(ImgMatrix imgMatrix) {
-        return imgMatrixTable.containsValue(imgMatrix);
+    public boolean hasImgMatrix(FrogTrainImg frogTrainImg) {
+        return frogImgTable.containsValue(frogTrainImg);
     }
 
     public boolean hasImgMatrix(File file) {
-        return imgMatrixTable.containsKey(file);
+        return frogImgTable.containsKey(file);
     }
 
-    public ImgMatrix locateImgMatrix(File file) {
+    public FrogTrainImg locateImgMatrix(File file) {
         if (hasImgMatrix(file)) {
-            return imgMatrixTable.get(file);
+            return frogImgTable.get(file);
         } else {
             throw new IllegalAccessError("This ImgMatrix doesn't exist in the library, Please create ImgMatrix first.");
         }
@@ -77,23 +76,23 @@ public class HumanFactory {
         }
     }
 
-    public void addTrainImgToHuman (ImgMatrix imgMatrix, String name) {
+    public void addTrainImgToHuman (FrogTrainImg frogTrainImg, String name) {
         if (hasHuman(name)) {
             Human human = locateHuman(name);
-            human.addTrainImg(imgMatrix);
-            imgMatrix.setHuman(locateHuman(name));
-            imgMatrixTable.put(imgMatrix.file, imgMatrix);
+            human.addTrainImg(frogTrainImg);
+            frogTrainImg.setHuman(locateHuman(name));
+            frogImgTable.put(frogTrainImg.file, frogTrainImg);
         } else {
             throw new IllegalAccessError("This person is not in the HumanFactory, Please hasHuman() and create first.");
         }
     }
 
-    public void addImgToHuman(ImgMatrix imgMatrix, String name) {
+    public void addImgToHuman(FrogTrainImg frogTrainImg, String name) {
         if (hasHuman(name)) {
             Human human = locateHuman(name);
-            human.addImg(imgMatrix);
-            imgMatrix.setHuman(locateHuman(name));
-            imgMatrixTable.put(imgMatrix.file, imgMatrix);
+            human.addImg(frogTrainImg);
+            frogTrainImg.setHuman(locateHuman(name));
+            frogImgTable.put(frogTrainImg.file, frogTrainImg);
         } else {
             throw new IllegalAccessError("This person is not in the HumanFactory, Please hasHuman() and create first.");
         }
