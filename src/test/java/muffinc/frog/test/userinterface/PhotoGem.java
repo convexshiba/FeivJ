@@ -2,7 +2,7 @@ package muffinc.frog.test.userinterface;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.scene.image.ImageView;
-import muffinc.frog.test.object.FrogTrainImg;
+import muffinc.frog.test.object.FrogImg;
 
 import java.io.Serializable;
 
@@ -29,8 +29,8 @@ public class PhotoGem implements Serializable{
     private IntegerProperty photoCount;
     private ImageView img;
 
-    public PhotoGem(FrogTrainImg frogTrainImg) {
-        photoCount = frogTrainImg.detectedFaces;
+    public PhotoGem(FrogImg frogImg) {
+        photoCount = frogImg.detectedFaces;
         img =
     }
 

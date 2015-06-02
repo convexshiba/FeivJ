@@ -47,19 +47,19 @@ public class FrogTrainImg {
     private double distance = -1;
 //    private boolean detected = false;
     public IntegerProperty detectedFaces = new SimpleIntegerProperty(-1);
-    private LinkedList<CvRect> cvRects = null;
-    private Metadata metadata = null;
+//    private LinkedList<CvRect> cvRects = null;
+//    private Metadata metadata = null;
 
-    private boolean isScaned;
+//    private boolean isScaned;
 
     public FrogTrainImg(File file) {
         this.file = file;
-        try {
-            metadata = ImageMetadataReader.readMetadata(file);
-        } catch (Exception  e) {
-//            e.printStackTrace();
-            metadata = new Metadata();
-        }
+//        try {
+//            metadata = ImageMetadataReader.readMetadata(file);
+//        } catch (Exception  e) {
+////            e.printStackTrace();
+//            metadata = new Metadata();
+//        }
     }
 
     public FrogTrainImg(File file, Matrix matrix, TrainingEngine trainingEngine) {
@@ -145,29 +145,29 @@ public class FrogTrainImg {
         return detectedFaces.toString().equals("-1");
     }
 
-    public boolean hasFace() {
-        if (!isDetected()) {
-            throw new IllegalAccessError(file.getAbsolutePath() + "has not be Detected");
-        } else {
-            return cvRects.size() != 0;
-        }
-    }
-
-    public int faceNumber() {
-        return cvRects.size();
-    }
-
-    public void detectFace() {
-        cvRects = FaceDetection.detectFaces(file);
-        detectedFaces.setValue(cvRects.size());
-        System.out.println("detectFace() found " + cvRects.size() + " faces");
-    }
-
-    public void removeCvRect(int index) {
-        if (cvRects.remove(cvRects.get(index))) {
-            System.out.println("cvRect has been successfully removed");
-        } else {
-            System.out.println("Does not contain CvRect");
-        }
-    }
+//    public boolean hasFace() {
+//        if (!isDetected()) {
+//            throw new IllegalAccessError(file.getAbsolutePath() + "has not be Detected");
+//        } else {
+//            return cvRects.size() != 0;
+//        }
+//    }
+//
+//    public int faceNumber() {
+//        return cvRects.size();
+//    }
+//
+//    public void detectFace() {
+//        cvRects = FaceDetection.detectFaces(file);
+//        detectedFaces.setValue(cvRects.size());
+//        System.out.println("detectFace() found " + cvRects.size() + " faces");
+//    }
+//
+//    public void removeCvRect(int index) {
+//        if (cvRects.remove(cvRects.get(index))) {
+//            System.out.println("cvRect has been successfully removed");
+//        } else {
+//            System.out.println("Does not contain CvRect");
+//        }
+//    }
 }
