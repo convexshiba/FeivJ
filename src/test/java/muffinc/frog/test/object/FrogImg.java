@@ -11,6 +11,7 @@ import muffinc.frog.test.eigenface.TrainingEngine;
 import org.bytedeco.javacpp.opencv_core;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import static org.bytedeco.javacpp.opencv_core.*;
@@ -41,10 +42,10 @@ public class FrogImg {
 
     public IplImage originalIplImage;
 
-    public Human human;
-    public File file;
-    public Matrix matrix;
-    public Matrix vectorized;
+//    private Human human;
+    private File file;
+    private Matrix matrix;
+    private Matrix vectorized;
     private boolean isFace;
     private Matrix idMatrix;
 //    private double distance = -1;
@@ -52,14 +53,23 @@ public class FrogImg {
 
     private boolean isScaned;
     public IntegerProperty detectedFaces = new SimpleIntegerProperty(-1);
-    private LinkedList<opencv_core.CvRect> cvRects = null;
+    private LinkedList<CvRect> cvRects = null;
+    public HashMap<CvRect, Human> rectToHuman;
+    public HashMap<Human, LinkedList<CvRect>> humanToRects;
+    public HashMap<CvRect, Matrix> idMatrices = null;
 
     private Metadata metadata = null;
+
+
+//    public FrogImg() {
+//        super();
+//    }
 
 
     public FrogImg(File file) {
         this.file = file;
         originalIplImage = cvLoadImage(file.getAbsolutePath());
+        isScaned = false;
 
         try {
             metadata = ImageMetadataReader.readMetadata(file);
@@ -69,9 +79,22 @@ public class FrogImg {
         }
     }
 
-    public FrogImg(File file, Matrix matrix, TrainingEngine trainingEngine) {
-        this(file);
-        this.matrix = matrix;
+//    public FrogImg(File file, Matrix matrix, TrainingEngine trainingEngine) {
+//        this(file);
+//        this.matrix = matrix;
+//    }
+
+
+    public void setCvRectHuman(Human human, CvRect cvRect) {
+        rectToHuman.put(cvRect, human);
+
+        if (humanToRects.containsKey(human)) {
+            humanToRects.get(human).add(cvRect);
+        } else {
+            LinkedList<CvRect> temp = new LinkedList<>();
+            temp.add(cvRect);
+            humanToRects.put(human, temp);
+        }
     }
 
     public Matrix getVectorized() {
@@ -118,17 +141,17 @@ public class FrogImg {
 //        this.distance = distance;
 //    }
 
-    public Human getHuman() {
-        if (human != null) {
-            return human;
-        } else {
-            throw new IllegalAccessError("Please set people First");
-        }
-    }
-
-    public void setHuman(Human human) {
-        this.human = human;
-    }
+//    public Human[] getHuman() {
+//        if (human != null) {
+//            return human;
+//        } else {
+//            throw new IllegalAccessError("Please set people First");
+//        }
+//    }
+//
+//    public void setCvRectHuman(Human human, CvRect cvRect) {
+//        this.human = human;
+//    }
 
     public void project(PCA pca) {
         if (!isProjected()) {
@@ -165,9 +188,11 @@ public class FrogImg {
     }
 
     public void detectFace() {
-        cvRects = FaceDetection.detectFaces(file);
-        detectedFaces.setValue(cvRects.size());
-        System.out.println("detectFace() found " + cvRects.size() + " faces");
+        if (!isDetected()) {
+            cvRects = FaceDetection.detectFaces(file);
+            detectedFaces.setValue(cvRects.size());
+            System.out.println("detectFace() found " + cvRects.size() + " faces");
+        }
     }
 
     public void removeCvRect(int index) {
@@ -177,4 +202,66 @@ public class FrogImg {
             System.out.println("Does not contain CvRect");
         }
     }
+
+    public double getDistance() {
+        return 0;
+    }
+
+    public void setDistance(double distance) {
+
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
+    }
+
+    public boolean isScaned() {
+        return isScaned;
+    }
+
+    public void setIsScaned(boolean isScaned) {
+        this.isScaned = isScaned;
+    }
+
+    public LinkedList<CvRect> getCvRects() {
+        return cvRects;
+    }
+
+    public void setCvRects(LinkedList<CvRect> cvRects) {
+        this.cvRects = cvRects;
+    }
+
+    public Metadata getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Metadata metadata) {
+        this.metadata = metadata;
+    }
+
+    public int getDetectedFaces() {
+        return detectedFaces.get();
+    }
+
+    public IntegerProperty detectedFacesProperty() {
+        return detectedFaces;
+    }
+
+    public void setDetectedFaces(int detectedFaces) {
+        this.detectedFaces.set(detectedFaces);
+    }
+
+    public IplImage getOriginalIplImage() {
+        return originalIplImage;
+    }
+
+    public void setOriginalIplImage(IplImage originalIplImage) {
+        this.originalIplImage = originalIplImage;
+    }
+
+
 }

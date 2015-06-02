@@ -41,6 +41,7 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         trainingEngine = new TrainingEngine();
+
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/simpleui/SimplePane.fxml"));
 

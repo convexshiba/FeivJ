@@ -1,7 +1,8 @@
 package muffinc.frog.test.eigenface;
 
-import muffinc.frog.test.object.FrogTrainImg;
+import muffinc.frog.test.object.FrogImg;
 import muffinc.frog.test.object.Human;
+import org.bytedeco.javacpp.opencv_core;
 
 import java.io.File;
 import java.util.HashMap;
@@ -30,28 +31,28 @@ public class HumanFactory {
 
     public HashMap<String, Human> nameTable;
 
-    public HashMap<File, FrogTrainImg> frogImgTable;
+    public HashMap<File, FrogImg> frogImgTable;
 
     public HumanFactory(TrainingEngine engine) {
         this.engine = engine;
-        nameTable = new HashMap<String, Human>();
-        frogImgTable = new HashMap<File, FrogTrainImg>();
+        nameTable = new HashMap<>();
+        frogImgTable = new HashMap<>();
     }
 
     public boolean hasHuman(String name) {
         return nameTable.containsKey(name);
     }
 
-    public boolean hasImgMatrix(FrogTrainImg frogTrainImg) {
-        return frogImgTable.containsValue(frogTrainImg);
+    public boolean hasImg(FrogImg frogImg) {
+        return frogImgTable.containsValue(frogImg);
     }
 
-    public boolean hasImgMatrix(File file) {
+    public boolean hasImg(File file) {
         return frogImgTable.containsKey(file);
     }
 
-    public FrogTrainImg locateImgMatrix(File file) {
-        if (hasImgMatrix(file)) {
+    public FrogImg locateFrogImg(File file) {
+        if (hasImg(file)) {
             return frogImgTable.get(file);
         } else {
             throw new IllegalAccessError("This ImgMatrix doesn't exist in the library, Please create ImgMatrix first.");
@@ -60,7 +61,7 @@ public class HumanFactory {
 
     public Human newHuman(String name) {
         if (!hasHuman(name)) {
-            Human newHuman = new Human(name, engine);
+            Human newHuman = new Human(name);
             nameTable.put(name, newHuman);
             return newHuman;
         } else {
@@ -76,23 +77,13 @@ public class HumanFactory {
         }
     }
 
-    public void addTrainImgToHuman (FrogTrainImg frogTrainImg, String name) {
-        if (hasHuman(name)) {
-            Human human = locateHuman(name);
-            human.addTrainImg(frogTrainImg);
-            frogTrainImg.setHuman(locateHuman(name));
-            frogImgTable.put(frogTrainImg.file, frogTrainImg);
-        } else {
-            throw new IllegalAccessError("This person is not in the HumanFactory, Please hasHuman() and create first.");
-        }
-    }
 
-    public void addImgToHuman(FrogTrainImg frogTrainImg, String name) {
+    public void addImgToHuman(FrogImg frogImg, String name, opencv_core.CvRect cvRect) {
         if (hasHuman(name)) {
             Human human = locateHuman(name);
-            human.addImg(frogTrainImg);
-            frogTrainImg.setHuman(locateHuman(name));
-            frogImgTable.put(frogTrainImg.file, frogTrainImg);
+            human.addImg(frogImg, cvRect);
+            frogImg.setCvRectHuman(locateHuman(name), cvRect);
+//            frogImgTable.put(frogTrainImg.file, frogTrainImg);
         } else {
             throw new IllegalAccessError("This person is not in the HumanFactory, Please hasHuman() and create first.");
         }

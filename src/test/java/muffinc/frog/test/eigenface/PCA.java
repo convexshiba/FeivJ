@@ -51,25 +51,25 @@ public class PCA {
 
 		// Construct projectedTrainingMatrix
 		this.projectedTrainingSet = new ArrayList<FrogTrainImg>();
-		for (int i = 0; i < trainingSet.size(); i++) {
-//			ImgMatrix ptm = new ImgMatrix(project(trainingSet.get(i)), labels.get(i));
-            trainingImg.get(i).setIdMatrix(project(trainingImg.get(i).getVectorized()));
-
-            // setIsFace for trainingImg
-            setAndReturnIsFace(trainingImg.get(i));
-
-//			this.projectedTrainingSet.add(tr);
-		}
-        projectedTrainingSet = trainingImg;
-
-        // project testImg
-        for (FrogTrainImg frogTrainImg : trainingEngine.testingImgSet) {
-            frogTrainImg.setIdMatrix(project(frogTrainImg.getVectorized()));
-
-            // setIsFace for testImg
-            setAndReturnIsFace(frogTrainImg);
-
-        }
+//		for (int i = 0; i < trainingSet.size(); i++) {
+////			ImgMatrix ptm = new ImgMatrix(project(trainingSet.get(i)), labels.get(i));
+//            trainingImg.get(i).setIdMatrix(project(trainingImg.get(i).getVectorized()));
+//
+//            // setIsFace for trainingImg
+//            setAndReturnIsFace(trainingImg.get(i));
+//
+////			this.projectedTrainingSet.add(tr);
+//		}
+//        projectedTrainingSet = trainingImg;
+//
+//        // project testImg
+//        for (FrogTrainImg frogTrainImg : trainingEngine.testingImgSet) {
+//            frogTrainImg.setIdMatrix(project(frogTrainImg.getVectorized()));
+//
+//            // setIsFace for testImg
+//            setAndReturnIsFace(frogTrainImg);
+//
+//        }
 
 //        for (Human p : trainingEngine.humanFactory.nameTable.values()) {
 //            p.calculateID();

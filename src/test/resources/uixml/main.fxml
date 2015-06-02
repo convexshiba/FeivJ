@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.media.*?>
 <?import java.lang.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
 
 <BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="muffinc.frog.test.userinterface.MainController">
    <top>
@@ -58,18 +56,20 @@
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </padding>
                         </GridPane>
-                        <ToolBar layoutY="298.0" prefHeight="40.0" prefWidth="288.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
+                        <ToolBar layoutY="298.0" prefHeight="40.0" prefWidth="339.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
                           <items>
-                            <Button mnemonicParsing="false" text="Add File" />
-                              <Button mnemonicParsing="false" text="Delete Selected" />
-                              <Button mnemonicParsing="false" text="Scan" />
+                            <Button fx:id="addFileButton" mnemonicParsing="false" onAction="#setAddFileButton" text="Add File" />
+                              <Button fx:id="deleteSelectedButton" mnemonicParsing="false" text="Delete Selected" />
+                              <Button fx:id="scanNDetectButton" mnemonicParsing="false" onAction="#setScanNDetectButton" text="Scan&amp;Detect" />
+                              <Button fx:id="scanNDetectButton1" layoutX="197.0" layoutY="11.0" mnemonicParsing="false" text="Scan&amp;Detect" />
                           </items>
                         </ToolBar>
-                        <ListView layoutX="300.0" layoutY="204.0" prefHeight="119.0" prefWidth="200.0" />
+                        <ListView layoutX="377.0" layoutY="199.0" prefHeight="119.0" prefWidth="200.0" />
                         <TableView fx:id="photoTable" layoutX="14.0" prefHeight="293.0" prefWidth="299.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
                           <columns>
-                            <TableColumn fx:id="photoColume" prefWidth="75.0" text="Photo" />
-                            <TableColumn fx:id="countColume" prefWidth="75.0" text="People Count" />
+                              <TableColumn fx:id="photoNameColumn" prefWidth="75.0" text="PhotoName" />
+                            <TableColumn fx:id="photoColumn" prefWidth="75.0" text="Photo" />
+                            <TableColumn fx:id="countColumn" prefWidth="75.0" text="People Count" />
                           </columns>
                            <columnResizePolicy>
                               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

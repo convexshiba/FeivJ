@@ -34,7 +34,7 @@ import static org.bytedeco.javacpp.opencv_highgui.*;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  * zj45499 (at) gmail (dot) com
  */
-public class FrogTrainImg {
+public class FrogTrainImg implements Img {
 //    public PCA pca;
 //    public TrainingEngine trainingEngine;
 //    public String peopleName;
@@ -67,26 +67,32 @@ public class FrogTrainImg {
         this.matrix = matrix;
     }
 
+    @Override
     public Matrix getVectorized() {
         return vectorized;
     }
 
+    @Override
     public void setVectorized(Matrix vectorized) {
         this.vectorized = vectorized;
     }
 
+    @Override
     public Matrix getMatrix() {
         return matrix;
     }
 
+    @Override
     public void setMatrix(Matrix matrix) {
         this.matrix = matrix;
     }
 
+    @Override
     public boolean isProjected() {
         return idMatrix != null;
     }
 
+    @Override
     public Matrix getIdMatrix() {
         if (!isProjected()) {
             throw new IllegalAccessError("This Matrix has not been idMatrix");
@@ -95,10 +101,12 @@ public class FrogTrainImg {
         }
     }
 
+    @Override
     public void setIdMatrix(Matrix idMatrix) {
         this.idMatrix = idMatrix;
     }
 
+    @Override
     public double getDistance() {
         if (distance == -1) {
             throw new IllegalAccessError("distance has not been initialized");
@@ -107,10 +115,12 @@ public class FrogTrainImg {
         }
     }
 
+    @Override
     public void setDistance(double distance) {
         this.distance = distance;
     }
 
+    @Override
     public Human getHuman() {
         if (human != null) {
             return human;
@@ -119,33 +129,53 @@ public class FrogTrainImg {
         }
     }
 
+//    @Override
     public void setHuman(Human human) {
         this.human = human;
     }
 
+    @Override
     public void project(PCA pca) {
         if (!isProjected()) {
             idMatrix = pca.project(matrix);
         }
     }
 
+    @Override
     public boolean isFace() {
         return isFace;
     }
 
+    @Override
     public void setIsFace(boolean isFace) {
         this.isFace = isFace;
     }
 
+    @Override
     public IplImage toIplImage() {
         return cvLoadImage(file.getAbsolutePath());
     }
 
+    @Override
     public boolean isDetected() {
         return detectedFaces.toString().equals("-1");
     }
 
-//    public boolean hasFace() {
+    public FrogTrainImg() {
+        super();
+    }
+
+    @Override
+    public File getFile() {
+        return file;
+    }
+
+    @Override
+    public void setFile(File file) {
+        this.file = file;
+    }
+
+    //    public boolean hasFace() {
 //        if (!isDetected()) {
 //            throw new IllegalAccessError(file.getAbsolutePath() + "has not be Detected");
 //        } else {

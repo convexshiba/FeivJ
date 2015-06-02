@@ -39,7 +39,7 @@ public class SimplePeople {
     public SimplePeople(Human human) {
         name = new SimpleStringProperty(human.name);
         fileNums = new SimpleIntegerProperty(human.fileNums);
-        fileAddress = new SimpleStringProperty(human.imgMatrices.get(0).file.getAbsolutePath());
+        fileAddress = new SimpleStringProperty(human.frogImgs.get(0).getFile().getAbsolutePath());
     }
 
     public String getName() {

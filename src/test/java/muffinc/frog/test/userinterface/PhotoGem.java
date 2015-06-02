@@ -1,6 +1,10 @@
 package muffinc.frog.test.userinterface;
 
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import muffinc.frog.test.object.FrogImg;
 
@@ -27,14 +31,50 @@ import java.io.Serializable;
  */
 public class PhotoGem implements Serializable{
     private IntegerProperty photoCount;
-    private ImageView img;
+    private Image img;
+    private StringProperty fileName;
+    private FrogImg frogImg;
 
     public PhotoGem(FrogImg frogImg) {
+
+        this.frogImg = frogImg;
+
         photoCount = frogImg.detectedFaces;
-        img =
+
+        img = SwingFXUtils.toFXImage(frogImg.originalIplImage.getBufferedImage(), null);
+
+        fileName = new SimpleStringProperty(frogImg.getFile().getName());
     }
 
-    public static void main(String[] args) {
+    public FrogImg getFrogImg() {
+        return frogImg;
+    }
 
+    public String getFileName() {
+        return fileName.get();
+    }
+
+    public StringProperty fileNameProperty() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName.set(fileName);
+    }
+
+    public IntegerProperty photoCountProperty() {
+        return photoCount;
+    }
+
+    public void setPhotoCount(int photoCount) {
+        this.photoCount.set(photoCount);
+    }
+
+    public Image getImg() {
+        return img;
+    }
+
+    public void setImg(Image img) {
+        this.img = img;
     }
 }

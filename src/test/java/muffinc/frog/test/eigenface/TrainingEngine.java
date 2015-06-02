@@ -6,8 +6,10 @@ import muffinc.frog.test.eigenface.metric.CosineDissimilarity;
 import muffinc.frog.test.eigenface.metric.EuclideanDistance;
 import muffinc.frog.test.eigenface.metric.L1Distance;
 import muffinc.frog.test.helper.Writer;
+import muffinc.frog.test.object.FrogImg;
 import muffinc.frog.test.object.FrogTrainImg;
 import muffinc.frog.test.object.Human;
+import muffinc.frog.test.object.Img;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -45,25 +47,18 @@ public class TrainingEngine {
     public static final int METRIC_EUCILDEAN = 2;
 
     public HumanFactory humanFactory;
-
+    public PCA pca;
+//    HashMap<String, ArrayList<Integer>> trainMap;
+//    HashMap<String, ArrayList<Integer>> testMap;
+//    ArrayList<Matrix> trainingSet = new ArrayList<Matrix>();
+//    ArrayList<String> labels = new ArrayList<String>();
+    ArrayList<FrogTrainImg> trainingImgSet = new ArrayList<>();
+//    ArrayList<Matrix> testingSet = new ArrayList<Matrix>();
+//    ArrayList<String> trueLabels = new ArrayList<String>();
+//    ArrayList<FrogTrainImg> testingImgSet = new ArrayList<FrogTrainImg>();
     private int componentsRetained;
     private int trainNums;
     private int knn_k;
-
-    public PCA pca;
-
-    HashMap<String, ArrayList<Integer>> trainMap;
-    HashMap<String, ArrayList<Integer>> testMap;
-
-    ArrayList<Matrix> trainingSet = new ArrayList<Matrix>();
-    ArrayList<String> labels = new ArrayList<String>();
-
-    ArrayList<FrogTrainImg> trainingImgSet = new ArrayList<>();
-
-    ArrayList<Matrix> testingSet = new ArrayList<Matrix>();
-    ArrayList<String> trueLabels = new ArrayList<String>();
-
-    ArrayList<FrogTrainImg> testingImgSet = new ArrayList<FrogTrainImg>();
 
 //    public TrainingEngine() {
 //        this(COMPONENT_NUMBER, 5, 2);
@@ -105,338 +100,17 @@ public class TrainingEngine {
         humanFactory = new HumanFactory(this);
     }
 
-    public FrogTrainImg addImg(File file) {
-        if (!humanFactory.frogImgTable.containsKey(file)) {
-
-            FrogTrainImg frogTrainImg = new FrogTrainImg(file);
-            humanFactory.frogImgTable.put(file, frogTrainImg);
-            return frogTrainImg;
-
-        } else {
+    public FrogImg addNewImg(File file) {
+        if (humanFactory.frogImgTable.containsKey(file)) {
+            System.out.println(file.getAbsolutePath() + " is already in the library");
             return humanFactory.frogImgTable.get(file);
+        } else {
+            FrogImg frogImg = new FrogImg(file);
+            humanFactory.frogImgTable.put(file, frogImg);
+            return frogImg;
         }
     }
 
-    @Deprecated
-    public TrainingEngine(int componentsRetained, int trainNums, int knn_k) {
-        this.componentsRetained = componentsRetained;
-        this.trainNums = trainNums;
-        this.knn_k = knn_k;
-
-        humanFactory = new HumanFactory(this);
-
-        //set trainSet and testSet
-        trainMap = new HashMap<String, ArrayList<Integer>>();
-        testMap = new HashMap<String, ArrayList<Integer>>();
-
-        for(int i = 1; i <= 10; i ++ ){
-            String label = "s"+i;
-
-//            Human human = new Human(label, this);
-//
-//            humanFactory.nameTable.put(label, human);
-            humanFactory.newHuman(label);
-
-
-
-            ArrayList<Integer> train = generateTrainNums(trainNums);
-            ArrayList<Integer> test = generateTestNums(train);
-            trainMap.put(label, train);
-            testMap.put(label, test);
-        }
-
-        //trainingSet & respective labels
-        trainingSet = new ArrayList<Matrix>();
-        labels = new ArrayList<String>();
-
-
-        trainingImgSet = new ArrayList<FrogTrainImg>();
-
-        Set<String> labelSet = trainMap.keySet();
-        Iterator<String> it = labelSet.iterator();
-        while(it.hasNext()){
-            String label = it.next();
-            ArrayList<Integer> cases = trainMap.get(label);
-            for (int i = 0; i < cases.size(); i ++){
-                String filePath = "/Users/Meth/Documents/FROG/src/test/faces/"+label+"/"+cases.get(i)+".pgm";
-
-                File file = new File(filePath);
-
-                Matrix temp;
-                try {
-                    temp = FileManager.convertPGMtoMatrix(filePath);
-
-                    FrogTrainImg frogTrainImg = new FrogTrainImg(file, temp, this);
-//                    humanFactory.frogImgTable.put(file, imgMatrix);
-//                    humanFactory.nameTable.get(label).addTrainImg(imgMatrix);
-                    humanFactory.addTrainImgToHuman(frogTrainImg, label);
-
-
-                    frogTrainImg.setVectorized(vectorize(temp));
-                    trainingImgSet.add(frogTrainImg);
-
-                    trainingSet.add(vectorize(temp));
-                    labels.add(label);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        }
-
-        testingSet = new ArrayList<Matrix>();
-        trueLabels = new ArrayList<String>();
-
-        testingImgSet = new ArrayList<FrogTrainImg>();
-
-        labelSet = testMap.keySet();
-        it = labelSet.iterator();
-        while(it.hasNext()){
-            String label = it.next();
-            ArrayList<Integer> cases = testMap.get(label);
-            for(int i = 0; i < cases.size(); i ++){
-                String filePath = "/Users/Meth/Documents/FROG/src/test/faces/"+label+"/"+cases.get(i)+".pgm";
-                File file = new File(filePath);
-                Matrix temp;
-                try {
-                    temp = FileManager.convertPGMtoMatrix(filePath);
-
-                    FrogTrainImg frogTrainImg = new FrogTrainImg(file, temp, this);
-//                    humanFactory.frogImgTable.put(file, imgMatrix);
-//                    humanFactory.nameTable.get(label).addImg(imgMatrix);
-                    humanFactory.addImgToHuman(frogTrainImg, label);
-                    frogTrainImg.setVectorized(vectorize(temp));
-                    testingImgSet.add(frogTrainImg);
-
-                    testingSet.add(vectorize(temp));
-                    trueLabels.add(label);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        try {
-            pca = new PCA(trainingImgSet, componentsRetained, this);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public void addBufferedImage(BufferedImage bufferedImage) {
-
-    }
-
-    public double[] testKNNAccuracy() {
-        //test featureExtraction
-        double[] accuracies = new double[3];
-        try{
-
-//            PCA fe = new PCA(trainingSet, labels, componentsRetained, this);
-
-
-//            Display.display(FileManager.convertColMatrixToImage(fe.getMeanMatrix()));
-
-//            FileManager.convertMatricetoImage(fe.getW(), featureExtractionMode);
-
-
-            for (int metrictype = 0; metrictype < 3; metrictype++) {
-                Metric metric = getMetric(metrictype);
-                String metricName = metric.getClass().getSimpleName();
-
-                ArrayList<FrogTrainImg> projectedTrainingSet = pca.getProjectedTrainingSet();
-
-                int accurateNum = 0;
-
-                for (FrogTrainImg testImg : testingImgSet) {
-
-                    // testImg will be project in PCA
-//                    testImg.setIdMatrix(pca.project(testImg.getVectorized()));
-
-                    String result = new KNN().assignLabel(projectedTrainingSet.toArray(new FrogTrainImg[0]), testImg.getIdMatrix(), knn_k, metric);
-
-                    if (result.equals(testImg.human.name)) {
-                        accurateNum++;
-                    }
-                }
-
-
-                double accuracy = accurateNum / (double)testingSet.size();
-                System.out.println("The accuracy of " + metricName + "is "+accuracy);
-                accuracies[metrictype] = accuracy;
-            }
-
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        return accuracies;
-    }
-
-    public double testThresholdAccuracy() {
-        //test featureExtraction
-        double accuracies = Double.NaN;
-        try{
-
-//            PCA fe = new PCA(trainingSet, labels, componentsRetained, this);
-
-
-//            Display.display(FileManager.convertColMatrixToImage(fe.getMeanMatrix()));
-
-//            FileManager.convertMatricetoImage(fe.getW(), featureExtractionMode);
-
-
-            for (int metrictype = 2; metrictype < 3; metrictype++) {
-                Metric metric = getMetric(metrictype);
-                String metricName = metric.getClass().getSimpleName();
-
-                ArrayList<FrogTrainImg> projectedTrainingSet = pca.getProjectedTrainingSet();
-
-                int accurateNum = 0;
-
-                for (FrogTrainImg testImg : testingImgSet) {
-
-                    // testImg will be project in PCA
-//                    testImg.setIdMatrix(pca.project(testImg.getVectorized()));
-
-                    String result = new Identification().assignLabel(projectedTrainingSet.toArray(new FrogTrainImg[0]), testImg.getIdMatrix(), ID_THRESHOLD, metric);
-
-                    if (result.equals(testImg.human.name)) {
-                        accurateNum++;
-                    } else {
-                        System.out.println(result + " should be IDed as " + testImg.human.name);
-                    }
-                }
-
-
-                double accuracy = accurateNum / (double)testingSet.size();
-                System.out.println("The accuracy of " + metricName + "is "+accuracy);
-                accuracies = accuracy;
-            }
-
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        return accuracies;
-    }
-
-    @Deprecated
-    public static void main2(String args[]) {
-        //Test Different Methods
-        //Notice that the second parameter which is a measurement of energy percentage does not apply to LDA and LPP
-//        test(2,101,0,3,2);
-//		test(2,60,1,3,2);
-//		test(2,60,2,3,2);
-
-        int componentsRetained = 25;
-        int trainNums = 5;
-        int knn_k = 2;
-
-        //set trainSet and testSet
-        HashMap<String, ArrayList<Integer>> trainMap = new HashMap();
-        HashMap<String, ArrayList<Integer>> testMap = new HashMap();
-        for(int i = 1; i <= 10; i ++ ){
-            String label = "s"+i;
-            ArrayList<Integer> train = generateTrainNums(trainNums);
-            ArrayList<Integer> test = generateTestNums(train);
-            trainMap.put(label, train);
-            testMap.put(label, test);
-        }
-
-        //trainingSet & respective labels
-        ArrayList<Matrix> trainingSet = new ArrayList<Matrix>();
-        ArrayList<String> labels = new ArrayList<String>();
-
-        Set<String> labelSet = trainMap.keySet();
-        Iterator<String> it = labelSet.iterator();
-        while(it.hasNext()){
-            String label = it.next();
-            ArrayList<Integer> cases = trainMap.get(label);
-            for(int i = 0; i < cases.size(); i ++){
-                String filePath = "/Users/Meth/Documents/FROG/src/test/faces/"+label+"/"+cases.get(i)+".pgm";
-                Matrix temp;
-                try {
-                    temp = FileManager.convertPGMtoMatrix(filePath);
-                    trainingSet.add(vectorize(temp));
-                    labels.add(label);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        }
-
-        ArrayList<Matrix> testingSet = new ArrayList<Matrix>();
-        ArrayList<String> trueLabels = new ArrayList<String>();
-
-        labelSet = testMap.keySet();
-        it = labelSet.iterator();
-        while(it.hasNext()){
-            String label = it.next();
-            ArrayList<Integer> cases = testMap.get(label);
-            for(int i = 0; i < cases.size(); i ++){
-                String filePath = "/Users/Meth/Documents/FROG/src/test/faces/"+label+"/"+cases.get(i)+".pgm";
-                Matrix temp;
-                try {
-                    temp = FileManager.convertPGMtoMatrix(filePath);
-                    testingSet.add(vectorize(temp));
-                    trueLabels.add(label);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        }
-
-
-        //set featureExtraction
-        try{
-            PCA fe = new PCA(trainingSet, labels,componentsRetained, new TrainingEngine(10, 5, 2));
-
-
-//            Display.display(FileManager.convertColMatrixToImage(fe.getMeanMatrix()));
-
-//            FileManager.convertMatricetoImage(fe.getW(), featureExtractionMode);
-
-
-            for (int j = 0; j < 3; j++) {
-                int metricType = j;
-                String metricName = "";
-                Metric metric = null;
-                if(metricType == 0) {
-                    metric = new CosineDissimilarity();
-                    metricName = "Cosine";
-                }
-                else if (metricType == 1) {
-                    metric = new L1Distance();
-                    metricName = "L1";
-                }
-                else if (metricType == 2) {
-                    metric = new EuclideanDistance();
-                    metricName = " Euclidean";
-                }
-
-                assert metric != null : "metricType is wrong!";
-
-                ArrayList<FrogTrainImg> projectedTrainingSet = fe.getProjectedTrainingSet();
-                int accurateNum = 0;
-                for(int i = 0 ; i < testingSet.size(); i ++){
-                    Matrix testCase = fe.getW().transpose().times(testingSet.get(i).minus(fe.getMeanMatrix()));
-                    String result = new KNN().assignLabel(projectedTrainingSet.toArray(new FrogTrainImg[0]), testCase, knn_k, metric);
-
-                    if(result.equals(trueLabels.get(i)))
-                        accurateNum ++;
-                }
-                double accuracy = accurateNum / (double)testingSet.size();
-                System.out.println("The accuracy of " + metricName + "is "+accuracy);
-            }
-
-        }catch(Exception e){
-            System.out.println(e.getMessage());
-        }
-
-    }
 
     public static void main(String args[]) {
 
@@ -490,67 +164,400 @@ public class TrainingEngine {
 
     }
 
+//    @Deprecated
+//    public TrainingEngine(int componentsRetained, int trainNums, int knn_k) {
+//        this.componentsRetained = componentsRetained;
+//        this.trainNums = trainNums;
+//        this.knn_k = knn_k;
+//
+//        humanFactory = new HumanFactory(this);
+//
+//        //set trainSet and testSet
+//        trainMap = new HashMap<String, ArrayList<Integer>>();
+//        testMap = new HashMap<String, ArrayList<Integer>>();
+//
+//        for(int i = 1; i <= 10; i ++ ){
+//            String label = "s"+i;
+//
+////            Human human = new Human(label, this);
+////
+////            humanFactory.nameTable.put(label, human);
+//            humanFactory.newHuman(label);
+//
+//
+//
+//            ArrayList<Integer> train = generateTrainNums(trainNums);
+//            ArrayList<Integer> test = generateTestNums(train);
+//            trainMap.put(label, train);
+//            testMap.put(label, test);
+//        }
+//
+//        //trainingSet & respective labels
+//        trainingSet = new ArrayList<Matrix>();
+//        labels = new ArrayList<String>();
+//
+//
+//        trainingImgSet = new ArrayList<FrogTrainImg>();
+//
+//        Set<String> labelSet = trainMap.keySet();
+//        Iterator<String> it = labelSet.iterator();
+//        while(it.hasNext()){
+//            String label = it.next();
+//            ArrayList<Integer> cases = trainMap.get(label);
+//            for (int i = 0; i < cases.size(); i ++){
+//                String filePath = "/Users/Meth/Documents/FROG/src/test/faces/"+label+"/"+cases.get(i)+".pgm";
+//
+//                File file = new File(filePath);
+//
+//                Matrix temp;
+//                try {
+//                    temp = FileManager.convertPGMtoMatrix(filePath);
+//
+//                    FrogTrainImg frogTrainImg = new FrogTrainImg(file, temp, this);
+////                    humanFactory.frogImgTable.put(file, imgMatrix);
+////                    humanFactory.nameTable.get(label).addTrainImg(imgMatrix);
+//                    humanFactory.addTrainImgToHuman(frogTrainImg, label);
+//
+//
+//                    frogTrainImg.setVectorized(vectorize(temp));
+//                    trainingImgSet.add(frogTrainImg);
+//
+//                    trainingSet.add(vectorize(temp));
+//                    labels.add(label);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//
+//            }
+//        }
+//
+//        testingSet = new ArrayList<Matrix>();
+//        trueLabels = new ArrayList<String>();
+//
+//        testingImgSet = new ArrayList<FrogTrainImg>();
+//
+//        labelSet = testMap.keySet();
+//        it = labelSet.iterator();
+//        while(it.hasNext()){
+//            String label = it.next();
+//            ArrayList<Integer> cases = testMap.get(label);
+//            for(int i = 0; i < cases.size(); i ++){
+//                String filePath = "/Users/Meth/Documents/FROG/src/test/faces/"+label+"/"+cases.get(i)+".pgm";
+//                File file = new File(filePath);
+//                Matrix temp;
+//                try {
+//                    temp = FileManager.convertPGMtoMatrix(filePath);
+//
+//                    FrogTrainImg frogTrainImg = new FrogTrainImg(file, temp, this);
+////                    humanFactory.frogImgTable.put(file, imgMatrix);
+////                    humanFactory.nameTable.get(label).addImg(imgMatrix);
+//                    humanFactory.addImgToHuman(frogTrainImg, label);
+//                    frogTrainImg.setVectorized(vectorize(temp));
+//                    testingImgSet.add(frogTrainImg);
+//
+//                    testingSet.add(vectorize(temp));
+//                    trueLabels.add(label);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+//
+//        try {
+//            pca = new PCA(trainingImgSet, componentsRetained, this);
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
 
-    public static void findIsFaceThreshold() {
+//    public void addBufferedImage(BufferedImage bufferedImage) {
+//
+//    }
+//
+//    public double[] testKNNAccuracy() {
+//        //test featureExtraction
+//        double[] accuracies = new double[3];
+//        try{
+//
+////            PCA fe = new PCA(trainingSet, labels, componentsRetained, this);
+//
+//
+////            Display.display(FileManager.convertColMatrixToImage(fe.getMeanMatrix()));
+//
+////            FileManager.convertMatricetoImage(fe.getW(), featureExtractionMode);
+//
+//
+//            for (int metrictype = 0; metrictype < 3; metrictype++) {
+//                Metric metric = getMetric(metrictype);
+//                String metricName = metric.getClass().getSimpleName();
+//
+//                ArrayList<FrogTrainImg> projectedTrainingSet = pca.getProjectedTrainingSet();
+//
+//                int accurateNum = 0;
+//
+//                for (FrogTrainImg testImg : testingImgSet) {
+//
+//                    // testImg will be project in PCA
+////                    testImg.setIdMatrix(pca.project(testImg.getVectorized()));
+//
+//                    String result = new KNN().assignLabel(projectedTrainingSet.toArray(new FrogTrainImg[0]), testImg.getIdMatrix(), knn_k, metric);
+//
+//                    if (result.equals(testImg.human.name)) {
+//                        accurateNum++;
+//                    }
+//                }
+//
+//
+//                double accuracy = accurateNum / (double)testingSet.size();
+//                System.out.println("The accuracy of " + metricName + "is "+accuracy);
+//                accuracies[metrictype] = accuracy;
+//            }
+//
+//        }catch(Exception e){
+//            e.printStackTrace();
+//        }
+//        return accuracies;
+//    }
+//
+//    public double testThresholdAccuracy() {
+//        //test featureExtraction
+//        double accuracies = Double.NaN;
+//        try{
+//
+////            PCA fe = new PCA(trainingSet, labels, componentsRetained, this);
+//
+//
+////            Display.display(FileManager.convertColMatrixToImage(fe.getMeanMatrix()));
+//
+////            FileManager.convertMatricetoImage(fe.getW(), featureExtractionMode);
+//
+//
+//            for (int metrictype = 2; metrictype < 3; metrictype++) {
+//                Metric metric = getMetric(metrictype);
+//                String metricName = metric.getClass().getSimpleName();
+//
+//                ArrayList<FrogTrainImg> projectedTrainingSet = pca.getProjectedTrainingSet();
+//
+//                int accurateNum = 0;
+//
+//                for (FrogTrainImg testImg : testingImgSet) {
+//
+//                    // testImg will be project in PCA
+////                    testImg.setIdMatrix(pca.project(testImg.getVectorized()));
+//
+//                    String result = new Identification().assignLabel(projectedTrainingSet.toArray(new FrogTrainImg[0]), testImg.getIdMatrix(), ID_THRESHOLD, metric);
+//
+//                    if (result.equals(testImg.human.name)) {
+//                        accurateNum++;
+//                    } else {
+//                        System.out.println(result + " should be IDed as " + testImg.human.name);
+//                    }
+//                }
+//
+//
+//                double accuracy = accurateNum / (double)testingSet.size();
+//                System.out.println("The accuracy of " + metricName + "is "+accuracy);
+//                accuracies = accuracy;
+//            }
+//
+//        }catch(Exception e){
+//            e.printStackTrace();
+//        }
+//        return accuracies;
+//    }
+//
+//    @Deprecated
+//    public static void main2(String args[]) {
+//        //Test Different Methods
+//        //Notice that the second parameter which is a measurement of energy percentage does not apply to LDA and LPP
+////        test(2,101,0,3,2);
+////		test(2,60,1,3,2);
+////		test(2,60,2,3,2);
+//
+//        int componentsRetained = 25;
+//        int trainNums = 5;
+//        int knn_k = 2;
+//
+//        //set trainSet and testSet
+//        HashMap<String, ArrayList<Integer>> trainMap = new HashMap();
+//        HashMap<String, ArrayList<Integer>> testMap = new HashMap();
+//        for(int i = 1; i <= 10; i ++ ){
+//            String label = "s"+i;
+//            ArrayList<Integer> train = generateTrainNums(trainNums);
+//            ArrayList<Integer> test = generateTestNums(train);
+//            trainMap.put(label, train);
+//            testMap.put(label, test);
+//        }
+//
+//        //trainingSet & respective labels
+//        ArrayList<Matrix> trainingSet = new ArrayList<Matrix>();
+//        ArrayList<String> labels = new ArrayList<String>();
+//
+//        Set<String> labelSet = trainMap.keySet();
+//        Iterator<String> it = labelSet.iterator();
+//        while(it.hasNext()){
+//            String label = it.next();
+//            ArrayList<Integer> cases = trainMap.get(label);
+//            for(int i = 0; i < cases.size(); i ++){
+//                String filePath = "/Users/Meth/Documents/FROG/src/test/faces/"+label+"/"+cases.get(i)+".pgm";
+//                Matrix temp;
+//                try {
+//                    temp = FileManager.convertPGMtoMatrix(filePath);
+//                    trainingSet.add(vectorize(temp));
+//                    labels.add(label);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//
+//            }
+//        }
+//
+//        ArrayList<Matrix> testingSet = new ArrayList<Matrix>();
+//        ArrayList<String> trueLabels = new ArrayList<String>();
+//
+//        labelSet = testMap.keySet();
+//        it = labelSet.iterator();
+//        while(it.hasNext()){
+//            String label = it.next();
+//            ArrayList<Integer> cases = testMap.get(label);
+//            for(int i = 0; i < cases.size(); i ++){
+//                String filePath = "/Users/Meth/Documents/FROG/src/test/faces/"+label+"/"+cases.get(i)+".pgm";
+//                Matrix temp;
+//                try {
+//                    temp = FileManager.convertPGMtoMatrix(filePath);
+//                    testingSet.add(vectorize(temp));
+//                    trueLabels.add(label);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//
+//            }
+//        }
+//
+//
+//        //set featureExtraction
+//        try{
+//            PCA fe = new PCA(trainingSet, labels,componentsRetained, new TrainingEngine(10, 5, 2));
+//
+//
+////            Display.display(FileManager.convertColMatrixToImage(fe.getMeanMatrix()));
+//
+////            FileManager.convertMatricetoImage(fe.getW(), featureExtractionMode);
+//
+//
+//            for (int j = 0; j < 3; j++) {
+//                int metricType = j;
+//                String metricName = "";
+//                Metric metric = null;
+//                if(metricType == 0) {
+//                    metric = new CosineDissimilarity();
+//                    metricName = "Cosine";
+//                }
+//                else if (metricType == 1) {
+//                    metric = new L1Distance();
+//                    metricName = "L1";
+//                }
+//                else if (metricType == 2) {
+//                    metric = new EuclideanDistance();
+//                    metricName = " Euclidean";
+//                }
+//
+//                assert metric != null : "metricType is wrong!";
+//
+//                ArrayList<FrogTrainImg> projectedTrainingSet = fe.getProjectedTrainingSet();
+//                int accurateNum = 0;
+//                for(int i = 0 ; i < testingSet.size(); i ++){
+//                    Matrix testCase = fe.getW().transpose().times(testingSet.get(i).minus(fe.getMeanMatrix()));
+//                    String result = new KNN().assignLabel(projectedTrainingSet.toArray(new FrogTrainImg[0]), testCase, knn_k, metric);
+//
+//                    if(result.equals(trueLabels.get(i)))
+//                        accurateNum ++;
+//                }
+//                double accuracy = accurateNum / (double)testingSet.size();
+//                System.out.println("The accuracy of " + metricName + "is "+accuracy);
+//            }
+//
+//        }catch(Exception e){
+//            System.out.println(e.getMessage());
+//        }
+//
+//    }
 
+//    public static void findIsFaceThreshold() {
+//
+//
+//        Writer writer = new Writer("isFaceTHreshold.csv");
+//        writer.write("imgName, distance between face and reconstructed\n");
+//
+//        for (int i = 0; i < 6; i++) {
+//            TrainingEngine engine = new TrainingEngine();
+//
+//            for (Img img : engine.humanFactory.frogImgTable.values()) {
+//                writer.write(img.getHuman().name + " " + img.getFile().getName() + ",");
+//                Matrix reconstr = engine.pca.reconstMatrix(img.getIdMatrix());
+//                Metric metric = getMetric(2);
+//                double distance = metric.getDistance(vectorize(reconstr), img.getVectorized());
+//                writer.write(distance);
+//                writer.newLine();
+//            }
+//        }
+//
+//        writer.close();
+//    }
 
-        Writer writer = new Writer("isFaceTHreshold.csv");
-        writer.write("imgName, distance between face and reconstructed\n");
-
-        for (int i = 0; i < 6; i++) {
-            TrainingEngine engine = new TrainingEngine();
-
-            for (FrogTrainImg frogTrainImg : engine.humanFactory.frogImgTable.values()) {
-                writer.write(frogTrainImg.getHuman().name + " " + frogTrainImg.file.getName() + ",");
-                Matrix reconstr = engine.pca.reconstMatrix(frogTrainImg.getIdMatrix());
-                Metric metric = getMetric(2);
-                double distance = metric.getDistance(vectorize(reconstr), frogTrainImg.getVectorized());
-                writer.write(distance);
-                writer.newLine();
-            }
+    public static Metric getMetric(int i) {
+        switch (i) {
+            case METRIC_COSINE:
+                return new CosineDissimilarity();
+            case METRIC_L1D:
+                return new L1Distance();
+            case METRIC_EUCILDEAN:
+                return new EuclideanDistance();
+            default:
+                throw new IllegalArgumentException("Please use a valid Metric");
         }
-
-        writer.close();
     }
 
 
-    public static void findnWriteThreshold() {
+//    public static void findnWriteThreshold() {
+//
+//        Metric metric = getMetric(METRIC_EUCILDEAN);
+//
+//        Writer writer = new Writer("Threshold.csv");
+//
+//        writer.write("Name, Max_Distance\n");
+//
+//        for (int i = 1; i < 16; i++) {
+//
+//
+//            System.out.println(i);
+//            TrainingEngine trainingEngine1 = new TrainingEngine(COMPONENT_NUMBER, 5, 2);
+//
+//            for (Human p : trainingEngine1.humanFactory.nameTable.values()) {
+//                writer.write(p.name + ",");
+//                double sum = 0;
+//                for (FrogTrainImg frogTrainImg : p.frogImgs) {
+//                    sum += metric.getDistance(p.getIdMatrix(), frogTrainImg.getIdMatrix());
+//                }
+//                writer.write(sum / p.fileNums);
+//                writer.newLine();
+//            }
+//        }
+//        writer.close();
+//
+//    }
 
-        Metric metric = getMetric(METRIC_EUCILDEAN);
 
-        Writer writer = new Writer("Threshold.csv");
-
-        writer.write("Name, Max_Distance\n");
-
-        for (int i = 1; i < 16; i++) {
-
-
-            System.out.println(i);
-            TrainingEngine trainingEngine1 = new TrainingEngine(COMPONENT_NUMBER, 5, 2);
-
-            for (Human p : trainingEngine1.humanFactory.nameTable.values()) {
-                writer.write(p.name + ",");
-                double sum = 0;
-                for (FrogTrainImg frogTrainImg : p.imgMatrices) {
-                    sum += metric.getDistance(p.getIdMatrix(), frogTrainImg.getIdMatrix());
-                }
-                writer.write(sum / p.fileNums);
-                writer.newLine();
-            }
-        }
-        writer.close();
-
-    }
-
-
-    @Deprecated
-    public void addImgMatrixtoPp(String peopleName, FrogTrainImg frogTrainImg, boolean isTraingImg) {
-        if (!humanFactory.nameTable.containsKey(peopleName)) {
-            throw new IllegalArgumentException("PeopleTable does not contain this people, Please create people first");
-        } else {
-            humanFactory.nameTable.get(peopleName).addTrainImg(frogTrainImg);
-        }
-    }
+//    @Deprecated
+//    public void addImgMatrixtoPp(String peopleName, FrogTrainImg frogTrainImg, boolean isTraingImg) {
+//        if (!humanFactory.nameTable.containsKey(peopleName)) {
+//            throw new IllegalArgumentException("PeopleTable does not contain this people, Please create people first");
+//        } else {
+//            humanFactory.nameTable.get(peopleName).addTrainImg(frogTrainImg);
+//        }
+//    }
 
     /*metricType:
      * 	0: CosineDissimilarity
@@ -573,178 +580,165 @@ public class TrainingEngine {
      * knn_k: number of K for KNN algorithm
      *
      * */
-    @Deprecated
-    static double test(int metricType, int componentsRetained, int featureExtractionMode, int trainNums, int knn_k){
-        //determine which metric is used
-        //metric
-/*        Metric metric = null;
-        if(metricType == 0)
-            metric = new CosineDissimilarity();
-        else if (metricType == 1)
-            metric = new L1Distance();
-        else if (metricType == 2)
-            metric = new EuclideanDistance();
-
-        assert metric != null : "metricType is wrong!";*/
-
-        //set expectedComponents according to energyPercentage
-        //componentsRetained
-//		int trainingSize = trainNums * 40;
-//		int componentsRetained = 0;
-//		if(featureExtractionMode == 0)
-//			componentsRetained = (int) (trainingSize * energyPercentage);
-//		else if(featureExtractionMode == 1)
-//			componentsRetained = (int) ((40 -1) * energyPercentage);
-//		else if(featureExtractionMode == 2)
-//			componentsRetained = (int) ((40 -1) * energyPercentage);
-
-        //set trainSet and testSet
-        HashMap<String, ArrayList<Integer>> trainMap = new HashMap();
-        HashMap<String, ArrayList<Integer>> testMap = new HashMap();
-        for(int i = 1; i <= 40; i ++ ){
-            String label = "s"+i;
-            ArrayList<Integer> train = generateTrainNums(trainNums);
-            ArrayList<Integer> test = generateTestNums(train);
-            trainMap.put(label, train);
-            testMap.put(label, test);
-        }
-
-        //trainingSet & respective labels
-        ArrayList<Matrix> trainingSet = new ArrayList<Matrix>();
-        ArrayList<String> labels = new ArrayList<String>();
-
-        Set<String> labelSet = trainMap.keySet();
-        Iterator<String> it = labelSet.iterator();
-        while(it.hasNext()){
-            String label = it.next();
-            ArrayList<Integer> cases = trainMap.get(label);
-            for(int i = 0; i < cases.size(); i ++){
-                String filePath = "faces/"+label+"/"+cases.get(i)+".pgm";
-                Matrix temp;
-                try {
-                    temp = FileManager.convertPGMtoMatrix(filePath);
-                    trainingSet.add(vectorize(temp));
-                    labels.add(label);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        }
-
-        //testingSet & respective true labels
-        ArrayList<Matrix> testingSet = new ArrayList<Matrix>();
-        ArrayList<String> trueLabels = new ArrayList<String>();
-
-        labelSet = testMap.keySet();
-        it = labelSet.iterator();
-        while(it.hasNext()){
-            String label = it.next();
-            ArrayList<Integer> cases = testMap.get(label);
-            for(int i = 0; i < cases.size(); i ++){
-                String filePath = "faces/"+label+"/"+cases.get(i)+".pgm";
-                Matrix temp;
-                try {
-                    temp = FileManager.convertPGMtoMatrix(filePath);
-                    testingSet.add(vectorize(temp));
-                    trueLabels.add(label);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        }
-
-        //set featureExtraction
-        try{
-//            TrainingFaces fe = new TrainingFaces(trainingSet, labels,componentsRetained);
-
-//            FileManager_SM.convertMatricetoImage(fe.getOutput(), featureExtractionMode);
-
-            //PCA Reconstruction
+//    @Deprecated
+//    static double test(int metricType, int componentsRetained, int featureExtractionMode, int trainNums, int knn_k){
+//        //determine which metric is used
+//        //metric
+///*        Metric metric = null;
+//        if(metricType == 0)
+//            metric = new CosineDissimilarity();
+//        else if (metricType == 1)
+//            metric = new L1Distance();
+//        else if (metricType == 2)
+//            metric = new EuclideanDistance();
 //
-//			Matrix hhMatrix = ((PCA) fe).reconstruct(50, 60);
-//			FileManager.convertToImage(hhMatrix, 60);
+//        assert metric != null : "metricType is wrong!";*/
 //
-//			hhMatrix = ((PCA) fe).reconstruct(50, 40);
-//			FileManager.convertToImage(hhMatrix, 40);
+//        //set expectedComponents according to energyPercentage
+//        //componentsRetained
+////		int trainingSize = trainNums * 40;
+////		int componentsRetained = 0;
+////		if(featureExtractionMode == 0)
+////			componentsRetained = (int) (trainingSize * energyPercentage);
+////		else if(featureExtractionMode == 1)
+////			componentsRetained = (int) ((40 -1) * energyPercentage);
+////		else if(featureExtractionMode == 2)
+////			componentsRetained = (int) ((40 -1) * energyPercentage);
 //
-//			hhMatrix = ((PCA) fe).reconstruct(50, 20);
-//			FileManager.convertToImage(hhMatrix, 20);
+//        //set trainSet and testSet
+//        HashMap<String, ArrayList<Integer>> trainMap = new HashMap();
+//        HashMap<String, ArrayList<Integer>> testMap = new HashMap();
+//        for(int i = 1; i <= 40; i ++ ){
+//            String label = "s"+i;
+//            ArrayList<Integer> train = generateTrainNums(trainNums);
+//            ArrayList<Integer> test = generateTestNums(train);
+//            trainMap.put(label, train);
+//            testMap.put(label, test);
+//        }
 //
-//			hhMatrix = ((PCA) fe).reconstruct(50, 10);
-//			FileManager.convertToImage(hhMatrix, 10);
+//        //trainingSet & respective labels
+//        ArrayList<Matrix> trainingSet = new ArrayList<Matrix>();
+//        ArrayList<String> labels = new ArrayList<String>();
 //
-//			hhMatrix = ((PCA) fe).reconstruct(50, 6);
-//			FileManager.convertToImage(hhMatrix, 6);
+//        Set<String> labelSet = trainMap.keySet();
+//        Iterator<String> it = labelSet.iterator();
+//        while(it.hasNext()){
+//            String label = it.next();
+//            ArrayList<Integer> cases = trainMap.get(label);
+//            for(int i = 0; i < cases.size(); i ++){
+//                String filePath = "faces/"+label+"/"+cases.get(i)+".pgm";
+//                Matrix temp;
+//                try {
+//                    temp = FileManager.convertPGMtoMatrix(filePath);
+//                    trainingSet.add(vectorize(temp));
+//                    labels.add(label);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
 //
-//			hhMatrix = ((PCA) fe).reconstruct(50, 2);
-//			FileManager.convertToImage(hhMatrix, 2);
-//
-//			hhMatrix = ((PCA)fe).getTrainingSet().get(50);
-
-
-
-
-            //use test cases to validate
-            //testingSet   trueLables
-//            ArrayList<projectedFaceMatrix> projectedTrainingSet = fe.getProjectedTrainingSet();
-//            int accurateNum = 0;
-//            for(int i = 0 ; i < testingSet.size(); i ++){
-//                Matrix testCase = fe.getW().transpose().times(testingSet.get(i).minus(fe.getMeanMatrix()));
-//                String result = KNN.assignLabel(projectedTrainingSet.toArray(new projectedTrainingMatrix[0]), testCase, knn_k, metric);
-//
-//                if(result == trueLabels.get(i))
-//                    accurateNum ++;
 //            }
-//            double accuracy = accurateNum / (double)testingSet.size();
-//            System.out.println("The accuracy is "+accuracy);
-//            return accuracy;
+//        }
+//
+//        //testingSet & respective true labels
+//        ArrayList<Matrix> testingSet = new ArrayList<Matrix>();
+//        ArrayList<String> trueLabels = new ArrayList<String>();
+//
+//        labelSet = testMap.keySet();
+//        it = labelSet.iterator();
+//        while(it.hasNext()){
+//            String label = it.next();
+//            ArrayList<Integer> cases = testMap.get(label);
+//            for(int i = 0; i < cases.size(); i ++){
+//                String filePath = "faces/"+label+"/"+cases.get(i)+".pgm";
+//                Matrix temp;
+//                try {
+//                    temp = FileManager.convertPGMtoMatrix(filePath);
+//                    testingSet.add(vectorize(temp));
+//                    trueLabels.add(label);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//
+//            }
+//        }
+//
+//        //set featureExtraction
+//        try{
+////            TrainingFaces fe = new TrainingFaces(trainingSet, labels,componentsRetained);
+//
+////            FileManager_SM.convertMatricetoImage(fe.getOutput(), featureExtractionMode);
+//
+//            //PCA Reconstruction
+////
+////			Matrix hhMatrix = ((PCA) fe).reconstruct(50, 60);
+////			FileManager.convertToImage(hhMatrix, 60);
+////
+////			hhMatrix = ((PCA) fe).reconstruct(50, 40);
+////			FileManager.convertToImage(hhMatrix, 40);
+////
+////			hhMatrix = ((PCA) fe).reconstruct(50, 20);
+////			FileManager.convertToImage(hhMatrix, 20);
+////
+////			hhMatrix = ((PCA) fe).reconstruct(50, 10);
+////			FileManager.convertToImage(hhMatrix, 10);
+////
+////			hhMatrix = ((PCA) fe).reconstruct(50, 6);
+////			FileManager.convertToImage(hhMatrix, 6);
+////
+////			hhMatrix = ((PCA) fe).reconstruct(50, 2);
+////			FileManager.convertToImage(hhMatrix, 2);
+////
+////			hhMatrix = ((PCA)fe).getTrainingSet().get(50);
+//
+//
+//
+//
+//            //use test cases to validate
+//            //testingSet   trueLables
+////            ArrayList<projectedFaceMatrix> projectedTrainingSet = fe.getProjectedTrainingSet();
+////            int accurateNum = 0;
+////            for(int i = 0 ; i < testingSet.size(); i ++){
+////                Matrix testCase = fe.getW().transpose().times(testingSet.get(i).minus(fe.getMeanMatrix()));
+////                String result = KNN.assignLabel(projectedTrainingSet.toArray(new projectedTrainingMatrix[0]), testCase, knn_k, metric);
+////
+////                if(result == trueLabels.get(i))
+////                    accurateNum ++;
+////            }
+////            double accuracy = accurateNum / (double)testingSet.size();
+////            System.out.println("The accuracy is "+accuracy);
+////            return accuracy;
+//
+//        }catch(Exception e){
+//            System.out.println(e.getMessage());
+//        }
+//
+//        return -1;
+//    }
 
-        }catch(Exception e){
-            System.out.println(e.getMessage());
-        }
-
-        return -1;
-    }
-
-    public static Metric getMetric(int i) {
-        switch (i) {
-            case METRIC_COSINE:
-                return new CosineDissimilarity();
-            case METRIC_L1D:
-                return new L1Distance();
-            case METRIC_EUCILDEAN:
-                return new EuclideanDistance();
-            default:
-                throw new IllegalArgumentException("Please use a valid Metric");
-        }
-    }
-
-    static ArrayList<Integer> generateTrainNums(int trainNum){
-        Random random = new Random();
-        ArrayList<Integer> result = new ArrayList<Integer>();
-
-        while(result.size() < trainNum){
-			int temp = random.nextInt(10)+1;
-			while(result.contains(temp)){
-				temp = random.nextInt(10)+1;
-			}
-            result.add(temp);
-
-        }
-
-        return result;
-    }
-
-    static ArrayList<Integer> generateTestNums(ArrayList<Integer> trainSet){
-        ArrayList<Integer> result = new ArrayList<Integer>();
-        for(int i= 1; i <= 10; i ++){
-            if(!trainSet.contains(i))
-                result.add(i);
-        }
-        return result;
-    }
+//    static ArrayList<Integer> generateTrainNums(int trainNum){
+//        Random random = new Random();
+//        ArrayList<Integer> result = new ArrayList<Integer>();
+//
+//        while(result.size() < trainNum){
+//			int temp = random.nextInt(10)+1;
+//			while(result.contains(temp)){
+//				temp = random.nextInt(10)+1;
+//			}
+//            result.add(temp);
+//
+//        }
+//
+//        return result;
+//    }
+//
+//    static ArrayList<Integer> generateTestNums(ArrayList<Integer> trainSet){
+//        ArrayList<Integer> result = new ArrayList<Integer>();
+//        for(int i= 1; i <= 10; i ++){
+//            if(!trainSet.contains(i))
+//                result.add(i);
+//        }
+//        return result;
+//    }
 
     //correct
     //Convert a m by n matrix into a m*n by 1 matrix
