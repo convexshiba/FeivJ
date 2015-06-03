@@ -4,6 +4,8 @@ import com.drew.imaging.ImageMetadataReader;
 import com.drew.metadata.Metadata;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.image.Image;
 import muffinc.frog.test.Jama.Matrix;
 import muffinc.frog.test.detection.FaceDetection;
 import muffinc.frog.test.eigenface.PCA;
@@ -41,6 +43,8 @@ import static org.bytedeco.javacpp.opencv_imgproc.*;
 public class FrogImg {
 
     public IplImage originalIplImage;
+    public IplImage currentIplImage;
+    public Image currentImage;
 
 //    private Human human;
     private File file;
@@ -69,6 +73,9 @@ public class FrogImg {
     public FrogImg(File file) {
         this.file = file;
         originalIplImage = cvLoadImage(file.getAbsolutePath());
+        currentIplImage = originalIplImage.clone();
+        currentImage = SwingFXUtils.toFXImage(currentIplImage.getBufferedImage(), null);
+
         isScaned = false;
 
         try {
@@ -95,6 +102,20 @@ public class FrogImg {
             temp.add(cvRect);
             humanToRects.put(human, temp);
         }
+    }
+
+    private void updateCurrentIplImage() {
+
+        CvFont font = new CvFont();
+        cvInitFont(font, CV_FONT_HERSHEY_SIMPLEX, 1, 1, 0, 2, CV_AA);
+
+        for (int i = 0; i < cvRects.size(); i++) {
+            CvRect cvRect = cvRects.get(i);
+            cvPutText(currentIplImage, String.valueOf(i + 1), cvPoint(cvRect.x() + cvRect.width() - 20, cvRect.y() + cvRect.height() - 10), font, CvScalar.MAGENTA);
+            cvRectangle(currentIplImage, cvPoint(cvRect.x(), cvRect.y()),
+                    cvPoint(cvRect.x() + cvRect.width(), cvRect.y() + cvRect.height()), CvScalar.YELLOW, 1, CV_AA, 0);
+        }
+        currentImage = SwingFXUtils.toFXImage(currentIplImage.getBufferedImage(), null);
     }
 
     public Matrix getVectorized() {
@@ -193,6 +214,11 @@ public class FrogImg {
             detectedFaces.setValue(cvRects.size());
             System.out.println("detectFace() found " + cvRects.size() + " faces");
         }
+        updateCurrentIplImage();
+    }
+
+    public Image getCurrentImage() {
+        return currentImage;
     }
 
     public void removeCvRect(int index) {
@@ -201,6 +227,7 @@ public class FrogImg {
         } else {
             System.out.println("Does not contain CvRect");
         }
+        updateCurrentIplImage();
     }
 
     public double getDistance() {

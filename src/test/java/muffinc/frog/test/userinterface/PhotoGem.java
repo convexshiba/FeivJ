@@ -31,7 +31,7 @@ import java.io.Serializable;
  */
 public class PhotoGem implements Serializable{
     private IntegerProperty photoCount;
-    private Image img;
+//    private Image img;
     private StringProperty fileName;
     private FrogImg frogImg;
 
@@ -41,10 +41,11 @@ public class PhotoGem implements Serializable{
 
         photoCount = frogImg.detectedFaces;
 
-        img = SwingFXUtils.toFXImage(frogImg.originalIplImage.getBufferedImage(), null);
+//        img = SwingFXUtils.toFXImage(frogImg.currentIplImage.getBufferedImage(), null);
 
         fileName = new SimpleStringProperty(frogImg.getFile().getName());
     }
+
 
     public FrogImg getFrogImg() {
         return frogImg;
@@ -70,11 +71,11 @@ public class PhotoGem implements Serializable{
         this.photoCount.set(photoCount);
     }
 
-    public Image getImg() {
-        return img;
-    }
-
-    public void setImg(Image img) {
-        this.img = img;
-    }
+//    public Image getImg() {
+//        return img;
+//    }
+//
+//    public void setImg(Image img) {
+//        this.img = img;
+//    }
 }
