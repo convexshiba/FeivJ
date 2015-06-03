@@ -2,6 +2,7 @@ package muffinc.frog.test.object;
 
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.metadata.Metadata;
+import javafx.beans.Observable;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.embed.swing.SwingFXUtils;
@@ -57,6 +58,7 @@ public class FrogImg {
 
     private boolean isScaned;
     public IntegerProperty detectedFaces = new SimpleIntegerProperty(-1);
+
     private LinkedList<CvRect> cvRects = null;
     public HashMap<CvRect, Human> rectToHuman;
     public HashMap<Human, LinkedList<CvRect>> humanToRects;
@@ -193,7 +195,8 @@ public class FrogImg {
     }
 
     public boolean isDetected() {
-        return detectedFaces.toString().equals("-1");
+        System.out.println(detectedFaces.getValue());
+        return detectedFaces.getValue() != -1;
     }
 
     public boolean hasFace() {

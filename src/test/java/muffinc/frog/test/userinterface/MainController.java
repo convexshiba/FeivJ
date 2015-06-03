@@ -2,6 +2,8 @@ package muffinc.frog.test.userinterface;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -40,6 +42,7 @@ public class MainController implements Initializable{
     @FXML
     private TableColumn<PhotoGem, Integer> countColumn;
 
+    //TODO center and auto resize ImageView
     @FXML
     private ImageView photoImageView;
 
@@ -56,6 +59,9 @@ public class MainController implements Initializable{
 
     @FXML
     private Button scanNDetectButton;
+
+    @FXML
+    private ComboBox<String> facesCombo;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -89,21 +95,6 @@ public class MainController implements Initializable{
         addPhotoPreviewListener();
 
         countColumn.setCellValueFactory(cellData -> cellData.getValue().photoCountProperty().asObject());
-//        photoColumn.setCellFactory(new Callback<TableColumn<PhotoGem, Image>, TableCell<PhotoGem, Image>>() {
-//            @Override
-//            public TableCell<PhotoGem, Image> call(TableColumn<PhotoGem, Image> param) {
-//                TableCell<PhotoGem, Image> cell = new TableCell<PhotoGem, Image>() {
-//                    @Override
-//                    protected void updateItem(Image item, boolean empty) {
-//                        if (item != null) {
-//                            ImageView imageView = new ImageView();
-//                            imageView.setImage(p);
-//                        }
-//                    }
-//                };
-//                return cell;
-//            }
-//        });
 
         photoNameColumn.setCellValueFactory(cellData -> cellData.getValue().fileNameProperty());
 
@@ -122,8 +113,27 @@ public class MainController implements Initializable{
 //        photoImageView.fitWidthProperty().bind(photoImageViewParent.widthProperty());
         photoTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (photoTable.getSelectionModel().getSelectedItem() != null) {
+
                 PhotoGem selected = photoTable.getSelectionModel().getSelectedItem();
                 photoImageView.setImage(selected.getFrogImg().getCurrentImage());
+
+                ObservableList<String> faces = FXCollections.observableArrayList();
+
+                if (selected.getFrogImg().isDetected()) {
+                    if (selected.getFrogImg().faceNumber() > 1) {
+                        for (int i = 0; i < selected.getFrogImg().faceNumber();) {
+                            faces.add("Face " + ++i);
+                        }
+                        facesCombo.setValue("Please Select Face:");
+                    } else  {
+                        facesCombo.setValue("Face Not Found");
+                    }
+                } else {
+                    facesCombo.setValue("Please Scan This Photo First!");
+
+                }
+                facesCombo.setItems(faces);
+
             }
         });
     }

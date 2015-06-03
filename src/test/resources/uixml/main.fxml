@@ -104,7 +104,19 @@
                                     <content>
                                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                              <children>
-                                                <ListView prefHeight="119.0" prefWidth="200.0" />
+                                                <VBox prefHeight="278.0" prefWidth="396.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                   <children>
+                                                      <ComboBox fx:id="facesCombo" promptText="Please Scan This Photo First!" VBox.vgrow="ALWAYS">
+                                                         <VBox.margin>
+                                                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                         </VBox.margin>
+                                                         <padding>
+                                                            <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                                                         </padding>
+                                                      </ComboBox>
+                                                      <ImageView pickOnBounds="true" preserveRatio="true" />
+                                                   </children>
+                                                </VBox>
                                              </children>
                                           </AnchorPane>
                                     </content>
