@@ -58,9 +58,9 @@ public class FrogImg {
     public IntegerProperty detectedFaces = new SimpleIntegerProperty(-1);
 
     private LinkedList<CvRect> cvRects = null;
-    public HashMap<CvRect, Human> rectToHuman;
-    public HashMap<Human, LinkedList<CvRect>> humanToRects;
-    public HashMap<CvRect, Matrix> idMatrices = null;
+    public HashMap<CvRect, Human> rectToHuman = new HashMap<>();
+    public HashMap<Human, LinkedList<CvRect>> humanToRects = new HashMap<>();
+    public HashMap<CvRect, Matrix> idMatrices = new HashMap<>();
 
     private Metadata metadata = null;
 

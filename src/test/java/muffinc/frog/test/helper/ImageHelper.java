@@ -58,9 +58,13 @@ public class ImageHelper {
     }
 
     public static IplImage toGrey(IplImage img) {
-        IplImage greyImg = IplImage.create(img.width(), img.height(), IPL_DEPTH_8U, 1);
-        cvCvtColor(img, greyImg, CV_BGR2GRAY);
-        return greyImg;
+        if (img.nChannels() != 1) {
+            IplImage greyImg = IplImage.create(img.width(), img.height(), IPL_DEPTH_8U, 1);
+            cvCvtColor(img, greyImg, CV_BGR2GRAY);
+            return greyImg;
+        } else {
+            return img;
+        }
     }
 
     public static IplImage resize(IplImage img) {
@@ -83,5 +87,18 @@ public class ImageHelper {
             }
         }
         return new Matrix(array);
+    }
+
+    public static Matrix vectorize(Matrix input){
+        int m = input.getRowDimension();
+        int n = input.getColumnDimension();
+
+        Matrix result = new Matrix(m*n,1);
+        for(int p = 0; p < n; p ++){
+            for(int q = 0; q < m; q ++){
+                result.set(p*m+q, 0, input.get(q, p));
+            }
+        }
+        return result;
     }
 }

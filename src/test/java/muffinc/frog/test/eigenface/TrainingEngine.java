@@ -5,13 +5,11 @@ import muffinc.frog.test.common.Metric;
 import muffinc.frog.test.eigenface.metric.CosineDissimilarity;
 import muffinc.frog.test.eigenface.metric.EuclideanDistance;
 import muffinc.frog.test.eigenface.metric.L1Distance;
-import muffinc.frog.test.helper.Writer;
+import muffinc.frog.test.helper.ImageHelper;
 import muffinc.frog.test.object.FrogImg;
 import muffinc.frog.test.object.FrogTrainImg;
-import muffinc.frog.test.object.Human;
-import muffinc.frog.test.object.Img;
+import org.bytedeco.javacpp.opencv_core;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -79,7 +77,7 @@ public class TrainingEngine {
 
                     FrogTrainImg frogTrainImg = new FrogTrainImg(file, temp, this);
 
-                    frogTrainImg.setVectorized(vectorize(temp));
+                    frogTrainImg.setVectorized(ImageHelper.vectorize(temp));
                     trainingImgSet.add(frogTrainImg);
 
                     if(trainingImgSet.size() == 200) {
@@ -111,6 +109,37 @@ public class TrainingEngine {
         }
     }
 
+
+    public static Metric getMetric(int i) {
+        switch (i) {
+            case METRIC_COSINE:
+                return new CosineDissimilarity();
+            case METRIC_L1D:
+                return new L1Distance();
+            case METRIC_EUCILDEAN:
+                return new EuclideanDistance();
+            default:
+                throw new IllegalArgumentException("Please use a valid Metric");
+        }
+    }
+
+    public void identify(FrogImg frogImg) {
+        if (!humanFactory.frogImgTable.containsValue(frogImg)) {
+            System.out.println("Error" + frogImg.getFile().getPath() + " is not in the library");
+        } else {
+            for (opencv_core.CvRect cvRect : frogImg.getCvRects()) {
+                identify(frogImg, cvRect);
+            }
+        }
+    }
+
+    public void identify(FrogImg frogImg, opencv_core.CvRect cvRect) {
+        Matrix rectID = pca.project(FileManager.getColMatrix(frogImg, cvRect));
+//        System.out.println("This Rect's Id is :");
+//        rectID.print(2, 2);
+
+        frogImg.idMatrices.put(cvRect, rectID);
+    }
 
     public static void main(String args[]) {
 
@@ -507,19 +536,6 @@ public class TrainingEngine {
 //        writer.close();
 //    }
 
-    public static Metric getMetric(int i) {
-        switch (i) {
-            case METRIC_COSINE:
-                return new CosineDissimilarity();
-            case METRIC_L1D:
-                return new L1Distance();
-            case METRIC_EUCILDEAN:
-                return new EuclideanDistance();
-            default:
-                throw new IllegalArgumentException("Please use a valid Metric");
-        }
-    }
-
 
 //    public static void findnWriteThreshold() {
 //
@@ -742,20 +758,6 @@ public class TrainingEngine {
 
     //correct
     //Convert a m by n matrix into a m*n by 1 matrix
-    public static Matrix vectorize(Matrix input){
-        int m = input.getRowDimension();
-        int n = input.getColumnDimension();
 
-        Matrix result = new Matrix(m*n,1);
-        for(int p = 0; p < n; p ++){
-            for(int q = 0; q < m; q ++){
-                result.set(p*m+q, 0, input.get(q, p));
-            }
-        }
-        return result;
-
-//        input.reshape(input.numRows() * input.numCols(), 1);
-//        return input;
-    }
 
 }

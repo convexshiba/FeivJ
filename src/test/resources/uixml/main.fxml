@@ -104,17 +104,17 @@
                                     <content>
                                       <AnchorPane>
                                              <children>
-                                                <ToolBar prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                <ToolBar AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                   <items>
-                                                      <ComboBox fx:id="facesCombo" promptText="Please Scan This Photo First!">
-                                                         <padding>
-                                                            <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
-                                                         </padding>
-                                                      </ComboBox>
+                                                      <ComboBox fx:id="facesCombo" promptText="Please Scan This Photo First!" />
                                                     <Button fx:id="deleteFaceButton" mnemonicParsing="false" onAction="#setDeleteFaceButton" text="Delete" />
+                                                      <Button fx:id="idButton" mnemonicParsing="false" onAction="#setIdButton" text="ID" />
+                                                      <Button fx:id="idAllButton" mnemonicParsing="false" onAction="#setIdAllButton" text="ID All" />
                                                   </items>
                                                 </ToolBar>
                                                 <ImageView fx:id="faceImageView" fitHeight="200.0" fitWidth="180.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" />
+                                                <TextArea fx:id="idText" editable="false" layoutX="212.0" layoutY="68.0" prefHeight="99.0" prefWidth="135.0" />
+                                                <TextField editable="false" layoutX="212.0" layoutY="183.0" />
                                              </children>
                                           </AnchorPane>
                                     </content>

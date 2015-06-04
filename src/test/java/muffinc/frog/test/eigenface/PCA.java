@@ -3,6 +3,7 @@ import muffinc.frog.test.Jama.EigenvalueDecomposition;
 import muffinc.frog.test.Jama.Matrix;
 import muffinc.frog.test.displayio.Display;
 import muffinc.frog.test.eigenface.metric.EuclideanDistance;
+import muffinc.frog.test.helper.ImageHelper;
 import muffinc.frog.test.object.FrogTrainImg;
 
 import java.awt.image.BufferedImage;
@@ -119,19 +120,20 @@ public class PCA {
     }
 
     public boolean setAndReturnIsFace(FrogTrainImg frogTrainImg) {
-		Matrix reconstructedVector = TrainingEngine.vectorize(reconstMatrix(frogTrainImg.getIdMatrix()));
+		Matrix reconstructedVector = ImageHelper.vectorize(reconstMatrix(frogTrainImg.getIdMatrix()));
         boolean isFace = TrainingEngine.IS_FACE_THRESHOLD > new EuclideanDistance().getDistance(reconstructedVector, frogTrainImg.getVectorized());
         frogTrainImg.setIsFace(isFace);
         return frogTrainImg.isFace();
     }
 
+	@Deprecated
 	public boolean isMatrixFace(Matrix matrix) {
-        Matrix recon = TrainingEngine.vectorize(reconstMatrix(project(TrainingEngine.vectorize(matrix))));
-		BufferedImage image = reconstBufferImg(project(TrainingEngine.vectorize(matrix)));
-        System.out.println(new EuclideanDistance().getDistance(recon, TrainingEngine.vectorize(matrix)));
+        Matrix recon = ImageHelper.vectorize(reconstMatrix(project(ImageHelper.vectorize(matrix))));
+		BufferedImage image = reconstBufferImg(project(ImageHelper.vectorize(matrix)));
+        System.out.println(new EuclideanDistance().getDistance(recon, ImageHelper.vectorize(matrix)));
         Display.display(image);
 
-        return TrainingEngine.IS_FACE_THRESHOLD > new EuclideanDistance().getDistance(recon, TrainingEngine.vectorize(matrix));
+        return TrainingEngine.IS_FACE_THRESHOLD > new EuclideanDistance().getDistance(recon, ImageHelper.vectorize(matrix));
     }
 
 	// extract features, namely W

@@ -13,13 +13,13 @@ import muffinc.frog.test.object.FrogImg;
 import org.bytedeco.javacpp.opencv_core;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable{
-
-    private Main main;
 
     @FXML
     private MenuBar menuBar;
@@ -46,11 +46,9 @@ public class MainController implements Initializable{
     @FXML
     private Button addFileButton;
 
-    private FileChooser fileChooser = new FileChooser();
-
     @FXML
     private Button deleteSelectedPhotoButton;
-    
+
     @FXML
     private Button deleteFaceButton;
 
@@ -58,7 +56,20 @@ public class MainController implements Initializable{
     private Button scanNDetectButton;
 
     @FXML
+    private Button idButton;
+
+    @FXML
+    private Button idAllButton;
+
+    @FXML
+    private TextArea idText;
+
+    @FXML
     private ComboBox<String> facesCombo;
+
+    private Main main;
+
+    private FileChooser fileChooser = new FileChooser();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -131,6 +142,8 @@ public class MainController implements Initializable{
                     faceImageView.setImage(photoImageView.getImage());
                     faceImageView.setViewport(rectangle2D);
                 }
+
+                repaintIdText(newValue);
             }
         });
     }
@@ -224,6 +237,47 @@ public class MainController implements Initializable{
             facesCombo.setValue("Please Scan This Photo First!");
         }
         facesCombo.setItems(faces);
+    }
+
+    private void repaintIdText(String newValue) {
+        int i = parseSelectedFaceIndex(newValue);
+
+        //TODO repaint Not Yet Finished.
+        if (i >= 0) {
+            FrogImg frogImg = photoTable.getSelectionModel().getSelectedItem().getFrogImg();
+            opencv_core.CvRect cvRect = frogImg.getCvRects().get(i);
+            if (frogImg.idMatrices.containsKey(cvRect)) {
+                StringWriter sw = new StringWriter();
+
+                PrintWriter pw = new PrintWriter(sw);
+
+                frogImg.idMatrices.get(cvRect).print(pw, 6, 2);
+
+                idText.setText(sw.toString());
+            } else {
+                idText.setText("Please ID this face first.");
+            }
+        } else {
+            idText.setText("Please Select Face.");
+        }
+    }
+
+    public void setIdButton() {
+
+        int i = parseSelectedFaceIndex(facesCombo.getValue());
+
+        if (i >= 0) {
+            FrogImg frogImg = photoTable.getSelectionModel().getSelectedItem().getFrogImg();
+            opencv_core.CvRect cvRect = frogImg.getCvRects().get(i);
+
+            main.engine.identify(frogImg, cvRect);
+
+            repaintIdText(facesCombo.getValue());
+        }
+    }
+
+    public void setIdAllButton() {
+
     }
 
 }

@@ -1,8 +1,13 @@
 package muffinc.frog.test.eigenface;
 
 import muffinc.frog.test.Jama.Matrix;
+import muffinc.frog.test.helper.ImageHelper;
+import muffinc.frog.test.object.FrogImg;
+import org.bytedeco.javacpp.opencv_core;
+import org.bytedeco.javacpp.opencv_highgui;
 
 import javax.imageio.ImageIO;
+import java.awt.font.ImageGraphicAttribute;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.DataInputStream;
@@ -186,5 +191,13 @@ public class FileManager {
         }
 
         ImageIO.write(img,"bmp",file);
+    }
+
+    public static Matrix getColMatrix(FrogImg frogImg, opencv_core.CvRect cvRect) {
+        opencv_core.IplImage iplImage = opencv_highgui.cvLoadImage(frogImg.getFile().getAbsolutePath(), 0);
+        opencv_core.cvSetImageROI(iplImage, cvRect);
+        opencv_core.IplImage resizedGreyed = ImageHelper.resize(iplImage);
+
+        return ImageHelper.vectorize(ImageHelper.getMatrixFromGrey(resizedGreyed));
     }
 }

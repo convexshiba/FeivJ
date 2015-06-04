@@ -4,17 +4,13 @@ import muffinc.frog.test.Jama.Matrix;
 import muffinc.frog.test.displayio.Display;
 import muffinc.frog.test.eigenface.FileManager;
 import muffinc.frog.test.eigenface.TrainingEngine;
-import muffinc.frog.test.helper.FileHelper;
 import muffinc.frog.test.helper.ImageHelper;
-import org.bytedeco.javacpp.opencv_core;
 import org.bytedeco.javacpp.opencv_core.IplImage;
-import org.bytedeco.javacpp.opencv_objdetect;
 import org.bytedeco.javacv.JavaCvErrorCallback;
 
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 import static org.bytedeco.javacpp.opencv_core.*;
@@ -164,7 +160,7 @@ public class FaceDetection {
 
 //        Display.display(newImg);
         Matrix matrix = ImageHelper.getMatrixFromGrey(ImageHelper.resize(newImg));
-        BufferedImage image = FileManager.convertColMatrixToImage(TrainingEngine.vectorize(matrix));
+        BufferedImage image = FileManager.convertColMatrixToImage(ImageHelper.vectorize(matrix));
         Display.display(image);
 
         return trainingEngine.pca.isMatrixFace(matrix);
