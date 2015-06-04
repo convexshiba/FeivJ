@@ -2,7 +2,6 @@ package muffinc.frog.test.object;
 
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.metadata.Metadata;
-import javafx.beans.Observable;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.embed.swing.SwingFXUtils;
@@ -10,7 +9,6 @@ import javafx.scene.image.Image;
 import muffinc.frog.test.Jama.Matrix;
 import muffinc.frog.test.detection.FaceDetection;
 import muffinc.frog.test.eigenface.PCA;
-import muffinc.frog.test.eigenface.TrainingEngine;
 import org.bytedeco.javacpp.opencv_core;
 
 import java.io.File;
@@ -19,8 +17,6 @@ import java.util.LinkedList;
 
 import static org.bytedeco.javacpp.opencv_core.*;
 import static org.bytedeco.javacpp.opencv_highgui.*;
-import static org.bytedeco.javacpp.opencv_objdetect.*;
-import static org.bytedeco.javacpp.opencv_imgproc.*;
 
 /**
  * FROG, a Face Recognition Gallery in Java
@@ -56,6 +52,8 @@ public class FrogImg {
 //    private double distance = -1;
 //    private boolean detected = false;
 
+
+    private boolean inUse = true;
     private boolean isScaned;
     public IntegerProperty detectedFaces = new SimpleIntegerProperty(-1);
 
@@ -106,14 +104,16 @@ public class FrogImg {
         }
     }
 
-    private void updateCurrentIplImage() {
+    private void updateCurrentIplAndImage() {
+
+        currentIplImage = originalIplImage.clone();
 
         CvFont font = new CvFont();
         cvInitFont(font, CV_FONT_HERSHEY_SIMPLEX, 1, 1, 0, 2, CV_AA);
 
         for (int i = 0; i < cvRects.size(); i++) {
             CvRect cvRect = cvRects.get(i);
-            cvPutText(currentIplImage, String.valueOf(i + 1), cvPoint(cvRect.x() + cvRect.width() - 20, cvRect.y() + cvRect.height() - 10), font, CvScalar.MAGENTA);
+            cvPutText(currentIplImage, String.valueOf(i + 1), cvPoint(cvRect.x() + cvRect.width() - 40, cvRect.y() + cvRect.height() - 10), font, CvScalar.MAGENTA);
             cvRectangle(currentIplImage, cvPoint(cvRect.x(), cvRect.y()),
                     cvPoint(cvRect.x() + cvRect.width(), cvRect.y() + cvRect.height()), CvScalar.YELLOW, 1, CV_AA, 0);
         }
@@ -195,7 +195,6 @@ public class FrogImg {
     }
 
     public boolean isDetected() {
-        System.out.println(detectedFaces.getValue());
         return detectedFaces.getValue() != -1;
     }
 
@@ -217,7 +216,7 @@ public class FrogImg {
             detectedFaces.setValue(cvRects.size());
             System.out.println("detectFace() found " + cvRects.size() + " faces");
         }
-        updateCurrentIplImage();
+        updateCurrentIplAndImage();
     }
 
     public Image getCurrentImage() {
@@ -230,7 +229,8 @@ public class FrogImg {
         } else {
             System.out.println("Does not contain CvRect");
         }
-        updateCurrentIplImage();
+        detectedFaces.setValue(detectedFaces.getValue() - 1);
+        updateCurrentIplAndImage();
     }
 
     public double getDistance() {

@@ -50,7 +50,7 @@
                                 <items>
                                   <Button fx:id="addFileButton" mnemonicParsing="false" onAction="#setAddFileButton" text="Add File" textAlignment="CENTER" />
                                     <Region />
-                                    <Button fx:id="deleteSelectedButton" mnemonicParsing="false" text="Delete Selected" textAlignment="CENTER" />
+                                    <Button fx:id="deleteSelectedPhotoButton" mnemonicParsing="false" text="Delete Selected" textAlignment="CENTER" />
                                     <Region />
                                     <Button fx:id="scanNDetectButton" mnemonicParsing="false" onAction="#setScanNDetectButton" text="Scan&amp;Detect" textAlignment="CENTER" />
                                 </items>
@@ -102,21 +102,19 @@
                                   </TitledPane>
                                   <TitledPane animated="false" text="Faces">
                                     <content>
-                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                      <AnchorPane>
                                              <children>
-                                                <VBox prefHeight="278.0" prefWidth="396.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                                   <children>
-                                                      <ComboBox fx:id="facesCombo" promptText="Please Scan This Photo First!" VBox.vgrow="ALWAYS">
-                                                         <VBox.margin>
-                                                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                                         </VBox.margin>
+                                                <ToolBar prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                  <items>
+                                                      <ComboBox fx:id="facesCombo" promptText="Please Scan This Photo First!">
                                                          <padding>
                                                             <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                                                          </padding>
                                                       </ComboBox>
-                                                      <ImageView pickOnBounds="true" preserveRatio="true" />
-                                                   </children>
-                                                </VBox>
+                                                    <Button fx:id="deleteFaceButton" mnemonicParsing="false" onAction="#setDeleteFaceButton" text="Delete" />
+                                                  </items>
+                                                </ToolBar>
+                                                <ImageView fx:id="faceImageView" fitHeight="200.0" fitWidth="180.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" />
                                              </children>
                                           </AnchorPane>
                                     </content>
