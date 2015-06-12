@@ -39,7 +39,7 @@
                            <children>
                               <TableView fx:id="photoTable" editable="true" prefHeight="2000.0">
                                 <columns>
-                                    <TableColumn fx:id="photoNameColumn" prefWidth="75.0" text="PhotoName" />
+                                    <TableColumn fx:id="photoNameColumn" prefWidth="75.0" text="Photo Name" />
                                   <TableColumn fx:id="countColumn" prefWidth="75.0" text="People Count" />
                                 </columns>
                                  <columnResizePolicy>
@@ -50,14 +50,14 @@
                                 <items>
                                   <Button fx:id="addFileButton" mnemonicParsing="false" onAction="#setAddFileButton" text="Add File" textAlignment="CENTER" />
                                     <Region />
-                                    <Button fx:id="deleteSelectedPhotoButton" mnemonicParsing="false" text="Delete Selected" textAlignment="CENTER" />
+                                    <Button fx:id="deleteSelectedPhotoButton" mnemonicParsing="false" onAction="#setDeleteSelectedPhotoButton" text="Delete Selected" textAlignment="CENTER" />
                                     <Region />
                                     <Button fx:id="scanNDetectButton" mnemonicParsing="false" onAction="#setScanNDetectButton" text="Scan&amp;Detect" textAlignment="CENTER" />
                                 </items>
                               </ToolBar>
                            </children>
                         </VBox>
-                        <SplitPane dividerPositions="0.379182156133829" orientation="VERTICAL">
+                        <SplitPane dividerPositions="0.40148698884758366" orientation="VERTICAL">
                           <items>
                               <HBox alignment="CENTER" SplitPane.resizableWithParent="false">
                                  <children>
@@ -128,22 +128,44 @@
                </content>
           </Tab>
           <Tab text="People">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <TableView layoutX="14.0" layoutY="25.0" prefHeight="338.0" prefWidth="284.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
-                          <columns>
-                              <TableColumn prefWidth="75.0" text="Photo" />
-                            <TableColumn prefWidth="75.0" text="Name" />
-                            <TableColumn prefWidth="75.0" text="Total Number" />
-                          </columns>
-                           <columnResizePolicy>
-                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                           </columnResizePolicy>
-                        </TableView>
-                     </children>
-                  </AnchorPane>
-            </content>
+               <content>
+                  <SplitPane dividerPositions="0.79182156133829" orientation="VERTICAL">
+                    <items>
+                        <VBox>
+                           <children>
+                              <ToolBar>
+                                <items>
+                                  <Button mnemonicParsing="false" text="Add People" />
+                                </items>
+                              </ToolBar>
+                              <SplitPane dividerPositions="0.5">
+                                <items>
+                                    <TableView>
+                                      <columns>
+                                        <TableColumn prefWidth="75.0" text="People Name" />
+                                        <TableColumn prefWidth="75.0" text="Total Photo" />
+                                      </columns>
+                                       <columnResizePolicy>
+                                          <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                       </columnResizePolicy>
+                                    </TableView>
+                                    <TableView>
+                                      <columns>
+                                        <TableColumn prefWidth="75.0" text="Photo Name" />
+                                        <TableColumn prefWidth="75.0" text="Photo Location" />
+                                      </columns>
+                                       <columnResizePolicy>
+                                          <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                       </columnResizePolicy>
+                                    </TableView>
+                                </items>
+                              </SplitPane>
+                           </children>
+                        </VBox>
+                      <AnchorPane />
+                    </items>
+                  </SplitPane>
+               </content>
           </Tab>
         </tabs>
       </TabPane>

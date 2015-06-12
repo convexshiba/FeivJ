@@ -117,4 +117,11 @@ public class Main extends Application {
         FrogImg frogImg = engine.addNewImg(file);
         photoGemObservableList.add(new PhotoGem(frogImg));
     }
+
+    // TODO delete not yet finished
+    public void deleteImg(PhotoGem photoGem) {
+        FrogImg frogImg = photoGem.getFrogImg();
+        photoGemObservableList.remove(photoGem);
+
+    }
 }

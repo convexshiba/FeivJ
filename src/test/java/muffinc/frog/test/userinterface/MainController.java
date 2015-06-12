@@ -124,8 +124,14 @@ public class MainController implements Initializable{
 //        );
 
         addFaceImagePreviewListener();
+    }
 
-
+    public void setDeleteSelectedPhotoButton() {
+        if (photoTable.getSelectionModel().getSelectedItem() != null) {
+            PhotoGem photoGem = photoTable.getSelectionModel().getSelectedItem();
+            main.deleteImg(photoGem);
+            photoTable.setItems(main.getPhotoGemObservableList());
+        }
     }
 
     private void addFaceImagePreviewListener() {
@@ -270,7 +276,7 @@ public class MainController implements Initializable{
             FrogImg frogImg = photoTable.getSelectionModel().getSelectedItem().getFrogImg();
             opencv_core.CvRect cvRect = frogImg.getCvRects().get(i);
 
-            main.engine.identify(frogImg, cvRect);
+            main.engine.getIdentify(frogImg, cvRect);
 
             repaintIdText(facesCombo.getValue());
         }
@@ -279,5 +285,7 @@ public class MainController implements Initializable{
     public void setIdAllButton() {
 
     }
+
+
 
 }

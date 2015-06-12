@@ -50,7 +50,7 @@ public class FrogTrainImg implements Img {
 //    private LinkedList<CvRect> cvRects = null;
 //    private Metadata metadata = null;
 
-//    private boolean isScaned;
+//    private boolean isScanned;
 
     public FrogTrainImg(File file) {
         this.file = file;

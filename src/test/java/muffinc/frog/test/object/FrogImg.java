@@ -8,10 +8,10 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import muffinc.frog.test.Jama.Matrix;
 import muffinc.frog.test.detection.FaceDetection;
-import muffinc.frog.test.eigenface.PCA;
 import org.bytedeco.javacpp.opencv_core;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -53,21 +53,16 @@ public class FrogImg {
 //    private boolean detected = false;
 
 
-    private boolean inUse = true;
-    private boolean isScaned;
+//    private boolean inUse = true;
+    private boolean isScanned;
     public IntegerProperty detectedFaces = new SimpleIntegerProperty(-1);
 
     private LinkedList<CvRect> cvRects = null;
     public HashMap<CvRect, Human> rectToHuman = new HashMap<>();
-    public HashMap<Human, LinkedList<CvRect>> humanToRects = new HashMap<>();
+//    public HashMap<Human, LinkedList<CvRect>> humanToRects = new HashMap<>();
     public HashMap<CvRect, Matrix> idMatrices = new HashMap<>();
 
     private Metadata metadata = null;
-
-
-//    public FrogImg() {
-//        super();
-//    }
 
 
     public FrogImg(File file) {
@@ -76,31 +71,32 @@ public class FrogImg {
         currentIplImage = originalIplImage.clone();
         currentImage = SwingFXUtils.toFXImage(currentIplImage.getBufferedImage(), null);
 
-        isScaned = false;
+        isScanned = false;
 
         try {
             metadata = ImageMetadataReader.readMetadata(file);
         } catch (Exception  e) {
-//            e.printStackTrace();
             metadata = new Metadata();
         }
     }
 
-//    public FrogImg(File file, Matrix matrix, TrainingEngine trainingEngine) {
-//        this(file);
-//        this.matrix = matrix;
-//    }
 
 
     public void setCvRectHuman(Human human, CvRect cvRect) {
         rectToHuman.put(cvRect, human);
+    }
 
-        if (humanToRects.containsKey(human)) {
-            humanToRects.get(human).add(cvRect);
+    public ArrayList<CvRect> getHumanCvRects(Human human) {
+        ArrayList<CvRect> cvRects = new ArrayList<>();
+        if (rectToHuman.containsValue(human)) {
+            for (CvRect cvRect : rectToHuman.keySet()) {
+                if (rectToHuman.get(cvRect) == human) {
+                    cvRects.add(cvRect);
+                }
+            }
+            return cvRects;
         } else {
-            LinkedList<CvRect> temp = new LinkedList<>();
-            temp.add(cvRect);
-            humanToRects.put(human, temp);
+            return null;
         }
     }
 
@@ -176,11 +172,11 @@ public class FrogImg {
 //        this.human = human;
 //    }
 
-    public void project(PCA pca) {
-        if (!isProjected()) {
-            idMatrix = pca.project(matrix);
-        }
-    }
+//    public void project(PCA pca) {
+//        if (!isProjected()) {
+//            idMatrix = pca.project(matrix);
+//        }
+//    }
 
     public boolean isFace() {
         return isFace;
@@ -249,12 +245,12 @@ public class FrogImg {
         this.file = file;
     }
 
-    public boolean isScaned() {
-        return isScaned;
+    public boolean isScanned() {
+        return isScanned;
     }
 
     public void setIsScaned(boolean isScaned) {
-        this.isScaned = isScaned;
+        this.isScanned = isScaned;
     }
 
     public LinkedList<CvRect> getCvRects() {

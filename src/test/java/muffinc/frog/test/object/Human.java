@@ -1,10 +1,14 @@
 package muffinc.frog.test.object;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import muffinc.frog.test.Jama.Matrix;
 import muffinc.frog.test.eigenface.TrainingEngine;
 import org.bytedeco.javacpp.opencv_core;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 /**
@@ -28,43 +32,49 @@ import java.util.LinkedList;
  */
 public class Human {
 //    public TrainingEngine trainingEngine;
-
-    public final String name;
-
 //    public boolean isTrain = false;
 
-    public ArrayList<FrogImg> trainingSet = new ArrayList<>();
-
-    public final LinkedList<FrogImg> frogImgs;
-
-    public int fileNums;
-
+    public final String name;
+//    public ArrayList<FrogImg> trainingSet = new ArrayList<>();
+//    public final LinkedList<FrogImg> frogImgs;
+    public final HashMap<FrogImg, HashSet<opencv_core.CvRect>> frogImgs;
+//    public int fileNums;
+    public IntegerProperty fileNumber = new SimpleIntegerProperty(-1);
     private Matrix idMatrix = null;
 
     public Human(String name) {
         this.name = name;
 //        this.trainingEngine = trainingEngine;
-        frogImgs = new LinkedList<>();
-        fileNums = 0;
+        frogImgs = new HashMap<>();
+        fileNumber = new SimpleIntegerProperty(0);
     }
 
     public void addImg(FrogImg frogImg, opencv_core.CvRect cvRect) {
-        frogImgs.add(frogImg);
-        // already set in HumanFactory
-        frogImg.setCvRectHuman(this, cvRect);
-        fileNums++;
-        calculateID();
+//        frogImgs.add(frogImg);
+        if (frogImgs.containsKey(frogImg)) {
+            if (!frogImgs.get(frogImg).contains(cvRect)) {
+                frogImgs.get(frogImg).add(cvRect);
+            }
+
+            frogImg.setCvRectHuman(this, cvRect);
+            calculateID();
+
+        } else {
+            frogImgs.put(frogImg, new HashSet<opencv_core.CvRect>());
+            addImg(frogImg, cvRect);
+        }
+
+
     }
 
     public void calculateID() {
         Matrix sum = new Matrix(TrainingEngine.COMPONENT_NUMBER, 1, 0);
-        for (FrogImg frogImg : frogImgs) {
-            for (opencv_core.CvRect cvRect : frogImg.humanToRects.get(this)) {
+        for (FrogImg frogImg : frogImgs.keySet()) {
+            for (opencv_core.CvRect cvRect : frogImg.getHumanCvRects(this)) {
                 sum.plusEquals(frogImg.idMatrices.get(cvRect));
             }
         }
         idMatrix = sum.timesEquals(1 / ((double) frogImgs.size()));
-
     }
 
     public Matrix getIdMatrix() {

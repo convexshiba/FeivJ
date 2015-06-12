@@ -30,7 +30,6 @@ public class HumanFactory {
     public TrainingEngine engine;
 
     public HashMap<String, Human> nameTable;
-
     public HashMap<File, FrogImg> frogImgTable;
 
     public HumanFactory(TrainingEngine engine) {
@@ -38,7 +37,6 @@ public class HumanFactory {
         nameTable = new HashMap<>();
         frogImgTable = new HashMap<>();
     }
-
     public boolean hasHuman(String name) {
         return nameTable.containsKey(name);
     }

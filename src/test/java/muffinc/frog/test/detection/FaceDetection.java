@@ -59,7 +59,7 @@ public class FaceDetection {
 
         CvHaarClassifierCascade cascade = new CvHaarClassifierCascade(cvLoad(CASCADE_FILE));
 
-        CvSeq faces = cvHaarDetectObjects(greyImg, cascade, storage, 1.1, 1, CV_HAAR_SCALE_IMAGE);
+        CvSeq faces = cvHaarDetectObjects(greyImg, cascade, storage, 1.05, 2, CV_HAAR_SCALE_IMAGE);
 
         cvClearMemStorage(storage);
 

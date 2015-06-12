@@ -109,6 +109,15 @@ public class TrainingEngine {
         }
     }
 
+    //TODO delete not yet finished
+    public void removeImg(FrogImg frogImg) {
+        if (frogImg.isScanned()) {
+
+        }
+
+        humanFactory.frogImgTable.remove(frogImg.getFile());
+    }
+
 
     public static Metric getMetric(int i) {
         switch (i) {
@@ -123,22 +132,26 @@ public class TrainingEngine {
         }
     }
 
-    public void identify(FrogImg frogImg) {
+    public void getIdentify(FrogImg frogImg) {
         if (!humanFactory.frogImgTable.containsValue(frogImg)) {
             System.out.println("Error" + frogImg.getFile().getPath() + " is not in the library");
         } else {
             for (opencv_core.CvRect cvRect : frogImg.getCvRects()) {
-                identify(frogImg, cvRect);
+                getIdentify(frogImg, cvRect);
             }
         }
     }
 
-    public void identify(FrogImg frogImg, opencv_core.CvRect cvRect) {
+    public void getIdentify(FrogImg frogImg, opencv_core.CvRect cvRect) {
         Matrix rectID = pca.project(FileManager.getColMatrix(frogImg, cvRect));
 //        System.out.println("This Rect's Id is :");
 //        rectID.print(2, 2);
 
         frogImg.idMatrices.put(cvRect, rectID);
+    }
+
+    public void whosthis(FrogImg frogImg, opencv_core.CvRect cvRect) {
+
     }
 
     public static void main(String args[]) {
