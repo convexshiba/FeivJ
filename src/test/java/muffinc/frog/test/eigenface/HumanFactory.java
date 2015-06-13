@@ -37,7 +37,8 @@ public class HumanFactory {
         nameTable = new HashMap<>();
         frogImgTable = new HashMap<>();
     }
-    public boolean hasHuman(String name) {
+
+    private boolean hasHuman(String name) {
         return nameTable.containsKey(name);
     }
 
@@ -76,14 +77,14 @@ public class HumanFactory {
     }
 
 
-    public void addImgToHuman(FrogImg frogImg, String name, opencv_core.CvRect cvRect) {
-        if (hasHuman(name)) {
-            Human human = locateHuman(name);
-            human.addImg(frogImg, cvRect);
-            frogImg.setCvRectHuman(locateHuman(name), cvRect);
-//            frogImgTable.put(frogTrainImg.file, frogTrainImg);
-        } else {
-            throw new IllegalAccessError("This person is not in the HumanFactory, Please hasHuman() and create first.");
-        }
-    }
+//    public void addImgToHuman(FrogImg frogImg, String name, opencv_core.CvRect cvRect) {
+//        if (hasHuman(name)) {
+//            Human human = locateHuman(name);
+//            human.addImg(frogImg, cvRect);
+//            frogImg.setCvRectHuman(locateHuman(name), cvRect);
+////            frogImgTable.put(frogTrainImg.file, frogTrainImg);
+//        } else {
+//            throw new IllegalAccessError("This person is not in the HumanFactory, Please hasHuman() and create first.");
+//        }
+//    }
 }

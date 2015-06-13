@@ -12,6 +12,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import muffinc.frog.test.eigenface.TrainingEngine;
 import muffinc.frog.test.object.FrogImg;
@@ -19,10 +20,7 @@ import muffinc.frog.test.simpleui.SimplePaneController;
 import org.apache.commons.io.IOUtils;
 
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
+import java.io.*;
 import java.nio.file.Files;
 import java.util.Set;
 
@@ -34,11 +32,16 @@ public class Main extends Application {
 
     MainController mainController = null;
 
+    Stage primaryStage;
+
     private ObservableList<PhotoGem> photoGemObservableList = FXCollections.observableArrayList();
+
 
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+
+        this.primaryStage = primaryStage;
 
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/uixml/main.fxml"));
@@ -48,7 +51,8 @@ public class Main extends Application {
         mainController = loader.getController();
         mainController.setMain(this);
 
-        primaryStage.setTitle("FROG");
+
+        primaryStage.setTitle("FROG测试");
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
 
@@ -81,10 +85,10 @@ public class Main extends Application {
         }
     }
 
+    //TODO Store loaded files in xml
     @Override
     public void stop() throws Exception {
 
-        //TODO Store loaded files in xml
         File[] files = engine.humanFactory.frogImgTable.keySet().toArray(new File[1]);
 
         String filesxml = xStream.toXML(files);
@@ -113,6 +117,10 @@ public class Main extends Application {
         return photoGemObservableList;
     }
 
+//    public ObservableList<PeopleGem> getPeopleGemObservableList() {
+//        return peopleGemObservableList;
+//    }
+
     public void addNewImg(File file) {
         FrogImg frogImg = engine.addNewImg(file);
         photoGemObservableList.add(new PhotoGem(frogImg));
@@ -122,6 +130,33 @@ public class Main extends Application {
     public void deleteImg(PhotoGem photoGem) {
         FrogImg frogImg = photoGem.getFrogImg();
         photoGemObservableList.remove(photoGem);
+    }
 
+    public void showAddPeopleDialogue() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/uixml/addPeopleDialogue.fxml"));
+
+            AnchorPane anchorPane = loader.load();
+
+            Stage dialogueStage = new Stage();
+            dialogueStage.setTitle("Add People");
+            dialogueStage.initModality(Modality.WINDOW_MODAL);
+            dialogueStage.initOwner(primaryStage);
+            Scene scene = new Scene(anchorPane);
+            dialogueStage.setScene(scene);
+
+            AddPeopleDialogueController controller = loader.getController();
+            controller.setDialogStage(dialogueStage);
+
+            dialogueStage.showAndWait();
+
+            PeopleGem peopleGem = new PeopleGem(engine.humanFactory.newHuman(controller.name));
+
+            mainController.peopleGemObservableList.add(peopleGem);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

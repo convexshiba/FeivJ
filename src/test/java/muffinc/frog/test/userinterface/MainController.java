@@ -26,12 +26,25 @@ public class MainController implements Initializable{
     
     @FXML
     public TableView<PhotoGem> photoTable;
-    
     @FXML
     private TableColumn<PhotoGem, String> photoNameColumn;
-    
     @FXML
     private TableColumn<PhotoGem, Integer> countColumn;
+
+    @FXML
+    public TableView<PeopleGem> humanTable;
+    @FXML
+    private TableColumn<PeopleGem, String> humanNameColumn;
+    @FXML
+    private TableColumn<PeopleGem, Integer> humanPhotoNumberColumn;
+
+    @FXML
+    private TableView<PhotoGem> humanPhotoTable;
+    @FXML
+    private TableColumn<PhotoGem, String> humanPhotoNameColumn;
+    @FXML
+    private TableColumn<PhotoGem, String> humanPhotoLocationColumn;
+
 
     //TODO center and auto resize ImageView
     @FXML
@@ -53,13 +66,22 @@ public class MainController implements Initializable{
     private Button deleteFaceButton;
 
     @FXML
-    private Button scanNDetectButton;
+    private Button scanButton;
+
+    @FXML
+    private Button scanAllButton;
+
+    @FXML
+    private Button detectAllButton;
 
     @FXML
     private Button idButton;
 
     @FXML
     private Button idAllButton;
+
+    @FXML
+    private Button addPeopleButton;
 
     @FXML
     private TextArea idText;
@@ -70,6 +92,9 @@ public class MainController implements Initializable{
     private Main main;
 
     private FileChooser fileChooser = new FileChooser();
+
+    public ObservableList<PeopleGem> peopleGemObservableList = FXCollections.observableArrayList();
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -82,8 +107,14 @@ public class MainController implements Initializable{
 //                        .setFileName(event.getNewValue())
 //        );
 
+        humanTable.setItems(peopleGemObservableList);
+        addHumanTableListener();
+        humanNameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
+        humanPhotoNumberColumn.setCellValueFactory(cellData -> cellData.getValue().photoNumberProperty().asObject());
 
     }
+
+
 
     public Main getMain() {
         return main;
@@ -93,7 +124,7 @@ public class MainController implements Initializable{
         this.main = main;
     }
 
-    public void setAddFileButton() {
+    public void handleAddFileButton() {
         String[] extensions = {"*.jpeg", "*.jpg", "*.pgm"};
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Image Files", extensions);
         fileChooser.getExtensionFilters().add(extFilter);
@@ -112,7 +143,6 @@ public class MainController implements Initializable{
         addPhotoPreviewListener();
 
         countColumn.setCellValueFactory(cellData -> cellData.getValue().photoCountProperty().asObject());
-
         photoNameColumn.setCellValueFactory(cellData -> cellData.getValue().fileNameProperty());
 
         //TODO add file edit and rename
@@ -126,7 +156,8 @@ public class MainController implements Initializable{
         addFaceImagePreviewListener();
     }
 
-    public void setDeleteSelectedPhotoButton() {
+    //TODO does this work?
+    public void handleDeleteSelectedPhotoButton() {
         if (photoTable.getSelectionModel().getSelectedItem() != null) {
             PhotoGem photoGem = photoTable.getSelectionModel().getSelectedItem();
             main.deleteImg(photoGem);
@@ -181,20 +212,23 @@ public class MainController implements Initializable{
 
                 PhotoGem selected = photoTable.getSelectionModel().getSelectedItem();
                 repaintPhotoImageView(selected);
-
-
                 repaintFacesCombo(selected);
-
             }
         });
     }
 
+    //TODO
+    private void addHumanTableListener() {
 
+        humanTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 
-    public void setScanNDetectButton() {
+            //TODO update humanPhotoTable
 
+        });
+    }
+
+    public void handleScanButton() {
         if (photoTable.getSelectionModel().getSelectedItem() != null) {
-            System.out.println();
             PhotoGem selected = photoTable.getSelectionModel().getSelectedItem();
             selected.getFrogImg().detectFace();
             repaintPhotoImageView(selected);
@@ -202,7 +236,15 @@ public class MainController implements Initializable{
         }
     }
 
-    public void setDeleteFaceButton() {
+    public void handleScanAllButton() {
+        for (PhotoGem photoGem : photoTable.getItems()) {
+            photoGem.getFrogImg().detectFace();
+            repaintPhotoImageView(photoGem);
+//            repaintFacesCombo(photoGem);
+        }
+    }
+
+    public void handleDeleteFaceButton() {
         if (photoTable.getSelectionModel().getSelectedItem() != null) {
 
             PhotoGem selected = photoTable.getSelectionModel().getSelectedItem();
@@ -268,7 +310,7 @@ public class MainController implements Initializable{
         }
     }
 
-    public void setIdButton() {
+    public void handleIDButton() {
 
         int i = parseSelectedFaceIndex(facesCombo.getValue());
 
@@ -282,10 +324,18 @@ public class MainController implements Initializable{
         }
     }
 
-    public void setIdAllButton() {
+    // TODO add all Button
+    public void handleIDAllButton() {
 
     }
 
+    public void handleAddPeople() {
+        main.showAddPeopleDialogue();
+    }
 
+
+    public void handleDetectAllButton() {
+        //TODO
+    }
 
 }

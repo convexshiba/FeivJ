@@ -55,16 +55,14 @@ public class Human {
             if (!frogImgs.get(frogImg).contains(cvRect)) {
                 frogImgs.get(frogImg).add(cvRect);
             }
-
+            fileNumber.setValue(fileNumber.getValue() + 1);
             frogImg.setCvRectHuman(this, cvRect);
             calculateID();
 
         } else {
-            frogImgs.put(frogImg, new HashSet<opencv_core.CvRect>());
+            frogImgs.put(frogImg, new HashSet<>());
             addImg(frogImg, cvRect);
         }
-
-
     }
 
     public void calculateID() {

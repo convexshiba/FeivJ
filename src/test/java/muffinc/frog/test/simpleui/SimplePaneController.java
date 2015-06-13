@@ -91,7 +91,7 @@ public class SimplePaneController implements Initializable{
 
             c1.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
             c2.setCellValueFactory(cellData -> cellData.getValue().fileNumsProperty().asObject());
-            c3.setCellValueFactory(cellDate -> cellDate.getValue().fileAddressProperty());
+//            c3.setCellValueFactory(cellDate -> cellDate.getValue().fileAddressProperty());
         }
     }
 }

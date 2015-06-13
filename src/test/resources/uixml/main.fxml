@@ -48,11 +48,11 @@
                               </TableView>
                               <ToolBar AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" VBox.vgrow="ALWAYS">
                                 <items>
-                                  <Button fx:id="addFileButton" mnemonicParsing="false" onAction="#setAddFileButton" text="Add File" textAlignment="CENTER" />
-                                    <Region />
-                                    <Button fx:id="deleteSelectedPhotoButton" mnemonicParsing="false" onAction="#setDeleteSelectedPhotoButton" text="Delete Selected" textAlignment="CENTER" />
-                                    <Region />
-                                    <Button fx:id="scanNDetectButton" mnemonicParsing="false" onAction="#setScanNDetectButton" text="Scan&amp;Detect" textAlignment="CENTER" />
+                                  <Button fx:id="addFileButton" mnemonicParsing="false" onAction="#handleAddFileButton" text="Add File" textAlignment="CENTER" />
+                                    <Button fx:id="deleteSelectedPhotoButton" mnemonicParsing="false" onAction="#handleDeleteSelectedPhotoButton" text="Delete" textAlignment="CENTER" />
+                                    <Button fx:id="scanButton" mnemonicParsing="false" onAction="#handleScanButton" text="Scan" textAlignment="CENTER" />
+                                    <Button fx:id="scanAllButton" mnemonicParsing="false" onAction="#handleScanAllButton" text="Scan All" />
+                                    <Button fx:id="detectAllButton" mnemonicParsing="false" onAction="#handleDetectAllButton" text="Detect All" />
                                 </items>
                               </ToolBar>
                            </children>
@@ -107,9 +107,9 @@
                                                 <ToolBar AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                   <items>
                                                       <ComboBox fx:id="facesCombo" promptText="Please Scan This Photo First!" />
-                                                    <Button fx:id="deleteFaceButton" mnemonicParsing="false" onAction="#setDeleteFaceButton" text="Delete" />
-                                                      <Button fx:id="idButton" mnemonicParsing="false" onAction="#setIdButton" text="ID" />
-                                                      <Button fx:id="idAllButton" mnemonicParsing="false" onAction="#setIdAllButton" text="ID All" />
+                                                    <Button fx:id="deleteFaceButton" mnemonicParsing="false" onAction="#handleDeleteFaceButton" text="Delete" />
+                                                      <Button fx:id="idButton" mnemonicParsing="false" onAction="#handleIDButton" text="ID" />
+                                                      <Button fx:id="idAllButton" mnemonicParsing="false" onAction="#handleIDAllButton" text="ID All" />
                                                   </items>
                                                 </ToolBar>
                                                 <ImageView fx:id="faceImageView" fitHeight="200.0" fitWidth="180.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" />
@@ -129,30 +129,30 @@
           </Tab>
           <Tab text="People">
                <content>
-                  <SplitPane dividerPositions="0.79182156133829" orientation="VERTICAL">
+                  <SplitPane dividerPositions="0.5" orientation="VERTICAL">
                     <items>
                         <VBox>
                            <children>
                               <ToolBar>
                                 <items>
-                                  <Button mnemonicParsing="false" text="Add People" />
+                                  <Button fx:id="addPeopleButton" mnemonicParsing="false" onAction="#handleAddPeople" text="Add People" />
                                 </items>
                               </ToolBar>
                               <SplitPane dividerPositions="0.5">
                                 <items>
-                                    <TableView>
+                                    <TableView fx:id="humanTable">
                                       <columns>
-                                        <TableColumn prefWidth="75.0" text="People Name" />
-                                        <TableColumn prefWidth="75.0" text="Total Photo" />
+                                        <TableColumn fx:id="humanNameColumn" prefWidth="75.0" text="名字" />
+                                        <TableColumn fx:id="humanPhotoNumberColumn" prefWidth="75.0" text="Total Photo" />
                                       </columns>
                                        <columnResizePolicy>
                                           <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                                        </columnResizePolicy>
                                     </TableView>
-                                    <TableView>
+                                    <TableView fx:id="humanPhotoTable">
                                       <columns>
-                                        <TableColumn prefWidth="75.0" text="Photo Name" />
-                                        <TableColumn prefWidth="75.0" text="Photo Location" />
+                                        <TableColumn fx:id="humanPhotoNameColumn" prefWidth="75.0" text="Photo Name" />
+                                        <TableColumn fx:id="humanPhotoLocationColumn" prefWidth="75.0" text="Photo Location" />
                                       </columns>
                                        <columnResizePolicy>
                                           <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

@@ -8,6 +8,7 @@ import muffinc.frog.test.eigenface.metric.L1Distance;
 import muffinc.frog.test.helper.ImageHelper;
 import muffinc.frog.test.object.FrogImg;
 import muffinc.frog.test.object.FrogTrainImg;
+import muffinc.frog.test.object.Human;
 import org.bytedeco.javacpp.opencv_core;
 
 import java.io.File;
@@ -57,6 +58,8 @@ public class TrainingEngine {
     private int componentsRetained;
     private int trainNums;
     private int knn_k;
+
+    private Metric euclidean = new EuclideanDistance();
 
 //    public TrainingEngine() {
 //        this(COMPONENT_NUMBER, 5, 2);
@@ -132,15 +135,15 @@ public class TrainingEngine {
         }
     }
 
-    public void getIdentify(FrogImg frogImg) {
-        if (!humanFactory.frogImgTable.containsValue(frogImg)) {
-            System.out.println("Error" + frogImg.getFile().getPath() + " is not in the library");
-        } else {
-            for (opencv_core.CvRect cvRect : frogImg.getCvRects()) {
-                getIdentify(frogImg, cvRect);
-            }
-        }
-    }
+//    public void getIdentify(FrogImg frogImg) {
+//        if (!humanFactory.frogImgTable.containsValue(frogImg)) {
+//            System.out.println("Error" + frogImg.getFile().getPath() + " is not in the library");
+//        } else {
+//            for (opencv_core.CvRect cvRect : frogImg.getCvRects()) {
+//                getIdentify(frogImg, cvRect);
+//            }
+//        }
+//    }
 
     public void getIdentify(FrogImg frogImg, opencv_core.CvRect cvRect) {
         Matrix rectID = pca.project(FileManager.getColMatrix(frogImg, cvRect));
@@ -150,8 +153,26 @@ public class TrainingEngine {
         frogImg.idMatrices.put(cvRect, rectID);
     }
 
-    public void whosthis(FrogImg frogImg, opencv_core.CvRect cvRect) {
+    public Human whosthis(FrogImg frogImg, opencv_core.CvRect cvRect) {
+        Matrix thisID = frogImg.idMatrices.get(cvRect);
 
+        HashSet<Human> humans = new HashSet<>();
+
+        for (Human human : humanFactory.nameTable.values()) {
+            if (euclidean.getDistance(thisID, human.getIdMatrix()) < ID_THRESHOLD) {
+                humans.add(human);
+            }
+        }
+
+        if (humans.size() == 1) {
+            return humans.toArray(new Human[1])[0];
+        } else if (humans.size() == 0) {
+            System.out.println("whosthis failed");
+            return null;
+        } else {
+            System.out.println("whosthis found multiple human");
+            return null;
+        }
     }
 
     public static void main(String args[]) {
