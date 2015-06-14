@@ -7,11 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import muffinc.frog.test.eigenface.PeopleFactory;
 import muffinc.frog.test.eigenface.TrainingEngine;
-import muffinc.frog.test.object.Human;
-
-import java.util.stream.Collectors;
 
 /**
  * FROG, a Face Recognition Gallery in Java

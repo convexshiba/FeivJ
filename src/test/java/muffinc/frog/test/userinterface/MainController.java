@@ -318,7 +318,7 @@ public class MainController implements Initializable{
             FrogImg frogImg = photoTable.getSelectionModel().getSelectedItem().getFrogImg();
             opencv_core.CvRect cvRect = frogImg.getCvRects().get(i);
 
-            main.engine.getIdentify(frogImg, cvRect);
+            main.engine.getCvRectID(frogImg, cvRect);
 
             repaintIdText(facesCombo.getValue());
         }

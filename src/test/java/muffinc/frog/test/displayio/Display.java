@@ -1,5 +1,6 @@
 package muffinc.frog.test.displayio;
 
+import muffinc.frog.test.object.FrogImg;
 import muffinc.frog.test.object.FrogTrainImg;
 import org.bytedeco.javacpp.opencv_core.*;
 
@@ -8,6 +9,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+
+import static org.bytedeco.javacpp.opencv_core.*;
 
 /**
  * FROG, a Face Recognition Gallery in Java
@@ -54,7 +57,13 @@ public class Display {
     }
 
 
-    public static void display(FrogTrainImg frogTrainImg) {
-        display(frogTrainImg.file.getAbsolutePath());
+    public static void display(FrogImg frogImg) {
+        display(frogImg.getOriginalIplImage());
+    }
+
+    public static void display(FrogImg frogImg, CvRect cvRect) {
+        IplImage iplImage = frogImg.getOriginalIplImage().clone();
+        cvSetImageROI(iplImage, cvRect);
+        display(iplImage);
     }
 }

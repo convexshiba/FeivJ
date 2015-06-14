@@ -8,6 +8,7 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import muffinc.frog.test.Jama.Matrix;
 import muffinc.frog.test.detection.FaceDetection;
+import muffinc.frog.test.eigenface.FileManager;
 import org.bytedeco.javacpp.opencv_core;
 
 import java.io.File;
@@ -79,7 +80,6 @@ public class FrogImg {
             metadata = new Metadata();
         }
     }
-
 
 
     public void setCvRectHuman(Human human, CvRect cvRect) {
