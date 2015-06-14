@@ -94,6 +94,7 @@ public class MainController implements Initializable{
     private FileChooser fileChooser = new FileChooser();
 
     public ObservableList<PeopleGem> peopleGemObservableList = FXCollections.observableArrayList();
+    private ObservableList<PhotoGem> photoGemObservableList = FXCollections.observableArrayList();
 
 
     @Override
@@ -112,33 +113,7 @@ public class MainController implements Initializable{
         humanNameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
         humanPhotoNumberColumn.setCellValueFactory(cellData -> cellData.getValue().photoNumberProperty().asObject());
 
-    }
-
-
-
-    public Main getMain() {
-        return main;
-    }
-
-    public void setMain(Main main) {
-        this.main = main;
-    }
-
-    public void handleAddFileButton() {
-        String[] extensions = {"*.jpeg", "*.jpg", "*.pgm"};
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Image Files", extensions);
-        fileChooser.getExtensionFilters().add(extFilter);
-
-        List<File> files = fileChooser.showOpenMultipleDialog(addFileButton.getScene().getWindow());
-        if (files != null) {
-            for (File file : files) {
-                System.out.println(file.getAbsolutePath() + " was chosen");
-                main.addNewImg(file);
-            }
-        }
-
-
-        photoTable.setItems(main.getPhotoGemObservableList());
+        photoTable.setItems(photoGemObservableList);
 
         addPhotoPreviewListener();
 
@@ -154,14 +129,51 @@ public class MainController implements Initializable{
 //        );
 
         addFaceImagePreviewListener();
+
+    }
+
+
+
+    public Main getMain() {
+        return main;
+    }
+
+    public void setMain(Main main) {
+        this.main = main;
+    }
+
+
+    public void addNewImg(File file) {
+        FrogImg frogImg = main.engine.addNewImg(file);
+        photoGemObservableList.add(new PhotoGem(frogImg));
+    }
+
+    // TODO delete not yet finished
+    public void deleteImg(PhotoGem photoGem) {
+        FrogImg frogImg = photoGem.getFrogImg();
+        photoGemObservableList.remove(photoGem);
+    }
+
+    public void handleAddFileButton() {
+        String[] extensions = {"*.jpeg", "*.jpg", "*.pgm"};
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Image Files", extensions);
+        fileChooser.getExtensionFilters().add(extFilter);
+
+        List<File> files = fileChooser.showOpenMultipleDialog(addFileButton.getScene().getWindow());
+        if (files != null) {
+            for (File file : files) {
+                System.out.println(file.getAbsolutePath() + " was chosen");
+                addNewImg(file);
+            }
+        }
     }
 
     //TODO does this work?
     public void handleDeleteSelectedPhotoButton() {
         if (photoTable.getSelectionModel().getSelectedItem() != null) {
             PhotoGem photoGem = photoTable.getSelectionModel().getSelectedItem();
-            main.deleteImg(photoGem);
-            photoTable.setItems(main.getPhotoGemObservableList());
+            deleteImg(photoGem);
+            photoTable.setItems(photoGemObservableList);
         }
     }
 

@@ -45,6 +45,8 @@ public class TrainingEngine {
     public static final int METRIC_L1D = 1;
     public static final int METRIC_EUCILDEAN = 2;
 
+    public static final String HUMAN_DIRECTORY = "/Users/Meth/Documents/FROG/src/test/resources/Humans";
+
     public HumanFactory humanFactory;
     public PCA pca;
 //    HashMap<String, ArrayList<Integer>> trainMap;

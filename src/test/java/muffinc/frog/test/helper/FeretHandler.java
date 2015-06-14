@@ -6,6 +6,7 @@ import org.apache.commons.io.filefilter.WildcardFileFilter;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,7 +34,7 @@ public class FeretHandler {
 
     public static final String FOLDER = "/Users/Meth/Documents/FROG/src/test/resources/FERET1/";
 
-    public static final String NEW_FOLDER = "/Users/Meth/Documents/FROG/src/test/resources/FERET2Sorted/";
+    public static final String NEW_FOLDER = "/Users/Meth/Documents/FROG/src/test/resources/FERET1Sorted/";
 
     public static void move() {
 
@@ -66,8 +67,35 @@ public class FeretHandler {
     }
 
     public static void main(String[] args) {
-        rename(NEW_FOLDER);
+        moveToHumans();
     }
+
+    public static void moveToHumans() {
+        File file = new File(NEW_FOLDER);
+
+        for (File file1 : file.listFiles()) {
+            if (file1.isDirectory()) {
+                for (File file2 : file1.listFiles(((FileFilter) new RegexFileFilter("\\w{10}d.*")))) {
+
+                    try {
+                        String newFolder = "/Users/Meth/Documents/FROG/src/test/resources/Humans/" + "H_" + file2.getName().substring(1,5) + "/";
+
+                        File file3 = new File(newFolder);
+
+                        if (!file3.exists()) {
+                            file3.mkdirs();
+                        }
+
+                        Files.copy(file2.toPath(), new File(newFolder + file2.getName()).toPath());
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
 
     public static void rename(String s) {
         for (File file : new File(s).listFiles()) {

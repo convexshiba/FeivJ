@@ -2,9 +2,11 @@ package muffinc.frog.test.eigenface;
 
 import muffinc.frog.test.object.FrogImg;
 import muffinc.frog.test.object.Human;
+import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.bytedeco.javacpp.opencv_core;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.HashMap;
 
 /**

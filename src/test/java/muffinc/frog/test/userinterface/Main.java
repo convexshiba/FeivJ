@@ -18,6 +18,7 @@ import muffinc.frog.test.eigenface.TrainingEngine;
 import muffinc.frog.test.object.FrogImg;
 import muffinc.frog.test.simpleui.SimplePaneController;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.filefilter.WildcardFileFilter;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
@@ -33,8 +34,6 @@ public class Main extends Application {
     MainController mainController = null;
 
     Stage primaryStage;
-
-    private ObservableList<PhotoGem> photoGemObservableList = FXCollections.observableArrayList();
 
 
 
@@ -58,31 +57,13 @@ public class Main extends Application {
 
         engine = new TrainingEngine();
 
+        loadHumans();
+
     }
 
     //TODO add files preloading
     public void preload() {
-        try {
 
-            FileInputStream fileInputStream = new FileInputStream("/Users/Meth/Documents/FROG/src/test/resources/appxml/" + "filesXML.xml");
-
-            try {
-                String wholeFile = IOUtils.toString(fileInputStream);
-
-                File[] files = (File[]) xStream.fromXML(wholeFile);
-
-                for (File file : files) {
-                    addNewImg(file);
-                }
-
-                mainController.photoTable.setItems(getPhotoGemObservableList());
-            } finally {
-                fileInputStream.close();
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     //TODO Store loaded files in xml
@@ -113,24 +94,12 @@ public class Main extends Application {
         launch(args);
     }
 
-    public ObservableList<PhotoGem> getPhotoGemObservableList() {
-        return photoGemObservableList;
-    }
 
 //    public ObservableList<PeopleGem> getPeopleGemObservableList() {
 //        return peopleGemObservableList;
 //    }
 
-    public void addNewImg(File file) {
-        FrogImg frogImg = engine.addNewImg(file);
-        photoGemObservableList.add(new PhotoGem(frogImg));
-    }
 
-    // TODO delete not yet finished
-    public void deleteImg(PhotoGem photoGem) {
-        FrogImg frogImg = photoGem.getFrogImg();
-        photoGemObservableList.remove(photoGem);
-    }
 
     public void showAddPeopleDialogue() {
         try {
@@ -151,12 +120,31 @@ public class Main extends Application {
 
             dialogueStage.showAndWait();
 
-            PeopleGem peopleGem = new PeopleGem(engine.humanFactory.newHuman(controller.name));
-
-            mainController.peopleGemObservableList.add(peopleGem);
+            newHuman(controller.name);
 
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void newHuman(String name) {
+        PeopleGem peopleGem = new PeopleGem(engine.humanFactory.newHuman(name));
+        mainController.peopleGemObservableList.add(peopleGem);
+    }
+
+    private void loadHumans() {
+        File file = new File(TrainingEngine.HUMAN_DIRECTORY);
+
+        for (File humanFile : file.listFiles(((FileFilter) new WildcardFileFilter("H_*")))) {
+            if (humanFile.listFiles().length == 0) {
+                System.out.println(humanFile.getName().substring(2) + " is not a valid Human profile.");
+            } else {
+                newHuman(humanFile.getName().substring(2));
+
+                for (File picFile : humanFile.listFiles()) {
+                    mainController.addNewImg(picFile);
+                }
+            }
         }
     }
 }
