@@ -220,6 +220,14 @@ public class FrogImg {
     }
 
     public void removeCvRect(int index) {
+
+        CvRect cvRect = cvRects.get(index);
+
+        if (rectToHuman.containsKey(cvRect)) {
+            Human human = rectToHuman.get(cvRect);
+            human.deleteImg(this, cvRect);
+        }
+
         if (cvRects.remove(cvRects.get(index))) {
             System.out.println("cvRect has been successfully removed");
         } else {

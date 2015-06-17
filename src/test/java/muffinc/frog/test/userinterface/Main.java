@@ -16,9 +16,11 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import muffinc.frog.test.eigenface.TrainingEngine;
 import muffinc.frog.test.object.FrogImg;
+import muffinc.frog.test.object.Human;
 import muffinc.frog.test.simpleui.SimplePaneController;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
+import org.bytedeco.javacpp.opencv_core;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
@@ -127,9 +129,12 @@ public class Main extends Application {
         }
     }
 
-    private void newHuman(String name) {
-        PeopleGem peopleGem = new PeopleGem(engine.humanFactory.newHuman(name));
-        mainController.peopleGemObservableList.add(peopleGem);
+    private Human newHuman(String name) {
+
+        Human human = engine.humanFactory.newHuman(name);
+        mainController.peopleGemObservableList.add(new PeopleGem(human));
+
+        return human;
     }
 
     private void loadHumans() {
@@ -139,10 +144,16 @@ public class Main extends Application {
             if (humanFile.listFiles().length == 0) {
                 System.out.println(humanFile.getName().substring(2) + " is not a valid Human profile.");
             } else {
-                newHuman(humanFile.getName().substring(2));
+                Human human = newHuman(humanFile.getName().substring(2));
 
                 for (File picFile : humanFile.listFiles()) {
-                    mainController.addNewImg(picFile);
+                    PhotoGem photoGem = mainController.addNewImg(picFile);
+                    photoGem.getFrogImg().detectFace();
+
+                    for (opencv_core.CvRect cvRect : photoGem.getFrogImg().getCvRects()) {
+                        human.isInImg(photoGem.getFrogImg(), cvRect);
+                    }
+
                 }
             }
         }

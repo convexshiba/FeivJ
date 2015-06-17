@@ -34,6 +34,7 @@ public class PhotoGem implements Serializable{
     private IntegerProperty photoCount;
 //    private Image img;
     private StringProperty fileName;
+    private StringProperty location;
     private FrogImg frogImg;
 
     public PhotoGem(FrogImg frogImg) {
@@ -45,8 +46,21 @@ public class PhotoGem implements Serializable{
 //        img = SwingFXUtils.toFXImage(frogImg.currentIplImage.getBufferedImage(), null);
 
         fileName = new SimpleStringProperty(frogImg.getFile().getName());
+
+        location = new SimpleStringProperty(frogImg.getFile().getAbsolutePath());
     }
 
+    public String getLocation() {
+        return location.get();
+    }
+
+    public StringProperty locationProperty() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location.set(location);
+    }
 
     public FrogImg getFrogImg() {
         return frogImg;

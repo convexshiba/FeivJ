@@ -312,7 +312,7 @@ public class TrainingEngine {
 //
 //                    FrogTrainImg frogTrainImg = new FrogTrainImg(file, temp, this);
 ////                    humanFactory.frogImgTable.put(file, imgMatrix);
-////                    humanFactory.nameTable.get(label).addImg(imgMatrix);
+////                    humanFactory.nameTable.get(label).isInImg(imgMatrix);
 //                    humanFactory.addImgToHuman(frogTrainImg, label);
 //                    frogTrainImg.setVectorized(vectorize(temp));
 //                    testingImgSet.add(frogTrainImg);

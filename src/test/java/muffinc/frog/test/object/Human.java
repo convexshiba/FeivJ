@@ -6,10 +6,8 @@ import muffinc.frog.test.Jama.Matrix;
 import muffinc.frog.test.eigenface.TrainingEngine;
 import org.bytedeco.javacpp.opencv_core;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 
 /**
  * FROG, a Face Recognition Gallery in Java
@@ -49,7 +47,7 @@ public class Human {
         fileNumber = new SimpleIntegerProperty(0);
     }
 
-    public void addImg(FrogImg frogImg, opencv_core.CvRect cvRect) {
+    public void isInImg(FrogImg frogImg, opencv_core.CvRect cvRect) {
 //        frogImgs.add(frogImg);
         if (frogImgs.containsKey(frogImg)) {
             if (!frogImgs.get(frogImg).contains(cvRect)) {
@@ -57,11 +55,25 @@ public class Human {
             }
             fileNumber.setValue(fileNumber.getValue() + 1);
             frogImg.setCvRectHuman(this, cvRect);
-            calculateID();
+//            calculateID();
 
         } else {
             frogImgs.put(frogImg, new HashSet<>());
-            addImg(frogImg, cvRect);
+            isInImg(frogImg, cvRect);
+        }
+    }
+
+    public void deleteImg(FrogImg frogImg, opencv_core.CvRect cvRect) {
+        if (frogImgs.containsKey(frogImg)) {
+            if (frogImgs.get(frogImg).contains(cvRect)) {
+                frogImgs.get(frogImg).remove(cvRect);
+                if (frogImgs.get(frogImg).isEmpty()) {
+                    frogImgs.remove(frogImg);
+                }
+                fileNumber.setValue(fileNumber.getValue() - 1);
+                //            calculateID();
+
+            }
         }
     }
 

@@ -84,7 +84,7 @@ public class SimplePaneController implements Initializable{
         File file = fileChooser.showOpenDialog(addFileButton.getScene().getWindow());
 //        System.out.println(file.getAbsolutePath() + " was chosen");
 
-//        mainApp.trainingEngine.addImg(file);
+//        mainApp.trainingEngine.isInImg(file);
 
         if (mainApp.trainingEngine != null) {
             simplePeopleTableView.setItems(mainApp.getSimplePeopleObservableList());

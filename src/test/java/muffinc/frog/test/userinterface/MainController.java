@@ -10,12 +10,14 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 import muffinc.frog.test.object.FrogImg;
+import muffinc.frog.test.object.Human;
 import org.bytedeco.javacpp.opencv_core;
 
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -87,6 +89,9 @@ public class MainController implements Initializable{
     private TextArea idText;
 
     @FXML
+    private TextField idTextField;
+
+    @FXML
     private ComboBox<String> facesCombo;
 
     private Main main;
@@ -95,6 +100,8 @@ public class MainController implements Initializable{
 
     public ObservableList<PeopleGem> peopleGemObservableList = FXCollections.observableArrayList();
     private ObservableList<PhotoGem> photoGemObservableList = FXCollections.observableArrayList();
+
+    private ObservableList<PhotoGem> peoplePhotoObservableList = FXCollections.observableArrayList();
 
 
     @Override
@@ -108,17 +115,11 @@ public class MainController implements Initializable{
 //                        .setFileName(event.getNewValue())
 //        );
 
-        humanTable.setItems(peopleGemObservableList);
-        addHumanTableListener();
-        humanNameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
-        humanPhotoNumberColumn.setCellValueFactory(cellData -> cellData.getValue().photoNumberProperty().asObject());
+        initHumanTable();
 
-        photoTable.setItems(photoGemObservableList);
+        initPhotoTable();
 
-        addPhotoPreviewListener();
-
-        countColumn.setCellValueFactory(cellData -> cellData.getValue().photoCountProperty().asObject());
-        photoNameColumn.setCellValueFactory(cellData -> cellData.getValue().fileNameProperty());
+        initHumanPhotoTable();
 
         //TODO add file edit and rename
 //        photoNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -128,10 +129,37 @@ public class MainController implements Initializable{
 //                        .setFileName(event.getNewValue())
 //        );
 
-        addFaceImagePreviewListener();
+        initFaceComboPreview();
 
     }
 
+    private void initHumanPhotoTable() {
+        humanPhotoTable.setItems(peoplePhotoObservableList);
+        addHumanPhotoTableListener();
+        humanPhotoNameColumn.setCellValueFactory(cellData -> cellData.getValue().fileNameProperty());
+        humanPhotoLocationColumn.setCellValueFactory(cellData -> cellData.getValue().locationProperty());
+    }
+
+    //TODO
+    private void addHumanPhotoTableListener() {
+
+    }
+
+    private void initPhotoTable() {
+        photoTable.setItems(photoGemObservableList);
+        addPhotoPreviewListener();
+        countColumn.setCellValueFactory(cellData -> cellData.getValue().photoCountProperty().asObject());
+        photoNameColumn.setCellValueFactory(cellData -> cellData.getValue().locationProperty());
+
+    }
+
+    private void initHumanTable() {
+        humanTable.setItems(peopleGemObservableList);
+        addHumanTableListener();
+        humanNameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
+        humanPhotoNumberColumn.setCellValueFactory(cellData -> cellData.getValue().photoNumberProperty().asObject());
+
+    }
 
 
     public Main getMain() {
@@ -143,9 +171,10 @@ public class MainController implements Initializable{
     }
 
 
-    public void addNewImg(File file) {
-        FrogImg frogImg = main.engine.addNewImg(file);
-        photoGemObservableList.add(new PhotoGem(frogImg));
+    public PhotoGem addNewImg(File file) {
+        PhotoGem photoGem = new PhotoGem(main.engine.addNewImg(file));
+        photoGemObservableList.add(photoGem);
+        return photoGem;
     }
 
     // TODO delete not yet finished
@@ -177,7 +206,7 @@ public class MainController implements Initializable{
         }
     }
 
-    private void addFaceImagePreviewListener() {
+    private void initFaceComboPreview() {
         facesCombo.valueProperty().addListener((observable, oldValue, newValue) -> {
 
             if (photoTable.getSelectionModel().getSelectedItem().getFrogImg().isDetected() && newValue != null) {
@@ -193,6 +222,9 @@ public class MainController implements Initializable{
                 }
 
                 repaintIdText(newValue);
+
+                repaintHumanText(newValue);
+
             }
         });
     }
@@ -229,12 +261,23 @@ public class MainController implements Initializable{
         });
     }
 
-    //TODO
     private void addHumanTableListener() {
 
         humanTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 
-            //TODO update humanPhotoTable
+            if (humanTable.getSelectionModel().getSelectedItem() != null) {
+
+                Human human = humanTable.getSelectionModel().getSelectedItem().getHuman();
+
+                HashSet<FrogImg> hashSet = new HashSet<>();
+
+                peoplePhotoObservableList.clear();
+
+                for (FrogImg frogImg : human.frogImgs.keySet()) {
+                    peoplePhotoObservableList.add(new PhotoGem(frogImg));
+                }
+
+            }
 
         });
     }
@@ -320,6 +363,19 @@ public class MainController implements Initializable{
         } else {
             idText.setText("Please Select Face.");
         }
+    }
+
+    private void repaintHumanText(String newValue) {
+
+        int i = parseSelectedFaceIndex(newValue);
+
+        if (i >= 0) {
+            FrogImg frogImg = photoTable.getSelectionModel().getSelectedItem().getFrogImg();
+            opencv_core.CvRect cvRect = frogImg.getCvRects().get(i);
+
+            //TODO
+        }
+
     }
 
     public void handleIDButton() {
