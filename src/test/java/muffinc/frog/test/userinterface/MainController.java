@@ -149,6 +149,7 @@ public class MainController implements Initializable{
                 repaintHumanPhotoImageView(humanPhotoTable.getSelectionModel().getSelectedItem(),
                         humanTable.getSelectionModel().getSelectedItem().getHuman());
             }
+
         });
     }
 
@@ -156,7 +157,7 @@ public class MainController implements Initializable{
         photoTable.setItems(photoGemObservableList);
         addPhotoPreviewListener();
         countColumn.setCellValueFactory(cellData -> cellData.getValue().photoCountProperty().asObject());
-        photoNameColumn.setCellValueFactory(cellData -> cellData.getValue().locationProperty());
+        photoNameColumn.setCellValueFactory(cellData -> cellData.getValue().fileNameProperty());
 
     }
 
@@ -166,6 +167,23 @@ public class MainController implements Initializable{
         humanNameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
         humanPhotoNumberColumn.setCellValueFactory(cellData -> cellData.getValue().photoNumberProperty().asObject());
 
+    }
+
+    private void addHumanTableListener() {
+        humanTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (humanTable.getSelectionModel().getSelectedItem() != null) {
+                Human human = humanTable.getSelectionModel().getSelectedItem().getHuman();
+
+                peoplePhotoObservableList.clear();
+
+                for (FrogImg frogImg : human.frogImgs.keySet()) {
+                    peoplePhotoObservableList.add(new PhotoGem(frogImg));
+                }
+
+                repaintHumanPhotoImageView(null, null);
+            }
+            humanPhotoTable.getSelectionModel().selectFirst();
+        });
     }
 
 
@@ -266,27 +284,13 @@ public class MainController implements Initializable{
                 repaintFacesCombo(selected);
                 repaintHumanText(null);
             }
+
+            facesCombo.getSelectionModel().selectFirst();
+
         });
+
     }
 
-    private void addHumanTableListener() {
-
-        humanTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (humanTable.getSelectionModel().getSelectedItem() != null) {
-                Human human = humanTable.getSelectionModel().getSelectedItem().getHuman();
-
-                HashSet<FrogImg> hashSet = new HashSet<>();
-
-                peoplePhotoObservableList.clear();
-
-                for (FrogImg frogImg : human.frogImgs.keySet()) {
-                    peoplePhotoObservableList.add(new PhotoGem(frogImg));
-                }
-
-                repaintHumanPhotoImageView(null, null);
-            }
-        });
-    }
 
     public void handleScanButton() {
         if (photoTable.getSelectionModel().getSelectedItem() != null) {
@@ -320,6 +324,7 @@ public class MainController implements Initializable{
             }
             resetFaceImageView();
             repaintHumanText(null);
+            facesCombo.getSelectionModel().selectFirst();
         }
     }
 
@@ -360,7 +365,7 @@ public class MainController implements Initializable{
     private void repaintIdText(String newValue) {
         int i = parseSelectedFaceIndex(newValue);
 
-        //TODO repaint Not Yet Finished.
+        //TODO is this bug free?
         if (i >= 0) {
             FrogImg frogImg = photoTable.getSelectionModel().getSelectedItem().getFrogImg();
             opencv_core.CvRect cvRect = frogImg.getCvRects().get(i);
@@ -402,8 +407,9 @@ public class MainController implements Initializable{
     }
 
 
+    //TODO add detect all
     public void handleDetectAllButton() {
-        //TODO add detect all
+
     }
 
 }

@@ -55,7 +55,7 @@ public class Human {
             }
             fileNumber.setValue(fileNumber.getValue() + 1);
             frogImg.setCvRectHuman(this, cvRect);
-//            calculateID();
+            calculateID();
 
         } else {
             frogImgs.put(frogImg, new HashSet<>());
@@ -71,7 +71,7 @@ public class Human {
                     frogImgs.remove(frogImg);
                 }
                 fileNumber.setValue(fileNumber.getValue() - 1);
-                //            calculateID();
+                calculateID();
 
             }
         }

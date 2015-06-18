@@ -110,6 +110,7 @@ public class TrainingEngine {
         } else {
             FrogImg frogImg = new FrogImg(file, this);
             humanFactory.frogImgTable.put(file, frogImg);
+            frogImg.detectFace();
             return frogImg;
         }
     }
