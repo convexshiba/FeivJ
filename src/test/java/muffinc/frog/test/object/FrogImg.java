@@ -9,6 +9,7 @@ import javafx.scene.image.Image;
 import muffinc.frog.test.Jama.Matrix;
 import muffinc.frog.test.detection.FaceDetection;
 import muffinc.frog.test.eigenface.FileManager;
+import muffinc.frog.test.eigenface.TrainingEngine;
 import org.bytedeco.javacpp.opencv_core;
 
 import java.io.File;
@@ -40,6 +41,8 @@ import static org.bytedeco.javacpp.opencv_highgui.*;
  */
 public class FrogImg {
 
+    TrainingEngine trainingEngine;
+
     public IplImage originalIplImage;
     public IplImage currentIplImage;
     public Image currentImage;
@@ -66,7 +69,8 @@ public class FrogImg {
     private Metadata metadata = null;
 
 
-    public FrogImg(File file) {
+    public FrogImg(File file, TrainingEngine trainingEngine) {
+        this.trainingEngine = trainingEngine;
         this.file = file;
         originalIplImage = cvLoadImage(file.getAbsolutePath());
         currentIplImage = originalIplImage.clone();
@@ -97,6 +101,16 @@ public class FrogImg {
             return cvRects;
         } else {
             return null;
+        }
+    }
+
+    public String whoIsThisCvRect(CvRect cvRect) {
+        if (rectToHuman.containsKey(cvRect)) {
+            return rectToHuman.get(cvRect).name;
+        } else if (cvRects.contains(cvRect)) {
+            return "新人?";
+        } else {
+            throw new IllegalAccessError("This is cvRect is not found in this Human");
         }
     }
 
@@ -211,6 +225,11 @@ public class FrogImg {
             cvRects = FaceDetection.detectFaces(file);
             detectedFaces.setValue(cvRects.size());
             System.out.println("detectFace() found " + cvRects.size() + " faces");
+
+            for (CvRect cvRect : cvRects) {
+                trainingEngine.getCvRectID(this);
+            }
+
         }
         updateCurrentIplAndImage();
     }

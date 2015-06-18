@@ -398,6 +398,7 @@ public class MainController implements Initializable{
 
     }
 
+    @Deprecated
     public void handleIDButton() {
 
         int i = parseSelectedFaceIndex(facesCombo.getValue());

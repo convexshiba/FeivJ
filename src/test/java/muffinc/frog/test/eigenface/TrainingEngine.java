@@ -108,7 +108,7 @@ public class TrainingEngine {
             System.out.println(file.getAbsolutePath() + " is already in the library");
             return humanFactory.frogImgTable.get(file);
         } else {
-            FrogImg frogImg = new FrogImg(file);
+            FrogImg frogImg = new FrogImg(file, this);
             humanFactory.frogImgTable.put(file, frogImg);
             return frogImg;
         }
@@ -147,9 +147,16 @@ public class TrainingEngine {
 //        }
 //    }
 
+    @Deprecated
     public void getCvRectID(FrogImg frogImg, opencv_core.CvRect cvRect) {
         Matrix rectID = pca.project(FileManager.getColMatrix(frogImg, cvRect));
         frogImg.idMatrices.put(cvRect, rectID);
+    }
+
+    public void getCvRectID(FrogImg frogImg) {
+        for (opencv_core.CvRect cvRect : frogImg.getCvRects()) {
+            frogImg.idMatrices.put(cvRect, pca.project(FileManager.getColMatrix(frogImg, cvRect)));
+        }
     }
 
     public Human whosthis(FrogImg frogImg, opencv_core.CvRect cvRect) {
