@@ -166,8 +166,10 @@ public class TrainingEngine {
         HashSet<Human> humans = new HashSet<>();
 
         for (Human human : humanFactory.nameTable.values()) {
-            if (euclidean.getDistance(thisID, human.getIdMatrix()) < ID_THRESHOLD) {
-                humans.add(human);
+            if (human.hasIDMatrix()) {
+                if (euclidean.getDistance(thisID, human.getIdMatrix()) < ID_THRESHOLD) {
+                    humans.add(human);
+                }
             }
         }
 
@@ -320,7 +322,7 @@ public class TrainingEngine {
 //
 //                    FrogTrainImg frogTrainImg = new FrogTrainImg(file, temp, this);
 ////                    humanFactory.frogImgTable.put(file, imgMatrix);
-////                    humanFactory.nameTable.get(label).isInImg(imgMatrix);
+////                    humanFactory.nameTable.get(label).setInImg(imgMatrix);
 //                    humanFactory.addImgToHuman(frogTrainImg, label);
 //                    frogTrainImg.setVectorized(vectorize(temp));
 //                    testingImgSet.add(frogTrainImg);

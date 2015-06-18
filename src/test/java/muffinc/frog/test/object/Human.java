@@ -47,19 +47,23 @@ public class Human {
         fileNumber = new SimpleIntegerProperty(0);
     }
 
-    public void isInImg(FrogImg frogImg, opencv_core.CvRect cvRect) {
+    public void setInImg(FrogImg frogImg, opencv_core.CvRect cvRect) {
 //        frogImgs.add(frogImg);
-        if (frogImgs.containsKey(frogImg)) {
-            if (!frogImgs.get(frogImg).contains(cvRect)) {
-                frogImgs.get(frogImg).add(cvRect);
-            }
-            fileNumber.setValue(fileNumber.getValue() + 1);
-            frogImg.setCvRectHuman(this, cvRect);
-            calculateID();
+        if (idMatrix != null) {
+            if (frogImgs.containsKey(frogImg)) {
+                if (!frogImgs.get(frogImg).contains(cvRect)) {
+                    frogImgs.get(frogImg).add(cvRect);
+                }
+                fileNumber.setValue(fileNumber.getValue() + 1);
+                frogImg.setCvRectHuman(this, cvRect);
+                calculateID();
 
+            } else {
+                frogImgs.put(frogImg, new HashSet<>());
+                setInImg(frogImg, cvRect);
+            }
         } else {
-            frogImgs.put(frogImg, new HashSet<>());
-            isInImg(frogImg, cvRect);
+            idMatrix = frogImg.idMatrices.get(cvRect).copy();
         }
     }
 
@@ -93,5 +97,9 @@ public class Human {
         } else {
             throw new IllegalAccessError(name + "'s idMatrix has not been calculated");
         }
+    }
+
+    public boolean hasIDMatrix() {
+        return idMatrix != null;
     }
 }

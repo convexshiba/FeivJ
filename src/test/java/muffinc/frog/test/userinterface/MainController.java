@@ -175,11 +175,9 @@ public class MainController implements Initializable{
                 Human human = humanTable.getSelectionModel().getSelectedItem().getHuman();
 
                 peoplePhotoObservableList.clear();
-
                 for (FrogImg frogImg : human.frogImgs.keySet()) {
                     peoplePhotoObservableList.add(new PhotoGem(frogImg));
                 }
-
                 repaintHumanPhotoImageView(null, null);
             }
             humanPhotoTable.getSelectionModel().selectFirst();
@@ -209,7 +207,7 @@ public class MainController implements Initializable{
     }
 
     public void handleAddFileButton() {
-        String[] extensions = {"*.jpeg", "*.jpg", "*.pgm"};
+        String[] extensions = {"*.jpeg", "*.jpg", "*.pgm", "*.tif"};
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Image Files", extensions);
         fileChooser.getExtensionFilters().add(extFilter);
 
@@ -219,6 +217,17 @@ public class MainController implements Initializable{
                 System.out.println(file.getAbsolutePath() + " was chosen");
                 addNewImg(file);
             }
+        }
+
+        updateHumanObservableList();
+    }
+
+    //TODO wrong update method
+    public void updateHumanObservableList() {
+        peopleGemObservableList.clear();
+
+        for (Human human : main.engine.humanFactory.nameTable.values()) {
+            peopleGemObservableList.add(new PeopleGem(human));
         }
     }
 

@@ -1,31 +1,19 @@
 package muffinc.frog.test.userinterface;
 
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.StreamException;
 import javafx.application.Application;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import muffinc.frog.test.eigenface.TrainingEngine;
-import muffinc.frog.test.object.FrogImg;
 import muffinc.frog.test.object.Human;
-import muffinc.frog.test.simpleui.SimplePaneController;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.bytedeco.javacpp.opencv_core;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
-import java.nio.file.Files;
-import java.util.Set;
 
 public class Main extends Application {
 
@@ -132,7 +120,7 @@ public class Main extends Application {
     private Human newHuman(String name) {
 
         Human human = engine.humanFactory.newHuman(name);
-        mainController.peopleGemObservableList.add(new PeopleGem(human));
+        mainController.updateHumanObservableList();
 
         return human;
     }
@@ -144,18 +132,19 @@ public class Main extends Application {
             if (humanFile.listFiles().length == 0) {
                 System.out.println(humanFile.getName().substring(2) + " is not a valid Human profile.");
             } else {
-                Human human = newHuman(humanFile.getName().substring(2));
+                Human human = engine.humanFactory.newHuman(humanFile.getName().substring(2));
 
                 for (File picFile : humanFile.listFiles()) {
                     PhotoGem photoGem = mainController.addNewImg(picFile);
                     photoGem.getFrogImg().detectFace();
 
                     for (opencv_core.CvRect cvRect : photoGem.getFrogImg().getCvRects()) {
-                        human.isInImg(photoGem.getFrogImg(), cvRect);
+                        human.setInImg(photoGem.getFrogImg(), cvRect);
                     }
 
                 }
             }
         }
+        mainController.updateHumanObservableList();
     }
 }

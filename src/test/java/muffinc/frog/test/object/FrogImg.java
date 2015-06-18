@@ -228,6 +228,11 @@ public class FrogImg {
 
             for (CvRect cvRect : cvRects) {
                 trainingEngine.getCvRectID(this);
+
+                Human human = trainingEngine.whosthis(this, cvRect);
+                if (human != null) {
+                    rectToHuman.put(cvRect, human);
+                }
             }
 
         }
