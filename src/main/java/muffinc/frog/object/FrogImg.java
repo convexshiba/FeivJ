@@ -40,18 +40,17 @@ import static org.bytedeco.javacpp.opencv_highgui.cvLoadImage;
 public class FrogImg {
 
     public IplImage originalIplImage;
-    public IplImage currentIplImage;
     public Image currentImage;
     public IntegerProperty detectedFaces = new SimpleIntegerProperty(-1);
     public HashMap<CvRect, Human> rectToHuman = new HashMap<>();
     public HashMap<CvRect, Matrix> idMatrices = new HashMap<>();
-    TrainingEngine trainingEngine;
+    private TrainingEngine trainingEngine;
     private File file;
-    private Matrix matrix;
-    private Matrix vectorized;
-    private boolean isFace;
+//    private Matrix matrix;
+//    private Matrix vectorized;
+//    private boolean isFace;
     private Matrix idMatrix;
-    private boolean isScanned;
+//    private boolean isScanned;
     private LinkedList<CvRect> cvRects = null;
     private Metadata metadata = null;
 
@@ -60,10 +59,10 @@ public class FrogImg {
         this.trainingEngine = trainingEngine;
         this.file = file;
         originalIplImage = cvLoadImage(file.getAbsolutePath());
-        currentIplImage = originalIplImage.clone();
-        currentImage = SwingFXUtils.toFXImage(currentIplImage.getBufferedImage(), null);
+//        currentIplImage = originalIplImage.clone();
+        currentImage = SwingFXUtils.toFXImage(originalIplImage.getBufferedImage(), null);
 
-        isScanned = false;
+//        isScanned = false;
 
         try {
             metadata = ImageMetadataReader.readMetadata(file);
@@ -103,7 +102,7 @@ public class FrogImg {
 
     private void updateCurrentIplAndImage() {
 
-        currentIplImage = originalIplImage.clone();
+        IplImage currentIplImage = originalIplImage.clone();
 
         CvFont font = new CvFont();
         cvInitFont(font, CV_FONT_HERSHEY_SIMPLEX, 1, 1, 0, 2, CV_AA);
@@ -117,21 +116,21 @@ public class FrogImg {
         currentImage = SwingFXUtils.toFXImage(currentIplImage.getBufferedImage(), null);
     }
 
-    public Matrix getVectorized() {
-        return vectorized;
-    }
+//    public Matrix getVectorized() {
+//        return vectorized;
+//    }
 
-    public void setVectorized(Matrix vectorized) {
-        this.vectorized = vectorized;
-    }
+//    public void setVectorized(Matrix vectorized) {
+//        this.vectorized = vectorized;
+//    }
 
-    public Matrix getMatrix() {
-        return matrix;
-    }
+//    public Matrix getMatrix() {
+//        return matrix;
+//    }
 
-    public void setMatrix(Matrix matrix) {
-        this.matrix = matrix;
-    }
+//    public void setMatrix(Matrix matrix) {
+//        this.matrix = matrix;
+//    }
 
     public boolean isProjected() {
         return idMatrix != null;
@@ -228,13 +227,13 @@ public class FrogImg {
         this.file = file;
     }
 
-    public boolean isScanned() {
-        return isScanned;
-    }
-
-    public void setIsScaned(boolean isScaned) {
-        this.isScanned = isScaned;
-    }
+//    public boolean isScanned() {
+//        return isScanned;
+//    }
+//
+//    public void setIsScaned(boolean isScaned) {
+//        this.isScanned = isScaned;
+//    }
 
     public LinkedList<CvRect> getCvRects() {
         return cvRects;
