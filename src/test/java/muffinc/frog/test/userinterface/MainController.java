@@ -1,5 +1,6 @@
 package muffinc.frog.test.userinterface;
 
+import com.sun.javafx.font.freetype.HBGlyphLayout;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -7,6 +8,8 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 import muffinc.frog.test.object.FrogImg;
@@ -23,8 +26,8 @@ import java.util.ResourceBundle;
 
 public class MainController implements Initializable{
 
-    @FXML
-    private MenuBar menuBar;
+//    @FXML
+//    private MenuBar menuBar;
     
     @FXML
     public TableView<PhotoGem> photoTable;
@@ -48,15 +51,20 @@ public class MainController implements Initializable{
     private TableColumn<PhotoGem, String> humanPhotoLocationColumn;
 
 
-    //TODO center and auto resize ImageView
     @FXML
     private ImageView photoImageView;
+
+    @FXML
+    private HBox photoImageViewParent;
 
     @FXML
     private ImageView faceImageView;
 
     @FXML
-    private StackPane photoImageViewParent;
+    private ImageView humanPhotoImageView;
+
+    @FXML
+    private HBox humanPhotoImageViewParent;
 
     @FXML
     private Button addFileButton;
@@ -134,15 +142,21 @@ public class MainController implements Initializable{
     }
 
     private void initHumanPhotoTable() {
+        humanPhotoImageView.fitHeightProperty().bind(humanPhotoImageViewParent.heightProperty());
+
         humanPhotoTable.setItems(peoplePhotoObservableList);
         addHumanPhotoTableListener();
         humanPhotoNameColumn.setCellValueFactory(cellData -> cellData.getValue().fileNameProperty());
         humanPhotoLocationColumn.setCellValueFactory(cellData -> cellData.getValue().locationProperty());
     }
 
-    //TODO
     private void addHumanPhotoTableListener() {
-
+        humanPhotoTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (humanPhotoTable.getSelectionModel().getSelectedItem() != null) {
+                repaintHumanPhotoImageView(humanPhotoTable.getSelectionModel().getSelectedItem(),
+                        humanTable.getSelectionModel().getSelectedItem().getHuman());
+            }
+        });
     }
 
     private void initPhotoTable() {
@@ -264,9 +278,7 @@ public class MainController implements Initializable{
     private void addHumanTableListener() {
 
         humanTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-
             if (humanTable.getSelectionModel().getSelectedItem() != null) {
-
                 Human human = humanTable.getSelectionModel().getSelectedItem().getHuman();
 
                 HashSet<FrogImg> hashSet = new HashSet<>();
@@ -277,8 +289,8 @@ public class MainController implements Initializable{
                     peoplePhotoObservableList.add(new PhotoGem(frogImg));
                 }
 
+                repaintHumanPhotoImageView(null, null);
             }
-
         });
     }
 
@@ -320,6 +332,14 @@ public class MainController implements Initializable{
         faceImageView.setImage(null);
     }
 
+
+    private void repaintHumanPhotoImageView(PhotoGem selected, Human human) {
+        if (selected != null & human != null) {
+            humanPhotoImageView.setImage(selected.getFrogImg().getThisHumanImage(human));
+        } else {
+            humanPhotoImageView.setImage(null);
+        }
+    }
 
     private void repaintPhotoImageView(PhotoGem selected) {
         photoImageView.setImage(selected.getFrogImg().getCurrentImage());
@@ -373,7 +393,7 @@ public class MainController implements Initializable{
             FrogImg frogImg = photoTable.getSelectionModel().getSelectedItem().getFrogImg();
             opencv_core.CvRect cvRect = frogImg.getCvRects().get(i);
 
-            //TODO
+            //TODO repaint human ID
         }
 
     }
@@ -403,7 +423,7 @@ public class MainController implements Initializable{
 
 
     public void handleDetectAllButton() {
-        //TODO
+        //TODO add detect all
     }
 
 }

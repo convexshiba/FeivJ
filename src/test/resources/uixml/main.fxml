@@ -59,15 +59,15 @@
                         </VBox>
                         <SplitPane dividerPositions="0.40148698884758366" orientation="VERTICAL">
                           <items>
-                              <HBox alignment="CENTER" SplitPane.resizableWithParent="false">
+                              <AnchorPane>
                                  <children>
-                                    <StackPane fx:id="photoImageViewParent" HBox.hgrow="ALWAYS">
+                                    <HBox fx:id="photoImageViewParent" alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                        <children>
-                                          <ImageView fx:id="photoImageView" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER" />
+                                          <ImageView fx:id="photoImageView" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                        </children>
-                                    </StackPane>
+                                    </HBox>
                                  </children>
-                              </HBox>
+                              </AnchorPane>
                               <Accordion prefHeight="386.0" prefWidth="396.0">
                                 <panes>
                                   <TitledPane animated="false" text="Photo Info">
@@ -162,7 +162,20 @@
                               </SplitPane>
                            </children>
                         </VBox>
-                      <AnchorPane />
+                        <SplitPane dividerPositions="0.29797979797979796" prefHeight="160.0" prefWidth="200.0">
+                          <items>
+                              <AnchorPane>
+                                 <children>
+                                    <HBox fx:id="humanPhotoImageViewParent" alignment="CENTER" prefHeight="265.0" prefWidth="234.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <children>
+                                          <ImageView fx:id="humanPhotoImageView" pickOnBounds="true" preserveRatio="true" />
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </AnchorPane>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
+                          </items>
+                        </SplitPane>
                     </items>
                   </SplitPane>
                </content>

@@ -219,6 +219,20 @@ public class FrogImg {
         return currentImage;
     }
 
+    public Image getThisHumanImage(Human human) {
+
+        IplImage iplImage = originalIplImage.clone();
+
+        for (CvRect cvRect : cvRects) {
+            if (rectToHuman.get(cvRect) == human) {
+                cvRectangle(iplImage, cvPoint(cvRect.x(), cvRect.y()),
+                        cvPoint(cvRect.x() + cvRect.width(), cvRect.y() + cvRect.height()), CvScalar.YELLOW, 1, CV_AA, 0);
+            }
+        }
+
+        return SwingFXUtils.toFXImage(iplImage.getBufferedImage(), null);
+    }
+
     public void removeCvRect(int index) {
 
         CvRect cvRect = cvRects.get(index);
