@@ -85,12 +85,6 @@ public class MainController implements Initializable{
     private Button detectAllButton;
 
     @FXML
-    private Button idButton;
-
-    @FXML
-    private Button idAllButton;
-
-    @FXML
     private Button addPeopleButton;
 
     @FXML
@@ -122,7 +116,6 @@ public class MainController implements Initializable{
 //                        .get(event.getTablePosition().getRow()))
 //                        .setFileName(event.getNewValue())
 //        );
-
         initHumanTable();
 
         initPhotoTable();
@@ -235,7 +228,7 @@ public class MainController implements Initializable{
                     faceImageView.setViewport(rectangle2D);
                 }
 
-                repaintIdText(newValue);
+//                repaintIdText(newValue);
 
                 repaintHumanText(newValue);
 
@@ -271,6 +264,7 @@ public class MainController implements Initializable{
                 PhotoGem selected = photoTable.getSelectionModel().getSelectedItem();
                 repaintPhotoImageView(selected);
                 repaintFacesCombo(selected);
+                repaintHumanText(null);
             }
         });
     }
@@ -325,6 +319,7 @@ public class MainController implements Initializable{
                 repaintFacesCombo(selected);
             }
             resetFaceImageView();
+            repaintHumanText(null);
         }
     }
 
@@ -387,34 +382,18 @@ public class MainController implements Initializable{
 
     private void repaintHumanText(String newValue) {
 
-        int i = parseSelectedFaceIndex(newValue);
+        if (newValue != null) {
+            int i = parseSelectedFaceIndex(newValue);
 
-        if (i >= 0) {
-            FrogImg frogImg = photoTable.getSelectionModel().getSelectedItem().getFrogImg();
-            opencv_core.CvRect cvRect = frogImg.getCvRects().get(i);
+            if (i >= 0) {
+                FrogImg frogImg = photoTable.getSelectionModel().getSelectedItem().getFrogImg();
+                opencv_core.CvRect cvRect = frogImg.getCvRects().get(i);
 
-            //TODO repaint human ID
+                idTextField.setText(frogImg.whoIsThisCvRect(cvRect));
+            }
+        } else {
+            idTextField.clear();
         }
-
-    }
-
-    @Deprecated
-    public void handleIDButton() {
-
-        int i = parseSelectedFaceIndex(facesCombo.getValue());
-
-        if (i >= 0) {
-            FrogImg frogImg = photoTable.getSelectionModel().getSelectedItem().getFrogImg();
-            opencv_core.CvRect cvRect = frogImg.getCvRects().get(i);
-
-            main.engine.getCvRectID(frogImg, cvRect);
-
-            repaintIdText(facesCombo.getValue());
-        }
-    }
-
-    // TODO add all Button
-    public void handleIDAllButton() {
 
     }
 

@@ -108,8 +108,6 @@
                                                   <items>
                                                       <ComboBox fx:id="facesCombo" promptText="Please Scan This Photo First!" />
                                                     <Button fx:id="deleteFaceButton" mnemonicParsing="false" onAction="#handleDeleteFaceButton" text="Delete" />
-                                                      <Button fx:id="idButton" mnemonicParsing="false" onAction="#handleIDButton" text="ID" />
-                                                      <Button fx:id="idAllButton" mnemonicParsing="false" onAction="#handleIDAllButton" text="ID All" />
                                                   </items>
                                                 </ToolBar>
                                                 <ImageView fx:id="faceImageView" fitHeight="200.0" fitWidth="180.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" />
