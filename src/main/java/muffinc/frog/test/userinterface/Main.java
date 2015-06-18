@@ -65,7 +65,7 @@ public class Main extends Application {
         String filesxml = xStream.toXML(files);
 
 
-        File filesXML = new File("/Users/Meth/Documents/FROG/src/test/resources/appxml/" + "filesXML.xml");
+        File filesXML = new File("/Users/Meth/Documents/FROG/src/main/resources/appxml/" + "filesXML.xml");
         if (!filesXML.exists()) {
             filesXML.createNewFile();
         }

@@ -43,11 +43,11 @@ public class FaceDetection {
 
     // The cascade definition to be used for detection.
     public static final String CASCADE_FILE =
-            "/Users/Meth/Documents/FROG/src/test/resources/xml/haarcascade_frontalface_alt.xml";
+            "/Users/Meth/Documents/FROG/src/main/resources/xml/haarcascade_frontalface_alt.xml";
 
     @Deprecated
     public static final String FILE =
-            "/Users/Meth/Documents/FROG/src/test/resources/testtesttest copy/1280px-Solvay_conference_1927.jpg";
+            "/Users/Meth/Documents/FROG/src/main/resources/testtesttest copy/1280px-Solvay_conference_1927.jpg";
 
     public static LinkedList<CvRect> detectFaces(IplImage img) {
         IplImage greyImg = img.clone();
