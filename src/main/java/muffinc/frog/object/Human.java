@@ -47,24 +47,41 @@ public class Human {
         fileNumber = new SimpleIntegerProperty(0);
     }
 
-    public void setInImg(FrogImg frogImg, opencv_core.CvRect cvRect) {
-//        frogImgs.add(frogImg);
-        if (idMatrix != null) {
-            if (frogImgs.containsKey(frogImg)) {
-                if (!frogImgs.get(frogImg).contains(cvRect)) {
-                    frogImgs.get(frogImg).add(cvRect);
-                }
-                fileNumber.setValue(fileNumber.getValue() + 1);
-                frogImg.setCvRectHuman(this, cvRect);
-                calculateID();
+    public void linkWithImgCvRect(FrogImg frogImg, opencv_core.CvRect cvRect) {
 
-            } else {
-                frogImgs.put(frogImg, new HashSet<>());
-                setInImg(frogImg, cvRect);
-            }
-        } else {
-            idMatrix = frogImg.idMatrices.get(cvRect).copy();
+        if (!frogImgs.containsKey(frogImg)) {
+            frogImgs.put(frogImg, new HashSet<>());
         }
+
+        if (!frogImgs.get(frogImg).contains(cvRect)) {
+            frogImgs.get(frogImg).add(cvRect);
+            fileNumber.setValue(fileNumber.getValue() + 1);
+            frogImg.setCvRectHuman(this, cvRect);
+        }
+
+        if (idMatrix == null) {
+            idMatrix = frogImg.idMatrices.get(cvRect).copy();
+        } else {
+            calculateID();
+        }
+
+
+//        if (idMatrix != null) {
+//            if (frogImgs.containsKey(frogImg)) {
+//                if (!frogImgs.get(frogImg).contains(cvRect)) {
+//                    frogImgs.get(frogImg).add(cvRect);
+//                }
+//                fileNumber.setValue(fileNumber.getValue() + 1);
+//                frogImg.setCvRectHuman(this, cvRect);
+//                calculateID();
+//
+//            } else {
+//                frogImgs.put(frogImg, new HashSet<>());
+//                linkWithImgCvRect(frogImg, cvRect);
+//            }
+//        } else {
+//            idMatrix = frogImg.idMatrices.get(cvRect).copy();
+//        }
     }
 
     public void deleteImg(FrogImg frogImg, opencv_core.CvRect cvRect) {

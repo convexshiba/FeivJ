@@ -191,7 +191,11 @@ public class MainController implements Initializable{
 
 
     public PhotoGem addNewImg(File file) {
-        PhotoGem photoGem = new PhotoGem(main.engine.addNewImg(file));
+        return addNewImg(file, true);
+    }
+
+    public PhotoGem addNewImg(File file, boolean doScan) {
+        PhotoGem photoGem = new PhotoGem(main.engine.addNewImg(file, doScan));
         photoGemObservableList.add(photoGem);
         return photoGem;
     }
@@ -300,7 +304,7 @@ public class MainController implements Initializable{
     public void handleScanButton() {
         if (photoTable.getSelectionModel().getSelectedItem() != null) {
             PhotoGem selected = photoTable.getSelectionModel().getSelectedItem();
-            selected.getFrogImg().detectFace();
+            selected.getFrogImg().detectAndID();
             repaintPhotoImageView(selected);
             repaintFacesCombo(selected);
         }
@@ -308,7 +312,7 @@ public class MainController implements Initializable{
 
     public void handleScanAllButton() {
         for (PhotoGem photoGem : photoTable.getItems()) {
-            photoGem.getFrogImg().detectFace();
+            photoGem.getFrogImg().detectAndID();
             repaintPhotoImageView(photoGem);
 //            repaintFacesCombo(photoGem);
         }

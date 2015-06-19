@@ -1,6 +1,7 @@
 package muffinc.frog.eigenface;
 
 import muffinc.frog.Jama.Matrix;
+import muffinc.frog.detection.FaceDetection;
 import muffinc.frog.eigenface.metric.L1Distance;
 import muffinc.frog.object.FrogTrainImg;
 import muffinc.frog.object.Human;
@@ -35,7 +36,7 @@ import java.util.*;
  * zj45499 (at) gmail (dot) com
  */
 
-public class TrainingEngine {
+public class TrainingEngine extends FaceDetection {
 
 
     public static final int COMPONENT_NUMBER = 18;
@@ -103,14 +104,16 @@ public class TrainingEngine {
         humanFactory = new HumanFactory(this);
     }
 
-    public FrogImg addNewImg(File file) {
+    public FrogImg addNewImg(File file, boolean doScan) {
         if (humanFactory.frogImgTable.containsKey(file)) {
             System.out.println(file.getAbsolutePath() + " is already in the library");
             return humanFactory.frogImgTable.get(file);
         } else {
             FrogImg frogImg = new FrogImg(file, this);
             humanFactory.frogImgTable.put(file, frogImg);
-            frogImg.detectFace();
+            if (doScan) {
+                frogImg.detectAndID();
+            }
             return frogImg;
         }
     }
@@ -302,7 +305,7 @@ public class TrainingEngine {
 //
 //                    FrogTrainImg frogTrainImg = new FrogTrainImg(file, temp, this);
 ////                    humanFactory.frogImgTable.put(file, imgMatrix);
-////                    humanFactory.nameTable.get(label).setInImg(imgMatrix);
+////                    humanFactory.nameTable.get(label).linkWithImgCvRect(imgMatrix);
 //                    humanFactory.addImgToHuman(frogTrainImg, label);
 //                    frogTrainImg.setVectorized(vectorize(temp));
 //                    testingImgSet.add(frogTrainImg);

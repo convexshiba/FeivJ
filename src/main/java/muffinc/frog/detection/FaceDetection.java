@@ -1,15 +1,11 @@
 package muffinc.frog.detection;
 
-import muffinc.frog.Jama.Matrix;
 import muffinc.frog.displayio.Display;
-import muffinc.frog.eigenface.FileManager;
-import muffinc.frog.eigenface.TrainingEngine;
 import muffinc.frog.helper.ImageHelper;
 import org.bytedeco.javacpp.opencv_core.IplImage;
 import org.bytedeco.javacv.JavaCvErrorCallback;
 
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.LinkedList;
 
@@ -45,10 +41,6 @@ public class FaceDetection {
     public static final String CASCADE_FILE =
             "/Users/Meth/Documents/FROG/src/main/resources/xml/haarcascade_frontalface_alt.xml";
 
-    @Deprecated
-    public static final String FILE =
-            "/Users/Meth/Documents/FROG/src/main/resources/testtesttest copy/1280px-Solvay_conference_1927.jpg";
-
     public static LinkedList<CvRect> detectFaces(IplImage img) {
         IplImage greyImg = img.clone();
         if (greyImg.nChannels() != 1) {
@@ -78,7 +70,9 @@ public class FaceDetection {
     }
 
 
-    @Deprecated
+    public static final String FILE =
+            "/Users/Meth/Documents/FROG/src/main/resources/testtesttest copy/201404201524468276e.jpg";
+
     public static void main(String[] args) throws Exception {
         // This will redirect the OpenCV errors to the Java console to give you
         // feedback about any problems that may occur.
@@ -105,7 +99,7 @@ public class FaceDetection {
                 cvLoad(CASCADE_FILE));
 
         // We detect the faces.
-        CvSeq faces = cvHaarDetectObjects(grayImage, cascade, storage, 1.1, 1, CV_HAAR_SCALE_IMAGE);
+        CvSeq faces = cvHaarDetectObjects(grayImage, cascade, storage, 1.05, 1, CV_HAAR_DO_CANNY_PRUNING);
 
         // Clear storage.
         cvClearMemStorage(storage);
@@ -123,7 +117,7 @@ public class FaceDetection {
 
             CvFont font = new CvFont();
             cvInitFont(font, CV_FONT_HERSHEY_SIMPLEX, 1, 1, 0, 2, CV_AA);
-            cvPutText(originalImage, String.valueOf(i + 1), cvPoint(r.x() - 20, r.y() + 10), font, CvScalar.MAGENTA);
+//            cvPutText(originalImage, String.valueOf(i + 1), cvPoint(r.x() - 20, r.y() + 10), font, CvScalar.MAGENTA);
 
             cvRectangle(originalImage, cvPoint(r.x(), r.y()),
                     cvPoint(r.x() + r.width(), r.y() + r.height()), CvScalar.YELLOW, 1, CV_AA, 0);
@@ -150,20 +144,20 @@ public class FaceDetection {
         return cvRect(x, y, w_temp, h_temp);
     }
 
-    @Deprecated
-    public static boolean isRectFace(CvRect cvRect, IplImage img, TrainingEngine trainingEngine) {
-
-        cvSetImageROI(img, cvRect);
-        IplImage newImg = cvCreateImage(cvGetSize(img), IPL_DEPTH_8U, 1);
-        cvCopy(img, newImg);
-        cvResetImageROI(img);
-
-//        Display.display(newImg);
-        Matrix matrix = ImageHelper.getMatrixFromGrey(ImageHelper.resize(newImg));
-        BufferedImage image = FileManager.convertColMatrixToImage(ImageHelper.vectorize(matrix));
-        Display.display(image);
-
-        return trainingEngine.pca.isMatrixFace(matrix);
-    }
+//    @Deprecated
+//    public static boolean isRectFace(CvRect cvRect, IplImage img, TrainingEngine trainingEngine) {
+//
+//        cvSetImageROI(img, cvRect);
+//        IplImage newImg = cvCreateImage(cvGetSize(img), IPL_DEPTH_8U, 1);
+//        cvCopy(img, newImg);
+//        cvResetImageROI(img);
+//
+////        Display.display(newImg);
+//        Matrix matrix = ImageHelper.getMatrixFromGrey(ImageHelper.resize(newImg));
+//        BufferedImage image = FileManager.convertColMatrixToImage(ImageHelper.vectorize(matrix));
+//        Display.display(image);
+//
+//        return trainingEngine.pca.isMatrixFace(matrix);
+//    }
 
 }

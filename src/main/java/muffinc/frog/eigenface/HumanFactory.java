@@ -79,7 +79,7 @@ public class HumanFactory {
 //    public void addImgToHuman(FrogImg frogImg, String name, opencv_core.CvRect cvRect) {
 //        if (hasHuman(name)) {
 //            Human human = locateHuman(name);
-//            human.setInImg(frogImg, cvRect);
+//            human.linkWithImgCvRect(frogImg, cvRect);
 //            frogImg.setCvRectHuman(locateHuman(name), cvRect);
 ////            frogImgTable.put(frogTrainImg.file, frogTrainImg);
 //        } else {

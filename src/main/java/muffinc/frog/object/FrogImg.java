@@ -156,20 +156,34 @@ public class FrogImg {
         return cvRects.size();
     }
 
-    public void detectFace() {
+    public void detectAndID() {
         if (!isDetected()) {
             cvRects = FaceDetection.detectFaces(file);
             detectedFaces.setValue(cvRects.size());
-            System.out.println("detectFace() found " + cvRects.size() + " faces");
+            System.out.println("detectAndID() found " + cvRects.size() + " faces");
+            trainingEngine.projectAllCvRect(this);
 
             for (CvRect cvRect : cvRects) {
-                trainingEngine.projectAllCvRect(this);
 
                 Human human = trainingEngine.IDCvRectInFrogImg(this, cvRect);
                 if (human != null) {
-                    rectToHuman.put(cvRect, human);
+
+                    human.linkWithImgCvRect(this, cvRect);
+
                 }
             }
+
+        }
+        updateCurrentIplAndImage();
+    }
+
+    public void detect() {
+        if (!isDetected()) {
+            cvRects = FaceDetection.detectFaces(file);
+            detectedFaces.setValue(cvRects.size());
+            trainingEngine.projectAllCvRect(this);
+
+            System.out.println("detect() found " + cvRects.size() + " faces");
 
         }
         updateCurrentIplAndImage();

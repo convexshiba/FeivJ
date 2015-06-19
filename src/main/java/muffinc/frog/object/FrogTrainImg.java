@@ -182,10 +182,10 @@ public class FrogTrainImg implements Img {
 //        return cvRects.size();
 //    }
 //
-//    public void detectFace() {
+//    public void detectAndID() {
 //        cvRects = FaceDetection.detectFaces(file);
 //        detectedFaces.setValue(cvRects.size());
-//        System.out.println("detectFace() found " + cvRects.size() + " faces");
+//        System.out.println("detectAndID() found " + cvRects.size() + " faces");
 //    }
 //
 //    public void removeCvRect(int index) {

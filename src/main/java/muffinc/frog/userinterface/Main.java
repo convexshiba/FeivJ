@@ -8,6 +8,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import muffinc.frog.object.FrogImg;
 import muffinc.frog.object.Human;
 import muffinc.frog.eigenface.TrainingEngine;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
@@ -48,11 +49,6 @@ public class Main extends Application {
         engine = new TrainingEngine();
 
         loadHumans();
-
-    }
-
-    //TODO add files preloading
-    public void preload() {
 
     }
 
@@ -135,11 +131,14 @@ public class Main extends Application {
                 Human human = engine.humanFactory.newHuman(humanFile.getName().substring(2));
 
                 for (File picFile : humanFile.listFiles()) {
-                    PhotoGem photoGem = mainController.addNewImg(picFile);
-                    photoGem.getFrogImg().detectFace();
 
-                    for (opencv_core.CvRect cvRect : photoGem.getFrogImg().getCvRects()) {
-                        human.setInImg(photoGem.getFrogImg(), cvRect);
+                    FrogImg frogImg = mainController.addNewImg(picFile, false).getFrogImg();
+                    frogImg.detect();
+
+                    for (opencv_core.CvRect cvRect : frogImg.getCvRects()) {
+
+                        human.linkWithImgCvRect(frogImg, cvRect);
+
                     }
 
                 }
