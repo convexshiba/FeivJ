@@ -50,7 +50,7 @@ public class FrogImg {
 //    private Matrix vectorized;
 //    private boolean isFace;
     private Matrix idMatrix;
-    private boolean isScanned;
+//    private boolean isScanned;
     private LinkedList<CvRect> cvRects = null;
     private Metadata metadata = null;
 
@@ -225,6 +225,17 @@ public class FrogImg {
         updateCurrentIplAndImage();
     }
 
+    public void delete() {
+        if (isScanned()) {
+            for (CvRect cvRect : cvRects) {
+                if (rectToHuman.containsKey(cvRect)) {
+                    rectToHuman.get(cvRect).deleteImg(this, cvRect);
+                }
+            }
+            trainingEngine.humanFactory.frogImgTable.remove(file);
+        }
+    }
+
     public double getDistance() {
         return 0;
     }
@@ -242,12 +253,12 @@ public class FrogImg {
     }
 
     public boolean isScanned() {
-        return isScanned;
+        return cvRects != null;
     }
 
-    public void setIsScaned(boolean isScaned) {
-        this.isScanned = isScaned;
-    }
+//    public void setIsScaned(boolean isScaned) {
+//        this.isScanned = isScaned;
+//    }
 
     public LinkedList<CvRect> getCvRects() {
         return cvRects;

@@ -105,26 +105,13 @@ public class MainController implements Initializable{
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        //TODO add file edit and rename
-//        photoNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-//        photoNameColumn.setOnEditCommit(
-//                event -> (event.getTableView().getItems()
-//                        .get(event.getTablePosition().getRow()))
-//                        .setFileName(event.getNewValue())
-//        );
+
         initHumanTable();
 
         initPhotoTable();
 
         initHumanPhotoTable();
 
-        //TODO add file edit and rename
-//        photoNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-//        photoNameColumn.setOnEditCommit(
-//                event -> (event.getTableView().getItems()
-//                        .get(event.getTablePosition().getRow()))
-//                        .setFileName(event.getNewValue())
-//        );
 
         initFaceComboPreview();
 
@@ -200,9 +187,8 @@ public class MainController implements Initializable{
         return photoGem;
     }
 
-    // TODO delete not yet finished
     public void deleteImg(PhotoGem photoGem) {
-        FrogImg frogImg = photoGem.getFrogImg();
+        photoGem.getFrogImg().delete();
         photoGemObservableList.remove(photoGem);
     }
 

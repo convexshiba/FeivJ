@@ -120,9 +120,6 @@ public class TrainingEngine extends FaceDetection {
 
     //TODO delete not yet finished
     public void removeImg(FrogImg frogImg) {
-        if (frogImg.isScanned()) {
-
-        }
 
         humanFactory.frogImgTable.remove(frogImg.getFile());
     }
