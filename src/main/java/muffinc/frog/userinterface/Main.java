@@ -2,8 +2,10 @@ package muffinc.frog.userinterface;
 
 import com.thoughtworks.xstream.XStream;
 import javafx.application.Application;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
@@ -26,6 +28,7 @@ public class Main extends Application {
 
     Stage primaryStage;
 
+    ProgressBar progressBar = null;
 
 
     @Override
@@ -44,15 +47,39 @@ public class Main extends Application {
 
         primaryStage.setTitle("FROG测试");
         primaryStage.setScene(new Scene(root));
+
+        //TODO add a popup progress bar
+        //TODO Not working
+        Stage progressStage = initProgressBar();
+
         primaryStage.show();
 
         engine = new TrainingEngine();
+        progressBar.setProgress(0.5);
 
         loadHumans();
 
+        progressBar.setProgress(1);
+        progressStage.close();
     }
 
-    //TODO Store loaded files in xml
+    private Stage initProgressBar() throws IOException {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/uixml/progressBar.fxml"));
+        AnchorPane anchorPane = loader.load();
+        Stage newStage = new Stage();
+        newStage.initModality(Modality.WINDOW_MODAL);
+        newStage.initOwner(primaryStage);
+        ProgressBarController progressBarController = loader.getController();
+        progressBar = progressBarController.progressBar;
+        progressBar.setProgress(0);
+
+        newStage.setScene(new Scene(anchorPane));
+
+        newStage.show();
+        return newStage;
+    }
+
     @Override
     public void stop() throws Exception {
 
@@ -87,6 +114,7 @@ public class Main extends Application {
 
 
 
+    //TODO does not handle empty input right
     public void showAddPeopleDialogue() {
         try {
             FXMLLoader loader = new FXMLLoader();
