@@ -16,15 +16,13 @@ public class PCA {
     public static final int FACE_HEIGHT = 112;
 	ArrayList<Matrix> trainingSet;
 
-	@Deprecated
-	ArrayList<String> labels;
+//	@Deprecated
+//	ArrayList<String> labels;
 
-	int numOfComponents;
-	Matrix meanMatrix;
-	// Output
-	Matrix W;
-	ArrayList<FrogTrainImg> projectedTrainingSet;
-    TrainingEngine trainingEngine;
+	private int numOfComponents;
+	private Matrix meanMatrix;
+	private Matrix eigenfaces;
+//	private ArrayList<FrogTrainImg> projectedTrainingSet;
 
 //    public double infoRetainRatio;
     private BigDecimal sumOfEigenVal = BigDecimal.ZERO;
@@ -45,13 +43,13 @@ public class PCA {
         }
 
 		this.numOfComponents = numOfComponents;
-        this.trainingEngine = trainingEngine;
+//        this.trainingEngine = trainingEngine;
 
 		this.meanMatrix = getMean(this.trainingSet);
-		this.W = getFeature(this.trainingSet, this.numOfComponents);
+		this.eigenfaces = getFeature(this.trainingSet, this.numOfComponents);
 
 		// Construct projectedTrainingMatrix
-		this.projectedTrainingSet = new ArrayList<FrogTrainImg>();
+//		this.projectedTrainingSet = new ArrayList<FrogTrainImg>();
 //		for (int i = 0; i < trainingSet.size(); i++) {
 ////			ImgMatrix ptm = new ImgMatrix(project(trainingSet.get(i)), labels.get(i));
 //            trainingImg.get(i).setIdMatrix(project(trainingImg.get(i).getVectorized()));
@@ -79,64 +77,63 @@ public class PCA {
 
     }
 
-	@Deprecated
-	public PCA(ArrayList<Matrix> trainingSet, ArrayList<String> labels,
-			   int numOfComponents, TrainingEngine trainingEngine) throws Exception {
-
-		if(numOfComponents >= trainingSet.size()){
-			throw new Exception("the expected dimensions could not be achieved!");
-		}
-
-		this.trainingSet = trainingSet;
-		this.labels = labels;
-		this.numOfComponents = numOfComponents;
-
-		this.meanMatrix = getMean(this.trainingSet);
-		this.W = getFeature(this.trainingSet, this.numOfComponents);
-
-		// Construct projectedTrainingMatrix
-		this.projectedTrainingSet = new ArrayList<FrogTrainImg>();
-		for (int i = 0; i < trainingSet.size(); i++) {
-//			ImgMatrix ptm = new ImgMatrix(project(trainingSet.get(i)), labels.get(i));
-
-//            ImgMatrix ptm = new ImgMatrix()
-//			this.projectedTrainingSet.add(ptm);
-		}
-	}
+//	@Deprecated
+//	public PCA(ArrayList<Matrix> trainingSet, ArrayList<String> labels,
+//			   int numOfComponents, TrainingEngine trainingEngine) throws Exception {
+//
+//		if(numOfComponents >= trainingSet.size()){
+//			throw new Exception("the expected dimensions could not be achieved!");
+//		}
+//
+//		this.trainingSet = trainingSet;
+//		this.numOfComponents = numOfComponents;
+//
+//		this.meanMatrix = getMean(this.trainingSet);
+//		this.eigenfaces = getFeature(this.trainingSet, this.numOfComponents);
+//
+//		// Construct projectedTrainingMatrix
+//		this.projectedTrainingSet = new ArrayList<FrogTrainImg>();
+//		for (int i = 0; i < trainingSet.size(); i++) {
+////			ImgMatrix ptm = new ImgMatrix(project(trainingSet.get(i)), labels.get(i));
+//
+////            ImgMatrix ptm = new ImgMatrix()
+////			this.projectedTrainingSet.add(ptm);
+//		}
+//	}
 
     // calculate projected Matrix
     public Matrix project(Matrix input) {
-        return W.transpose().times(input.minus(meanMatrix));
+        return eigenfaces.transpose().times(input.minus(meanMatrix));
     }
 
     // returns the reconstructed Matrix as a col Matrix
 	public BufferedImage reconstBufferImg(Matrix idMatrix) {
-		Matrix restoredMatrix = getW().times(idMatrix).plus(getMeanMatrix());
+		Matrix restoredMatrix = getEigenfaces().times(idMatrix).plus(getMeanMatrix());
         return FileManager.convertColMatrixToImage(restoredMatrix);
     }
 
     public Matrix reconstMatrix(Matrix idMatrix) {
-        return getW().times(idMatrix).plus(getMeanMatrix());
+        return getEigenfaces().times(idMatrix).plus(getMeanMatrix());
     }
 
-    public boolean setAndReturnIsFace(FrogTrainImg frogTrainImg) {
-		Matrix reconstructedVector = ImageHelper.vectorize(reconstMatrix(frogTrainImg.getIdMatrix()));
-        boolean isFace = TrainingEngine.IS_FACE_THRESHOLD > new EuclideanDistance().getDistance(reconstructedVector, frogTrainImg.getVectorized());
-        frogTrainImg.setIsFace(isFace);
-        return frogTrainImg.isFace();
-    }
+//    public boolean setAndReturnIsFace(FrogTrainImg frogTrainImg) {
+//		Matrix reconstructedVector = ImageHelper.vectorize(reconstMatrix(frogTrainImg.getIdMatrix()));
+//        boolean isFace = TrainingEngine.IS_FACE_THRESHOLD > new EuclideanDistance().getDistance(reconstructedVector, frogTrainImg.getVectorized());
+//        frogTrainImg.setIsFace(isFace);
+//        return frogTrainImg.isFace();
+//    }
 
-	@Deprecated
-	public boolean isMatrixFace(Matrix matrix) {
-        Matrix recon = ImageHelper.vectorize(reconstMatrix(project(ImageHelper.vectorize(matrix))));
-		BufferedImage image = reconstBufferImg(project(ImageHelper.vectorize(matrix)));
-        System.out.println(new EuclideanDistance().getDistance(recon, ImageHelper.vectorize(matrix)));
-        Display.display(image);
+//	@Deprecated
+//	public boolean isMatrixFace(Matrix matrix) {
+//        Matrix recon = ImageHelper.vectorize(reconstMatrix(project(ImageHelper.vectorize(matrix))));
+//		BufferedImage image = reconstBufferImg(project(ImageHelper.vectorize(matrix)));
+//        System.out.println(new EuclideanDistance().getDistance(recon, ImageHelper.vectorize(matrix)));
+//        Display.display(image);
+//
+//        return TrainingEngine.IS_FACE_THRESHOLD > new EuclideanDistance().getDistance(recon, ImageHelper.vectorize(matrix));
+//    }
 
-        return TrainingEngine.IS_FACE_THRESHOLD > new EuclideanDistance().getDistance(recon, ImageHelper.vectorize(matrix));
-    }
-
-	// extract features, namely W
+	// extract features, namely eigenfaces
 	private Matrix getFeature(ArrayList<Matrix> input, int componantNum) {
 		int i, j;
 
@@ -238,14 +235,14 @@ public class PCA {
 		return all.times((double) 1 / length);
 	}
 
-	public Matrix getW() {
-		return this.W;
+	public Matrix getEigenfaces() {
+		return this.eigenfaces;
 	}
 
-	public ArrayList<FrogTrainImg> getProjectedTrainingSet() {
-		return this.projectedTrainingSet;
-	}
-	
+//	public ArrayList<FrogTrainImg> getProjectedTrainingSet() {
+//		return this.projectedTrainingSet;
+//	}
+//
 	public Matrix getMeanMatrix() {
 		return meanMatrix;
 	}
@@ -255,21 +252,17 @@ public class PCA {
 	}
 
     public double getInfoRatio() {
-//        System.out.println("getInfoRatie: " + sumOfSelected);
-//        System.out.println("getInfoRatie: " + sumOfEigenVal);
-//        System.out.println(Arrays.toString(d));
-
         return sumOfSelected.divide(sumOfEigenVal, BigDecimal.ROUND_CEILING).doubleValue();
     }
 	
-	public Matrix reconstruct(int whichImage, int dimensions) throws Exception {
-		if(dimensions > this.numOfComponents)
-			throw new Exception("dimensions should be smaller than the number of components");
-		
-		Matrix afterPCA = this.projectedTrainingSet.get(whichImage).getIdMatrix().getMatrix(0, dimensions - 1, 0, 0);
-		Matrix eigen = this.getW().getMatrix(0, 10304-1, 0, dimensions - 1);
-		return eigen.times(afterPCA).plus(this.getMeanMatrix());
-		
-	}
+//	public Matrix reconstruct(int whichImage, int dimensions) throws Exception {
+//		if(dimensions > this.numOfComponents)
+//			throw new Exception("dimensions should be smaller than the number of components");
+//
+//		Matrix afterPCA = this.projectedTrainingSet.get(whichImage).getIdMatrix().getMatrix(0, dimensions - 1, 0, 0);
+//		Matrix eigen = this.getEigenfaces().getMatrix(0, 10304-1, 0, dimensions - 1);
+//		return eigen.times(afterPCA).plus(this.getMeanMatrix());
+//
+//	}
 
 }

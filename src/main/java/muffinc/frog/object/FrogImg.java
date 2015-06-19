@@ -50,7 +50,7 @@ public class FrogImg {
 //    private Matrix vectorized;
 //    private boolean isFace;
     private Matrix idMatrix;
-//    private boolean isScanned;
+    private boolean isScanned;
     private LinkedList<CvRect> cvRects = null;
     private Metadata metadata = null;
 
@@ -163,9 +163,9 @@ public class FrogImg {
             System.out.println("detectFace() found " + cvRects.size() + " faces");
 
             for (CvRect cvRect : cvRects) {
-                trainingEngine.getCvRectID(this);
+                trainingEngine.projectAllCvRect(this);
 
-                Human human = trainingEngine.whosthis(this, cvRect);
+                Human human = trainingEngine.IDCvRectInFrogImg(this, cvRect);
                 if (human != null) {
                     rectToHuman.put(cvRect, human);
                 }
@@ -227,13 +227,13 @@ public class FrogImg {
         this.file = file;
     }
 
-//    public boolean isScanned() {
-//        return isScanned;
-//    }
-//
-//    public void setIsScaned(boolean isScaned) {
-//        this.isScanned = isScaned;
-//    }
+    public boolean isScanned() {
+        return isScanned;
+    }
+
+    public void setIsScaned(boolean isScaned) {
+        this.isScanned = isScaned;
+    }
 
     public LinkedList<CvRect> getCvRects() {
         return cvRects;

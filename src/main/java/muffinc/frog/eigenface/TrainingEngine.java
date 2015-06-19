@@ -57,9 +57,9 @@ public class TrainingEngine {
 //    ArrayList<Matrix> testingSet = new ArrayList<Matrix>();
 //    ArrayList<String> trueLabels = new ArrayList<String>();
 //    ArrayList<FrogTrainImg> testingImgSet = new ArrayList<FrogTrainImg>();
-    private int componentsRetained;
-    private int trainNums;
-    private int knn_k;
+//    private int componentsRetained;
+//    private int trainNums;
+//    private int knn_k;
 
     private Metric euclidean = new EuclideanDistance();
 
@@ -139,13 +139,13 @@ public class TrainingEngine {
     }
 
 
-    public void getCvRectID(FrogImg frogImg) {
+    public void projectAllCvRect(FrogImg frogImg) {
         for (opencv_core.CvRect cvRect : frogImg.getCvRects()) {
             frogImg.idMatrices.put(cvRect, pca.project(FileManager.getColMatrix(frogImg, cvRect)));
         }
     }
 
-    public Human whosthis(FrogImg frogImg, opencv_core.CvRect cvRect) {
+    public Human IDCvRectInFrogImg(FrogImg frogImg, opencv_core.CvRect cvRect) {
         Matrix thisID = frogImg.idMatrices.get(cvRect);
 
         HashSet<Human> humans = new HashSet<>();
@@ -161,18 +161,16 @@ public class TrainingEngine {
         if (humans.size() == 1) {
             return humans.toArray(new Human[1])[0];
         } else if (humans.size() == 0) {
-            System.out.println("whosthis failed");
+            System.out.println("IDCvRectInFrogImg failed");
             return null;
         } else {
-            System.out.println("whosthis found multiple human");
+            System.out.println("IDCvRectInFrogImg found multiple human");
             return null;
         }
     }
 
-    public static void main(String args[]) {
 
-        TrainingEngine engine = new TrainingEngine();
-
+//        TrainingEngine engine = new TrainingEngine();
 //        for (ImgMatrix imgMatrix : engine.humanFactory.frogImgTable.values()) {
 //            if (!imgMatrix.isFace()) {
 //                System.out.println(imgMatrix.file.getAbsolutePath() + " is found not to be a Face");
@@ -217,9 +215,6 @@ public class TrainingEngine {
 //                System.out.println(metric.getDistance(list.get(i), list.get(j)));
 //            }
 //        }
-
-
-    }
 
 //    @Deprecated
 //    public TrainingEngine(int componentsRetained, int trainNums, int knn_k) {
@@ -343,7 +338,7 @@ public class TrainingEngine {
 //
 ////            Display.display(FileManager.convertColMatrixToImage(fe.getMeanMatrix()));
 //
-////            FileManager.convertMatricetoImage(fe.getW(), featureExtractionMode);
+////            FileManager.convertMatricetoImage(fe.getEigenfaces(), featureExtractionMode);
 //
 //
 //            for (int metrictype = 0; metrictype < 3; metrictype++) {
@@ -388,7 +383,7 @@ public class TrainingEngine {
 //
 ////            Display.display(FileManager.convertColMatrixToImage(fe.getMeanMatrix()));
 //
-////            FileManager.convertMatricetoImage(fe.getW(), featureExtractionMode);
+////            FileManager.convertMatricetoImage(fe.getEigenfaces(), featureExtractionMode);
 //
 //
 //            for (int metrictype = 2; metrictype < 3; metrictype++) {
@@ -501,7 +496,7 @@ public class TrainingEngine {
 //
 ////            Display.display(FileManager.convertColMatrixToImage(fe.getMeanMatrix()));
 //
-////            FileManager.convertMatricetoImage(fe.getW(), featureExtractionMode);
+////            FileManager.convertMatricetoImage(fe.getEigenfaces(), featureExtractionMode);
 //
 //
 //            for (int j = 0; j < 3; j++) {
@@ -526,7 +521,7 @@ public class TrainingEngine {
 //                ArrayList<FrogTrainImg> projectedTrainingSet = fe.getProjectedTrainingSet();
 //                int accurateNum = 0;
 //                for(int i = 0 ; i < testingSet.size(); i ++){
-//                    Matrix testCase = fe.getW().transpose().times(testingSet.get(i).minus(fe.getMeanMatrix()));
+//                    Matrix testCase = fe.getEigenfaces().transpose().times(testingSet.get(i).minus(fe.getMeanMatrix()));
 //                    String result = new KNN().assignLabel(projectedTrainingSet.toArray(new FrogTrainImg[0]), testCase, knn_k, metric);
 //
 //                    if(result.equals(trueLabels.get(i)))
@@ -742,7 +737,7 @@ public class TrainingEngine {
 ////            ArrayList<projectedFaceMatrix> projectedTrainingSet = fe.getProjectedTrainingSet();
 ////            int accurateNum = 0;
 ////            for(int i = 0 ; i < testingSet.size(); i ++){
-////                Matrix testCase = fe.getW().transpose().times(testingSet.get(i).minus(fe.getMeanMatrix()));
+////                Matrix testCase = fe.getEigenfaces().transpose().times(testingSet.get(i).minus(fe.getMeanMatrix()));
 ////                String result = KNN.assignLabel(projectedTrainingSet.toArray(new projectedTrainingMatrix[0]), testCase, knn_k, metric);
 ////
 ////                if(result == trueLabels.get(i))
