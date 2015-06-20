@@ -49,6 +49,10 @@ public class Human {
 
     public void linkWithImgCvRect(FrogImg frogImg, opencv_core.CvRect cvRect) {
 
+        if (frogImg.rectToHuman.keySet().contains(cvRect) && frogImg.rectToHuman.get(cvRect) != this) {
+            frogImg.rectToHuman.get(cvRect).deleteImg(frogImg, cvRect);
+        }
+
         if (!frogImgs.containsKey(frogImg)) {
             frogImgs.put(frogImg, new HashSet<>());
         }
@@ -64,6 +68,7 @@ public class Human {
         } else {
             calculateID();
         }
+
 
 
 //        if (idMatrix != null) {
@@ -93,9 +98,9 @@ public class Human {
                 }
                 fileNumber.setValue(fileNumber.getValue() - 1);
                 calculateID();
-
             }
         }
+        frogImg.updatePeopleNames();
     }
 
     public void calculateID() {

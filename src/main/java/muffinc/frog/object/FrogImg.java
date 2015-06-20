@@ -4,6 +4,8 @@ import com.drew.imaging.ImageMetadataReader;
 import com.drew.metadata.Metadata;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import muffinc.frog.Jama.Matrix;
@@ -53,6 +55,7 @@ public class FrogImg {
 //    private boolean isScanned;
     private LinkedList<CvRect> cvRects = null;
     private Metadata metadata = null;
+    public StringProperty peopleNames = null;
 
 
     public FrogImg(File file, TrainingEngine trainingEngine) {
@@ -63,6 +66,7 @@ public class FrogImg {
         currentImage = SwingFXUtils.toFXImage(originalIplImage.getBufferedImage(), null);
 
 //        isScanned = false;
+        peopleNames = new SimpleStringProperty();
 
         try {
             metadata = ImageMetadataReader.readMetadata(file);
@@ -74,6 +78,7 @@ public class FrogImg {
 
     public void setCvRectHuman(Human human, CvRect cvRect) {
         rectToHuman.put(cvRect, human);
+        updatePeopleNames();
     }
 
     public ArrayList<CvRect> getHumanCvRects(Human human) {
@@ -187,10 +192,15 @@ public class FrogImg {
 
         }
         updateCurrentIplAndImage();
+
     }
 
     public Image getCurrentImage() {
         return currentImage;
+    }
+
+    public Image getOriginalImage() {
+        return SwingFXUtils.toFXImage(originalIplImage.getBufferedImage(), null);
     }
 
     public Image getThisHumanImage(Human human) {
@@ -214,6 +224,7 @@ public class FrogImg {
         if (rectToHuman.containsKey(cvRect)) {
             Human human = rectToHuman.get(cvRect);
             human.deleteImg(this, cvRect);
+            rectToHuman.remove(cvRect);
         }
 
         if (cvRects.remove(cvRects.get(index))) {
@@ -223,6 +234,7 @@ public class FrogImg {
         }
         detectedFaces.setValue(detectedFaces.getValue() - 1);
         updateCurrentIplAndImage();
+        updatePeopleNames();
     }
 
     public void delete() {
@@ -256,9 +268,20 @@ public class FrogImg {
         return cvRects != null;
     }
 
-//    public void setIsScaned(boolean isScaned) {
-//        this.isScanned = isScaned;
-//    }
+    public void updatePeopleNames() {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (Human human : rectToHuman.values()) {
+            stringBuilder.append(human.name);
+            stringBuilder.append(", ");
+        }
+
+        if (stringBuilder.length() > 2) {
+            stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
+        }
+
+        peopleNames.setValue(stringBuilder.toString());
+    }
 
     public LinkedList<CvRect> getCvRects() {
         return cvRects;

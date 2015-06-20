@@ -31,6 +31,7 @@ public class PhotoGem implements Serializable{
 //    private Image img;
     private StringProperty fileName;
     private StringProperty location;
+    private StringProperty peopleNames;
     private FrogImg frogImg;
 
     public PhotoGem(FrogImg frogImg) {
@@ -44,6 +45,20 @@ public class PhotoGem implements Serializable{
         fileName = new SimpleStringProperty(frogImg.getFile().getName());
 
         location = new SimpleStringProperty(frogImg.getFile().getAbsolutePath());
+
+        peopleNames = frogImg.peopleNames;
+    }
+
+    public String getPeopleNames() {
+        return peopleNames.get();
+    }
+
+    public StringProperty peopleNamesProperty() {
+        return peopleNames;
+    }
+
+    public void setPeopleNames(String peopleNames) {
+        this.peopleNames.set(peopleNames);
     }
 
     public String getLocation() {

@@ -33,6 +33,8 @@ public class MainController implements Initializable{
     private TableColumn<PhotoGem, String> photoNameColumn;
     @FXML
     private TableColumn<PhotoGem, Integer> countColumn;
+    @FXML
+    private TableColumn<PhotoGem, String> photoPeoplesColumn;
 
     @FXML
     public TableView<PeopleGem> humanTable;
@@ -86,8 +88,6 @@ public class MainController implements Initializable{
     private Button addPeopleButton;
 
 
-    @FXML
-    private AnchorPane newPeopleGroup;
     @FXML
     private Button photoPageNewPeople;
     @FXML
@@ -150,6 +150,7 @@ public class MainController implements Initializable{
         addPhotoPreviewListener();
         countColumn.setCellValueFactory(cellData -> cellData.getValue().photoCountProperty().asObject());
         photoNameColumn.setCellValueFactory(cellData -> cellData.getValue().fileNameProperty());
+        photoPeoplesColumn.setCellValueFactory(cellData -> cellData.getValue().peopleNamesProperty());
 
     }
 
@@ -246,7 +247,7 @@ public class MainController implements Initializable{
                     PhotoGem selected = photoTable.getSelectionModel().getSelectedItem();
                     opencv_core.CvRect cvRect = selected.getFrogImg().getCvRects().get(i);
                     Rectangle2D rectangle2D = new Rectangle2D(cvRect.x(), cvRect.y(), cvRect.width(), cvRect.height());
-                    faceImageView.setImage(photoImageView.getImage());
+                    faceImageView.setImage(selected.getFrogImg().getOriginalImage());
                     faceImageView.setViewport(rectangle2D);
                 }
 
@@ -366,6 +367,15 @@ public class MainController implements Initializable{
         facesCombo.setItems(faces);
     }
 
+    private void repaintHumanText(int i) {
+        FrogImg frogImg = photoTable.getSelectionModel().getSelectedItem().getFrogImg();
+        opencv_core.CvRect cvRect = frogImg.getCvRects().get(i);
+
+        String thisIs = frogImg.whoIsThisCvRect(cvRect);
+        idTextField.setText(thisIs);
+        repaintSetAsCombo();
+    }
+
     private void repaintHumanText(String newValue) {
 
         if (newValue != null) {
@@ -377,13 +387,14 @@ public class MainController implements Initializable{
 
                 String thisIs = frogImg.whoIsThisCvRect(cvRect);
                 idTextField.setText(thisIs);
+                repaintSetAsCombo();
 
-                if (thisIs.equals("新人?")) {
-                    newPeopleGroup.setVisible(true);
-                    repaintSetAsCombo();
-                } else {
-                    newPeopleGroup.setVisible(false);
-                }
+//                if (thisIs.equals("新人?")) {
+//                    newPeopleGroup.setVisible(true);
+//                    repaintSetAsCombo();
+//                } else {
+//                    newPeopleGroup.setVisible(false);
+//                }
             }
         } else {
             idTextField.clear();
@@ -402,14 +413,34 @@ public class MainController implements Initializable{
         setAsCombo.setItems(observableList);
     }
 
-    //TODO handlePhotoPageNewPeople
+    //TODO seems working
     public void handlePhotoPageNewPeople() {
+        int i = parseSelectedFaceIndex(facesCombo.getSelectionModel().getSelectedItem());
+
+        if (i >= 0) {
+            FrogImg frogImg = photoTable.getSelectionModel().getSelectedItem().getFrogImg();
+
+            Human human = main.showAddPeopleDialogue();
+            human.linkWithImgCvRect(frogImg, frogImg.getCvRects().get(i));
+            repaintHumanText(i);
+        }
 
     }
 
-    // TODO handlePhotoPageSetAs
+    // TODO seems working
     public void handlePhotoPageSetAs() {
 
+        int i = parseSelectedFaceIndex(facesCombo.getSelectionModel().getSelectedItem());
+
+        if (setAsCombo.getSelectionModel().getSelectedItem() != null && i >= 0) {
+            Human human = main.engine.humanFactory.nameTable.get(setAsCombo.getSelectionModel().getSelectedItem());
+
+            FrogImg frogImg = photoTable.getSelectionModel().getSelectedItem().getFrogImg();
+
+            human.linkWithImgCvRect(frogImg, frogImg.getCvRects().get(i));
+            repaintHumanText(i);
+        }
+        repaintSetAsCombo();
     }
 
 

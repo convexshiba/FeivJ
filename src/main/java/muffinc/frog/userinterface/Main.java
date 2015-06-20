@@ -87,7 +87,7 @@ public class Main extends Application {
 
 
 
-    public void showAddPeopleDialogue() {
+    public Human showAddPeopleDialogue() {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/uixml/addPeopleDialogue.fxml"));
@@ -106,10 +106,11 @@ public class Main extends Application {
 
             dialogueStage.showAndWait();
 
-            newHuman(controller.name);
+            return newHuman(controller.name);
 
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
     }
 
@@ -124,11 +125,12 @@ public class Main extends Application {
     private void loadHumans() {
         File file = new File(TrainingEngine.HUMAN_DIRECTORY);
 
-        for (File humanFile : file.listFiles(((FileFilter) new WildcardFileFilter("H_*")))) {
-            if (humanFile.listFiles().length == 0) {
-                System.out.println(humanFile.getName().substring(2) + " is not a valid Human profile.");
+        // ((FileFilter) new WildcardFileFilter("*"))
+        for (File humanFile : file.listFiles()) {
+            if (humanFile.isFile() || humanFile.listFiles().length == 0) {
+//                System.out.println(humanFile.getName() + " is not a valid Human profile.");
             } else {
-                Human human = engine.humanFactory.newHuman(humanFile.getName().substring(2));
+                Human human = engine.humanFactory.newHuman(humanFile.getName());
 
                 for (File picFile : humanFile.listFiles()) {
 
@@ -138,6 +140,7 @@ public class Main extends Application {
 
                     FrogImg frogImg = mainController.addNewImg(picFile, false).getFrogImg();
                     frogImg.detect();
+
 
                     for (opencv_core.CvRect cvRect : frogImg.getCvRects()) {
 

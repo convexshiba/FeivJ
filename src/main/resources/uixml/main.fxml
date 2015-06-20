@@ -42,6 +42,7 @@
                                 <columns>
                                     <TableColumn fx:id="photoNameColumn" prefWidth="75.0" text="照片名称" />
                                   <TableColumn fx:id="countColumn" prefWidth="75.0" text="人物数量" />
+                                    <TableColumn fx:id="photoPeoplesColumn" prefWidth="75.0" text="包含人物" />
                                 </columns>
                                  <columnResizePolicy>
                                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -101,26 +102,40 @@
                                           </AnchorPane>
                                     </content>
                                   </TitledPane>
-                                  <TitledPane animated="false" text="Faces">
+                                  <TitledPane animated="false" text="人脸区域">
                                     <content>
                                       <AnchorPane>
                                              <children>
                                                 <ToolBar AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                   <items>
                                                       <ComboBox fx:id="facesCombo" promptText="Please Scan This Photo First!" />
-                                                    <Button fx:id="deleteFaceButton" mnemonicParsing="false" onAction="#handleDeleteFaceButton" text="Delete" />
+                                                    <Button fx:id="deleteFaceButton" mnemonicParsing="false" onAction="#handleDeleteFaceButton" text="删除区域" />
                                                   </items>
                                                 </ToolBar>
                                                 <ImageView fx:id="faceImageView" fitHeight="200.0" fitWidth="180.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" />
                                                 <TextField fx:id="idTextField" editable="false" layoutX="294.0" layoutY="65.0" prefHeight="26.0" prefWidth="74.0" />
-                                                <AnchorPane fx:id="newPeopleGroup" layoutX="183.0" layoutY="133.0">
-                                                   <children>
-                                                      <Button fx:id="photoPageNewPeople" layoutX="1.0" mnemonicParsing="false" onAction="#handlePhotoPageNewPeople" text="New People" />
-                                                      <ComboBox fx:id="setAsCombo" layoutX="67.0" layoutY="35.0" prefHeight="29.0" prefWidth="127.0" />
-                                                      <Button fx:id="photoPageSetAs" layoutY="37.0" mnemonicParsing="false" onAction="#handlePhotoPageSetAs" text="Set as" />
-                                                   </children>
-                                                </AnchorPane>
-                                                <Label layoutX="183.0" layoutY="70.0" text="This Probably is:" />
+                                                <Accordion layoutX="173.0" layoutY="100.0" prefHeight="149.0" prefWidth="217.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                                                  <panes>
+                                                    <TitledPane animated="false" text="更多功能">
+                                                         <content>
+                                                            <AnchorPane>
+                                                               <children>
+                                                                  <Button fx:id="photoPageNewPeople" layoutX="14.0" layoutY="55.0" mnemonicParsing="false" onAction="#handlePhotoPageNewPeople" text="设置为新人物" />
+                                                                  <ComboBox fx:id="setAsCombo" layoutX="74.0" layoutY="13.0" prefHeight="29.0" prefWidth="119.0" />
+                                                                  <Button fx:id="photoPageSetAs" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#handlePhotoPageSetAs" text="设置为" />
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                               </padding>
+                                                               <opaqueInsets>
+                                                                  <Insets />
+                                                               </opaqueInsets>
+                                                            </AnchorPane>
+                                                         </content>
+                                                    </TitledPane>
+                                                  </panes>
+                                                </Accordion>
+                                                <Label layoutX="183.0" layoutY="70.0" text="这个估计是:" />
                                              </children>
                                           </AnchorPane>
                                     </content>
@@ -133,7 +148,7 @@
                   </SplitPane>
                </content>
           </Tab>
-          <Tab text="People">
+          <Tab text="人物库">
                <content>
                   <SplitPane dividerPositions="0.5" orientation="VERTICAL">
                     <items>
@@ -141,7 +156,7 @@
                            <children>
                               <ToolBar>
                                 <items>
-                                  <Button fx:id="addPeopleButton" mnemonicParsing="false" onAction="#handleAddPeople" text="Add People" />
+                                  <Button fx:id="addPeopleButton" mnemonicParsing="false" onAction="#handleAddPeople" text="添加人物" />
                                 </items>
                               </ToolBar>
                               <SplitPane dividerPositions="0.5">
@@ -149,7 +164,7 @@
                                     <TableView fx:id="humanTable">
                                       <columns>
                                         <TableColumn fx:id="humanNameColumn" prefWidth="75.0" text="名字" />
-                                        <TableColumn fx:id="humanPhotoNumberColumn" prefWidth="75.0" text="Total Photo" />
+                                        <TableColumn fx:id="humanPhotoNumberColumn" prefWidth="75.0" text="照片数" />
                                       </columns>
                                        <columnResizePolicy>
                                           <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -157,8 +172,8 @@
                                     </TableView>
                                     <TableView fx:id="humanPhotoTable">
                                       <columns>
-                                        <TableColumn fx:id="humanPhotoNameColumn" prefWidth="75.0" text="Photo Name" />
-                                        <TableColumn fx:id="humanPhotoLocationColumn" prefWidth="75.0" text="Photo Location" />
+                                        <TableColumn fx:id="humanPhotoNameColumn" prefWidth="75.0" text="照片文件名" />
+                                        <TableColumn fx:id="humanPhotoLocationColumn" prefWidth="75.0" text="照片位置" />
                                       </columns>
                                        <columnResizePolicy>
                                           <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
