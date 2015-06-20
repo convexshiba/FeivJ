@@ -7,6 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import muffinc.frog.object.FrogImg;
@@ -17,6 +18,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
+import java.security.acl.Group;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -83,8 +85,15 @@ public class MainController implements Initializable{
     @FXML
     private Button addPeopleButton;
 
+
     @FXML
-    private TextArea idText;
+    private AnchorPane newPeopleGroup;
+    @FXML
+    private Button photoPageNewPeople;
+    @FXML
+    private Button photoPageSetAs;
+    @FXML
+    private ComboBox<String> setAsCombo;
 
     @FXML
     private TextField idTextField;
@@ -357,29 +366,6 @@ public class MainController implements Initializable{
         facesCombo.setItems(faces);
     }
 
-    private void repaintIdText(String newValue) {
-        int i = parseSelectedFaceIndex(newValue);
-
-        //TODO is this bug free?
-        if (i >= 0) {
-            FrogImg frogImg = photoTable.getSelectionModel().getSelectedItem().getFrogImg();
-            opencv_core.CvRect cvRect = frogImg.getCvRects().get(i);
-            if (frogImg.idMatrices.containsKey(cvRect)) {
-                StringWriter sw = new StringWriter();
-
-                PrintWriter pw = new PrintWriter(sw);
-
-                frogImg.idMatrices.get(cvRect).print(pw, 6, 2);
-
-                idText.setText(sw.toString());
-            } else {
-                idText.setText("Please ID this face first.");
-            }
-        } else {
-            idText.setText("Please Select Face.");
-        }
-    }
-
     private void repaintHumanText(String newValue) {
 
         if (newValue != null) {
@@ -389,13 +375,43 @@ public class MainController implements Initializable{
                 FrogImg frogImg = photoTable.getSelectionModel().getSelectedItem().getFrogImg();
                 opencv_core.CvRect cvRect = frogImg.getCvRects().get(i);
 
-                idTextField.setText(frogImg.whoIsThisCvRect(cvRect));
+                String thisIs = frogImg.whoIsThisCvRect(cvRect);
+                idTextField.setText(thisIs);
+
+                if (thisIs.equals("新人?")) {
+                    newPeopleGroup.setVisible(true);
+                    repaintSetAsCombo();
+                } else {
+                    newPeopleGroup.setVisible(false);
+                }
             }
         } else {
             idTextField.clear();
         }
 
     }
+
+    private void repaintSetAsCombo() {
+        ObservableList<String> observableList = FXCollections.observableArrayList();
+
+        for (Human human : main.engine.humanFactory.nameTable.values()) {
+            observableList.add(human.name);
+        }
+
+        setAsCombo.setValue("请选择人物:");
+        setAsCombo.setItems(observableList);
+    }
+
+    //TODO handlePhotoPageNewPeople
+    public void handlePhotoPageNewPeople() {
+
+    }
+
+    // TODO handlePhotoPageSetAs
+    public void handlePhotoPageSetAs() {
+
+    }
+
 
     public void handleAddPeople() {
         main.showAddPeopleDialogue();

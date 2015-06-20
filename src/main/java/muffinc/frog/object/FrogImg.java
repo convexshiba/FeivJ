@@ -96,7 +96,7 @@ public class FrogImg {
         } else if (cvRects.contains(cvRect)) {
             return "新人?";
         } else {
-            throw new IllegalAccessError("This is cvRect is not found in this Human");
+            throw new IllegalAccessError("This cvRect is not found in this Human");
         }
     }
 
