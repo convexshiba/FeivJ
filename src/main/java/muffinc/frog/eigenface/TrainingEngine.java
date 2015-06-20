@@ -148,25 +148,39 @@ public class TrainingEngine extends FaceDetection {
     public Human IDCvRectInFrogImg(FrogImg frogImg, opencv_core.CvRect cvRect) {
         Matrix thisID = frogImg.idMatrices.get(cvRect);
 
-        HashSet<Human> humans = new HashSet<>();
+//        HashSet<Human> humans = new HashSet<>();
+        Human minHuman = null;
+        double min = Double.MAX_VALUE;
 
         for (Human human : humanFactory.nameTable.values()) {
             if (human.hasIDMatrix()) {
-                if (euclidean.getDistance(thisID, human.getIdMatrix()) < ID_THRESHOLD) {
-                    humans.add(human);
+                if (euclidean.getDistance(thisID, human.getIdMatrix()) < (IS_FACE_THRESHOLD < min ? IS_FACE_THRESHOLD : min)) {
+                    minHuman = human;
+                    min = euclidean.getDistance(thisID, human.getIdMatrix());
+
                 }
             }
         }
 
-        if (humans.size() == 1) {
-            return humans.toArray(new Human[1])[0];
-        } else if (humans.size() == 0) {
-            System.out.println("IDCvRectInFrogImg failed");
-            return null;
-        } else {
-            System.out.println("IDCvRectInFrogImg found multiple human");
-            return null;
-        }
+        return minHuman;
+
+//        if (humans.size() == 1) {
+//            return humans.toArray(new Human[1])[0];
+//        } else if (humans.size() == 0) {
+//            System.out.println("IDCvRectInFrogImg failed");
+//            return null;
+//        } else {
+//            System.out.println("IDCvRectInFrogImg found multiple human");
+//            return null;
+//        }
+
+//        Human human = KNN.assignHuman(humanFactory, frogImg, cvRect, 3, euclidean);
+//
+//        if (euclidean.getDistance(thisID, human.getIdMatrix()) < ID_THRESHOLD) {
+//            return human;
+//        } else {
+//            return human;
+//        }
     }
 
 
@@ -354,7 +368,7 @@ public class TrainingEngine extends FaceDetection {
 //                    // testImg will be project in PCA
 ////                    testImg.setIdMatrix(pca.project(testImg.getVectorized()));
 //
-//                    String result = new KNN().assignLabel(projectedTrainingSet.toArray(new FrogTrainImg[0]), testImg.getIdMatrix(), knn_k, metric);
+//                    String result = new KNN().assignHuman(projectedTrainingSet.toArray(new FrogTrainImg[0]), testImg.getIdMatrix(), knn_k, metric);
 //
 //                    if (result.equals(testImg.human.name)) {
 //                        accurateNum++;
@@ -399,7 +413,7 @@ public class TrainingEngine extends FaceDetection {
 //                    // testImg will be project in PCA
 ////                    testImg.setIdMatrix(pca.project(testImg.getVectorized()));
 //
-//                    String result = new Identification().assignLabel(projectedTrainingSet.toArray(new FrogTrainImg[0]), testImg.getIdMatrix(), ID_THRESHOLD, metric);
+//                    String result = new Identification().assignHuman(projectedTrainingSet.toArray(new FrogTrainImg[0]), testImg.getIdMatrix(), ID_THRESHOLD, metric);
 //
 //                    if (result.equals(testImg.human.name)) {
 //                        accurateNum++;
@@ -522,7 +536,7 @@ public class TrainingEngine extends FaceDetection {
 //                int accurateNum = 0;
 //                for(int i = 0 ; i < testingSet.size(); i ++){
 //                    Matrix testCase = fe.getEigenfaces().transpose().times(testingSet.get(i).minus(fe.getMeanMatrix()));
-//                    String result = new KNN().assignLabel(projectedTrainingSet.toArray(new FrogTrainImg[0]), testCase, knn_k, metric);
+//                    String result = new KNN().assignHuman(projectedTrainingSet.toArray(new FrogTrainImg[0]), testCase, knn_k, metric);
 //
 //                    if(result.equals(trueLabels.get(i)))
 //                        accurateNum ++;
@@ -738,7 +752,7 @@ public class TrainingEngine extends FaceDetection {
 ////            int accurateNum = 0;
 ////            for(int i = 0 ; i < testingSet.size(); i ++){
 ////                Matrix testCase = fe.getEigenfaces().transpose().times(testingSet.get(i).minus(fe.getMeanMatrix()));
-////                String result = KNN.assignLabel(projectedTrainingSet.toArray(new projectedTrainingMatrix[0]), testCase, knn_k, metric);
+////                String result = KNN.assignHuman(projectedTrainingSet.toArray(new projectedTrainingMatrix[0]), testCase, knn_k, metric);
 ////
 ////                if(result == trueLabels.get(i))
 ////                    accurateNum ++;

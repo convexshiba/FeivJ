@@ -193,7 +193,7 @@ public class MainController implements Initializable{
     }
 
     public void handleAddFileButton() {
-        String[] extensions = {"*.jpeg", "*.jpg", "*.pgm", "*.tif"};
+        String[] extensions = {"*.jpeg", "*.jpg", "*.pgm", "*.tif", "*.gif"};
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Image Files", extensions);
         fileChooser.getExtensionFilters().add(extFilter);
 

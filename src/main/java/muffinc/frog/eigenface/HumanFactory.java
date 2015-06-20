@@ -49,14 +49,6 @@ public class HumanFactory {
         return frogImgTable.containsKey(file);
     }
 
-    public FrogImg locateFrogImg(File file) {
-        if (hasImg(file)) {
-            return frogImgTable.get(file);
-        } else {
-            throw new IllegalAccessError("This ImgMatrix doesn't exist in the library, Please create ImgMatrix first.");
-        }
-    }
-
     public Human newHuman(String name) {
         if (!hasHuman(name)) {
             Human newHuman = new Human(name);
@@ -67,13 +59,7 @@ public class HumanFactory {
         }
     }
 
-    public Human locateHuman(String name) {
-        if (hasHuman(name)) {
-            return nameTable.get(name);
-        } else {
-            throw new IllegalAccessError("This person is not in the HumanFactory, Please hasHuman() and create first.");
-        }
-    }
+
 
 
 //    public void addImgToHuman(FrogImg frogImg, String name, opencv_core.CvRect cvRect) {

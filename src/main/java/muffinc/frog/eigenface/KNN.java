@@ -20,17 +20,89 @@ package muffinc.frog.eigenface;
  * zj45499 (at) gmail (dot) com
  */
 
+
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.PriorityQueue;
 import java.util.Set;
 
+import muffinc.frog.object.FrogImg;
 import muffinc.frog.object.FrogTrainImg;
 import muffinc.frog.Jama.Matrix;
 import muffinc.frog.common.Metric;
+import muffinc.frog.object.Human;
+import org.bytedeco.javacpp.opencv_core;
 
 public class KNN{
 
-    public String assignLabel(FrogTrainImg[] trainingSet,Matrix testFace, int K, Metric metric) {
+    static class Pair implements Comparable<Pair>{
+        FrogImg frogImg;
+        opencv_core.CvRect cvRect;
+        double distance;
+        Human human;
+
+        public Pair(FrogImg frogImg, opencv_core.CvRect cvRect, double distance) {
+            this.frogImg = frogImg;
+            this.cvRect = cvRect;
+            human = frogImg.rectToHuman.get(cvRect);
+            this.distance = distance;
+        }
+
+        @Override
+        public int compareTo(Pair o) {
+            return ((int) (o.distance - distance));
+        }
+    }
+
+    public static Human assignHuman(HumanFactory humanFactory, FrogImg frogImg, opencv_core.CvRect cvRect, int k, Metric metric) {
+        Pair[] neighbors = findKNN(humanFactory, frogImg, cvRect, k, metric);
+        return classify(neighbors);
+    }
+
+    private static Pair[] findKNN(HumanFactory humanFactory, FrogImg img, opencv_core.CvRect imgCvRect, int k, Metric metric) {
+
+        Pair[] neighbors = new Pair[k];
+
+        PriorityQueue<Pair> pairPriorityQueue = new PriorityQueue<>();
+
+        for (FrogImg frogImg : humanFactory.frogImgTable.values()) {
+            for (opencv_core.CvRect cvRect : frogImg.rectToHuman.keySet()) {
+                pairPriorityQueue.add(new Pair(frogImg, cvRect, metric.getDistance(img.idMatrices.get(imgCvRect), frogImg.idMatrices.get(cvRect))));
+            }
+        }
+
+        for (int i = 0; i < k; i++) {
+            neighbors[i] = pairPriorityQueue.remove();
+        }
+
+        return neighbors;
+    }
+
+    private static Human classify(Pair[] neighbors) {
+        HashMap<Human, Double> hashMap = new HashMap<>();
+
+        for (Pair pair : neighbors) {
+            if (hashMap.containsKey(pair.human)) {
+                hashMap.put(pair.human, hashMap.get(pair.human) + 1 / pair.distance);
+            } else {
+                hashMap.put(pair.human, 1 / pair.distance);
+            }
+        }
+
+        Human maxHuman = null;
+        double maxDistance = Double.MIN_VALUE;
+
+        for (Human human : hashMap.keySet()) {
+            if (hashMap.get(human) > maxDistance) {
+                maxDistance = hashMap.get(human);
+                maxHuman = human;
+            }
+        }
+
+        return maxHuman;
+    }
+
+    public String assignHuman(FrogTrainImg[] trainingSet, Matrix testFace, int K, Metric metric) {
         FrogTrainImg[] neighbors = findKNN(trainingSet, testFace, K, metric);
         return classify(neighbors);
     }

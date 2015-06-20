@@ -132,6 +132,10 @@ public class Main extends Application {
 
                 for (File picFile : humanFile.listFiles()) {
 
+                    if (picFile.getName().charAt(0) == '.') {
+                        continue;
+                    }
+
                     FrogImg frogImg = mainController.addNewImg(picFile, false).getFrogImg();
                     frogImg.detect();
 
