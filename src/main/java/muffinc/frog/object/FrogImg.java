@@ -195,6 +195,13 @@ public class FrogImg {
 
     }
 
+    public void IDCvRect(CvRect cvRect) {
+        Human human = trainingEngine.IDCvRectInFrogImg(this, cvRect);
+        if (human != null) {
+            human.linkWithImgCvRect(this, cvRect);
+        }
+    }
+
     public Image getCurrentImage() {
         return currentImage;
     }
@@ -215,6 +222,20 @@ public class FrogImg {
         }
 
         return SwingFXUtils.toFXImage(iplImage.getBufferedImage(), null);
+    }
+
+    public void redoCvRect(CvRect cvRect) {
+        if (cvRects.contains(cvRect)) {
+
+            if (rectToHuman.keySet().contains(cvRect)) {
+                rectToHuman.remove(cvRect).deleteImg(this, cvRect);
+            }
+
+            IDCvRect(cvRect);
+
+        } else {
+            throw new IllegalAccessError("redoCvRect");
+        }
     }
 
     public void removeCvRect(int index) {

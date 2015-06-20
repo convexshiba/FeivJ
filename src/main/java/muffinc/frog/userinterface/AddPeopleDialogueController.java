@@ -51,6 +51,7 @@ public class AddPeopleDialogueController implements Initializable{
         this.dialogStage = dialogStage;
     }
 
+    // TODO empty string error
     public void handleOK() {
         name = nameField.getText();
 

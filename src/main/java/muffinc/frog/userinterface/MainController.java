@@ -87,7 +87,6 @@ public class MainController implements Initializable{
     @FXML
     private Button addPeopleButton;
 
-
     @FXML
     private Button photoPageNewPeople;
     @FXML
@@ -294,6 +293,13 @@ public class MainController implements Initializable{
 
         });
 
+    }
+
+    public void handleReScanButton() {
+        FrogImg frogImg = photoTable.getSelectionModel().getSelectedItem().getFrogImg();
+        opencv_core.CvRect cvRect = frogImg.getCvRects().get(parseSelectedFaceIndex(facesCombo.getValue()));
+        frogImg.redoCvRect(cvRect);
+        repaintHumanText(facesCombo.getValue());
     }
 
 
