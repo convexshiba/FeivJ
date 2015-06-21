@@ -1,11 +1,16 @@
 package muffinc.frog.object;
 
 import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
+import com.drew.metadata.Tag;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import muffinc.frog.Jama.Matrix;
@@ -13,6 +18,7 @@ import muffinc.frog.eigenface.FaceDetection;
 import muffinc.frog.eigenface.TrainingEngine;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -68,11 +74,27 @@ public class FrogImg {
 //        isScanned = false;
         peopleNames = new SimpleStringProperty();
 
+
         try {
             metadata = ImageMetadataReader.readMetadata(file);
-        } catch (Exception e) {
-            metadata = new Metadata();
+        } catch (ImageProcessingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+    }
+
+    public ObservableList<Tag> getTagsObservableList() {
+        ObservableList<Tag> tagObservableList = FXCollections.observableArrayList();
+
+        for (Directory directory : metadata.getDirectories()) {
+            for (Tag tag : directory.getTags()) {
+                tagObservableList.add(tag);
+            }
+        }
+
+        return tagObservableList;
     }
 
 

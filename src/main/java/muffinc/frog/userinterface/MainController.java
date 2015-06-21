@@ -1,5 +1,7 @@
 package muffinc.frog.userinterface;
 
+import com.drew.metadata.Tag;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -7,7 +9,6 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import muffinc.frog.object.FrogImg;
@@ -15,10 +16,7 @@ import muffinc.frog.object.Human;
 import org.bytedeco.javacpp.opencv_core;
 
 import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.URL;
-import java.security.acl.Group;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -49,6 +47,13 @@ public class MainController implements Initializable{
     private TableColumn<PhotoGem, String> humanPhotoNameColumn;
     @FXML
     private TableColumn<PhotoGem, String> humanPhotoLocationColumn;
+
+    @FXML
+    private TableView<Tag> photoTagTable;
+    @FXML
+    private TableColumn<Tag, String> tagNameColumn;
+    @FXML
+    private TableColumn<Tag, String> tagContentColumn;
 
 
     @FXML
@@ -146,7 +151,7 @@ public class MainController implements Initializable{
 
     private void initPhotoTable() {
         photoTable.setItems(photoGemObservableList);
-        addPhotoPreviewListener();
+        addPhotoTableListener();
         countColumn.setCellValueFactory(cellData -> cellData.getValue().photoCountProperty().asObject());
         photoNameColumn.setCellValueFactory(cellData -> cellData.getValue().fileNameProperty());
         photoPeoplesColumn.setCellValueFactory(cellData -> cellData.getValue().peopleNamesProperty());
@@ -158,6 +163,9 @@ public class MainController implements Initializable{
         addHumanTableListener();
         humanNameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
         humanPhotoNumberColumn.setCellValueFactory(cellData -> cellData.getValue().photoNumberProperty().asObject());
+
+        tagNameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTagName()));
+        tagContentColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDescription()));
 
     }
 
@@ -276,7 +284,7 @@ public class MainController implements Initializable{
         }
     }
 
-    private void addPhotoPreviewListener() {
+    private void addPhotoTableListener() {
         photoImageView.fitHeightProperty().bind(photoImageViewParent.heightProperty());
 //        photoImageView.fitWidthProperty().bind(photoImageViewParent.widthProperty());
         photoTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -287,9 +295,13 @@ public class MainController implements Initializable{
                 repaintPhotoImageView(selected);
                 repaintFacesCombo(selected);
                 repaintHumanText(null);
+
+                photoTagTable.setItems(selected.getFrogImg().getTagsObservableList());
+
             }
 
             facesCombo.getSelectionModel().selectFirst();
+
 
         });
 
