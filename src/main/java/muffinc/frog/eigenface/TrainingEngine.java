@@ -1,7 +1,6 @@
 package muffinc.frog.eigenface;
 
 import muffinc.frog.Jama.Matrix;
-import muffinc.frog.detection.FaceDetection;
 import muffinc.frog.eigenface.metric.L1Distance;
 import muffinc.frog.object.FrogTrainImg;
 import muffinc.frog.object.Human;

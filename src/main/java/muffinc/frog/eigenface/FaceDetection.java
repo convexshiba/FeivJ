@@ -1,4 +1,4 @@
-package muffinc.frog.detection;
+package muffinc.frog.eigenface;
 
 import muffinc.frog.displayio.Display;
 import muffinc.frog.helper.ImageHelper;
@@ -42,26 +42,24 @@ public class FaceDetection {
             "/Users/Meth/Documents/FROG/src/main/resources/xml/haarcascade_frontalface_alt.xml";
 
     public static LinkedList<CvRect> detectFaces(IplImage img) {
+        
         IplImage greyImg = img.clone();
         if (greyImg.nChannels() != 1) {
             greyImg = ImageHelper.toGrey(greyImg);
         }
 
         CvMemStorage storage = CvMemStorage.create();
-
         CvHaarClassifierCascade cascade = new CvHaarClassifierCascade(cvLoad(CASCADE_FILE));
-
         CvSeq faces = cvHaarDetectObjects(greyImg, cascade, storage, 1.05, 1, CV_HAAR_SCALE_IMAGE);
-
         cvClearMemStorage(storage);
 
         LinkedList<CvRect> rects = new LinkedList<>();
-
         for (int i = 0; i < faces.total(); i++) {
             CvRect rect = new CvRect(cvGetSeqElem(faces, i));
             rect = growRect(rect);
             rects.add(rect);
         }
+
         return rects;
     }
 

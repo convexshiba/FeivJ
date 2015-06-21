@@ -9,7 +9,7 @@ import javafx.beans.property.StringProperty;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import muffinc.frog.Jama.Matrix;
-import muffinc.frog.detection.FaceDetection;
+import muffinc.frog.eigenface.FaceDetection;
 import muffinc.frog.eigenface.TrainingEngine;
 
 import java.io.File;
@@ -149,10 +149,6 @@ public class FrogImg {
         }
     }
 
-    public void setIdMatrix(Matrix idMatrix) {
-        this.idMatrix = idMatrix;
-    }
-
     public boolean isDetected() {
         return detectedFaces.getValue() != -1;
     }
@@ -269,20 +265,8 @@ public class FrogImg {
         }
     }
 
-    public double getDistance() {
-        return 0;
-    }
-
-    public void setDistance(double distance) {
-
-    }
-
     public File getFile() {
         return file;
-    }
-
-    public void setFile(File file) {
-        this.file = file;
     }
 
     public boolean isScanned() {
@@ -308,36 +292,12 @@ public class FrogImg {
         return cvRects;
     }
 
-    public void setCvRects(LinkedList<CvRect> cvRects) {
-        this.cvRects = cvRects;
-    }
-
     public Metadata getMetadata() {
         return metadata;
     }
 
-    public void setMetadata(Metadata metadata) {
-        this.metadata = metadata;
-    }
-
-    public int getDetectedFaces() {
-        return detectedFaces.get();
-    }
-
-    public void setDetectedFaces(int detectedFaces) {
-        this.detectedFaces.set(detectedFaces);
-    }
-
-    public IntegerProperty detectedFacesProperty() {
-        return detectedFaces;
-    }
-
     public IplImage getOriginalIplImage() {
         return originalIplImage;
-    }
-
-    public void setOriginalIplImage(IplImage originalIplImage) {
-        this.originalIplImage = originalIplImage;
     }
 
 

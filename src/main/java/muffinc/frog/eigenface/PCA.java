@@ -34,16 +34,13 @@ public class PCA {
 			throw new Exception("the expected dimensions could not be achieved!");
 		}
 
-        trainingSet = new ArrayList<Matrix>();
-//        labels = new ArrayList<String>();
+        trainingSet = new ArrayList<>();
 
         for (FrogTrainImg frogTrainImg : trainingImg) {
             trainingSet.add(frogTrainImg.getVectorized());
-//            labels.add(imgMatrix.human.name);
         }
 
 		this.numOfComponents = numOfComponents;
-//        this.trainingEngine = trainingEngine;
 
 		this.meanMatrix = getMean(this.trainingSet);
 		this.eigenfaces = getFeature(this.trainingSet, this.numOfComponents);
@@ -77,29 +74,6 @@ public class PCA {
 
     }
 
-//	@Deprecated
-//	public PCA(ArrayList<Matrix> trainingSet, ArrayList<String> labels,
-//			   int numOfComponents, TrainingEngine trainingEngine) throws Exception {
-//
-//		if(numOfComponents >= trainingSet.size()){
-//			throw new Exception("the expected dimensions could not be achieved!");
-//		}
-//
-//		this.trainingSet = trainingSet;
-//		this.numOfComponents = numOfComponents;
-//
-//		this.meanMatrix = getMean(this.trainingSet);
-//		this.eigenfaces = getFeature(this.trainingSet, this.numOfComponents);
-//
-//		// Construct projectedTrainingMatrix
-//		this.projectedTrainingSet = new ArrayList<FrogTrainImg>();
-//		for (int i = 0; i < trainingSet.size(); i++) {
-////			ImgMatrix ptm = new ImgMatrix(project(trainingSet.get(i)), labels.get(i));
-//
-////            ImgMatrix ptm = new ImgMatrix()
-////			this.projectedTrainingSet.add(ptm);
-//		}
-//	}
 
     // calculate projected Matrix
     public Matrix project(Matrix input) {
@@ -135,19 +109,20 @@ public class PCA {
 
 	// extract features, namely eigenfaces
 	private Matrix getFeature(ArrayList<Matrix> input, int componantNum) {
-		int i, j;
 
 		int row = input.get(0).getRowDimension();
 		int column = input.size();
 		Matrix X = new Matrix(row, column);
 
-		for (i = 0; i < column; i++) {
+		for (int i = 0; i < column; i++) {
 			X.setMatrix(0, row - 1, i, i, input.get(i).minus(this.meanMatrix));
 		}
 
 		// get eigenvalues and eigenvectors
 		Matrix XT = X.transpose();
 		Matrix XTX = XT.times(X);
+
+
 		EigenvalueDecomposition feature = XTX.eig();
 		double[] d = feature.getd();
 
@@ -156,19 +131,17 @@ public class PCA {
 		int[] indexes = this.getIndexesOfKEigenvalues(d, componantNum);
 
 		Matrix eigenVectors = X.times(feature.getV());
-		Matrix selectedEigenVectors = eigenVectors.getMatrix(0,
-				eigenVectors.getRowDimension() - 1, indexes);
+		Matrix selectedEigenVectors = eigenVectors.getMatrix(0, eigenVectors.getRowDimension() - 1, indexes);
 
-		// normalize the eigenvectors
 		row = selectedEigenVectors.getRowDimension();
 		column = selectedEigenVectors.getColumnDimension();
-		for (i = 0; i < column; i++) {
+		for (int i = 0; i < column; i++) {
 			double temp = 0;
-			for (j = 0; j < row; j++)
+			for (int j = 0; j < row; j++)
 				temp += Math.pow(selectedEigenVectors.get(j, i), 2);
 			temp = Math.sqrt(temp);
 
-			for (j = 0; j < row; j++) {
+			for (int j = 0; j < row; j++) {
 				selectedEigenVectors.set(j, i, selectedEigenVectors.get(j, i) / temp);
 			}
 		}
