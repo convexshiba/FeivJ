@@ -271,14 +271,18 @@ public class MainController implements Initializable{
     private int parseSelectedFaceIndex(String newValue) {
         int i;
 
-        for (i = newValue.length() - 1; i >= 0; i--) {
-            if (newValue.charAt(i) < '0' || newValue.charAt(i) > '9') {
-                break;
+        if (newValue != null) {
+            for (i = newValue.length() - 1; i >= 0; i--) {
+                if (newValue.charAt(i) < '0' || newValue.charAt(i) > '9') {
+                    break;
+                }
             }
-        }
 
-        if (newValue.substring(++i).length() > 0) {
-            return Integer.parseInt(newValue.substring(i)) - 1;
+            if (newValue.substring(++i).length() > 0) {
+                return Integer.parseInt(newValue.substring(i)) - 1;
+            } else {
+                return -1;
+            }
         } else {
             return -1;
         }
@@ -301,7 +305,6 @@ public class MainController implements Initializable{
             }
 
             facesCombo.getSelectionModel().selectFirst();
-
 
         });
 
@@ -334,7 +337,6 @@ public class MainController implements Initializable{
 
     public void handleDeleteFaceButton() {
         if (photoTable.getSelectionModel().getSelectedItem() != null) {
-
             PhotoGem selected = photoTable.getSelectionModel().getSelectedItem();
 
             int i = parseSelectedFaceIndex(facesCombo.getValue());

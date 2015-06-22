@@ -78,8 +78,8 @@
                                              <children>
                                                 <TableView fx:id="photoTagTable" layoutX="-20.0" layoutY="-49.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                   <columns>
-                                                    <TableColumn fx:id="tagNameColumn" prefWidth="75.0" text="Tag Name" />
-                                                    <TableColumn fx:id="tagContentColumn" prefWidth="75.0" text="Tag Content" />
+                                                    <TableColumn fx:id="tagNameColumn" prefWidth="75.0" text="照片标签" />
+                                                    <TableColumn fx:id="tagContentColumn" prefWidth="75.0" text="标签内容" />
                                                   </columns>
                                                    <columnResizePolicy>
                                                       <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

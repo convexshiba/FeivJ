@@ -42,7 +42,7 @@ public class Main extends Application {
         mainController.setMain(this);
 
 
-        primaryStage.setTitle("FROG测试");
+        primaryStage.setTitle("Face Recognition Image Library in Java, FriL");
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
 

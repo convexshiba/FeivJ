@@ -63,9 +63,9 @@ public class FaceDetection {
         return rects;
     }
 
-    public static LinkedList<CvRect> detectFaces(File file) {
-        return detectFaces(cvLoadImage(file.getAbsolutePath(), 1));
-    }
+//    public static LinkedList<CvRect> detectFaces(File file) {
+//        return detectFaces(cvLoadImage(file.getAbsolutePath(), 1));
+//    }
 
 
     public static final String FILE =

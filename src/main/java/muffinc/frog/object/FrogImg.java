@@ -24,7 +24,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import static org.bytedeco.javacpp.opencv_core.*;
-import static org.bytedeco.javacpp.opencv_highgui.cvLoadImage;
+import static org.bytedeco.javacpp.opencv_highgui.*;
+import static org.bytedeco.javacpp.opencv_imgproc.*;
 
 /**
  * FROG, a Face Recognition Gallery in Java
@@ -68,6 +69,9 @@ public class FrogImg {
         this.trainingEngine = trainingEngine;
         this.file = file;
         originalIplImage = cvLoadImage(file.getAbsolutePath());
+
+        doResize();
+
 //        currentIplImage = originalIplImage.clone();
         currentImage = SwingFXUtils.toFXImage(originalIplImage.getBufferedImage(), null);
 
@@ -83,6 +87,19 @@ public class FrogImg {
             e.printStackTrace();
         }
 
+    }
+
+    private void doResize() {
+        if (originalIplImage.height() > 1600) {
+            final int EXPECTED_HEIGHT = 1600;
+
+            int retainedWidth = ((int) (((double) originalIplImage.width()) / originalIplImage.height() * EXPECTED_HEIGHT));
+            IplImage resizedImg = IplImage.create(retainedWidth, EXPECTED_HEIGHT, originalIplImage.depth(), originalIplImage.nChannels());
+
+            System.out.println("is resize to" + retainedWidth + "/" + EXPECTED_HEIGHT);
+            cvResize(originalIplImage, resizedImg, CV_INTER_AREA);
+            originalIplImage = resizedImg;
+        }
     }
 
     public ObservableList<Tag> getTagsObservableList() {
@@ -181,7 +198,7 @@ public class FrogImg {
 
     public void detectAndID() {
         if (!isDetected()) {
-            cvRects = FaceDetection.detectFaces(file);
+            cvRects = FaceDetection.detectFaces(originalIplImage);
             detectedFaces.setValue(cvRects.size());
             System.out.println("detectAndID() found " + cvRects.size() + " faces");
             trainingEngine.projectAllCvRect(this);
@@ -202,7 +219,7 @@ public class FrogImg {
 
     public void detect() {
         if (!isDetected()) {
-            cvRects = FaceDetection.detectFaces(file);
+            cvRects = FaceDetection.detectFaces(originalIplImage);
             detectedFaces.setValue(cvRects.size());
             trainingEngine.projectAllCvRect(this);
 

@@ -67,7 +67,7 @@ public class ImageHelper {
 //        IplImage greyImg = toGrey(img);
 //        CvSize size = cvSize(PCA.FACE_WIDTH, PCA.FACE_HEIGHT);
 
-        IplImage resizedImg = IplImage.create(muffinc.frog.eigenface.PCA.FACE_WIDTH, PCA.FACE_HEIGHT, IPL_DEPTH_8U, 1);
+        IplImage resizedImg = IplImage.create(PCA.FACE_WIDTH, PCA.FACE_HEIGHT, IPL_DEPTH_8U, 1);
 
         cvResize(img, resizedImg);
 
