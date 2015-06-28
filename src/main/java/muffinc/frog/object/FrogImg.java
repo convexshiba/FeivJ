@@ -90,15 +90,16 @@ public class FrogImg {
     }
 
     private void doResize() {
-        if (originalIplImage.height() > 1600) {
-            final int EXPECTED_HEIGHT = 1600;
+        if (originalIplImage.height() > 1500) {
+            final int EXPECTED_HEIGHT = 1200;
 
             int retainedWidth = ((int) (((double) originalIplImage.width()) / originalIplImage.height() * EXPECTED_HEIGHT));
             IplImage resizedImg = IplImage.create(retainedWidth, EXPECTED_HEIGHT, originalIplImage.depth(), originalIplImage.nChannels());
 
-            System.out.println("is resize to" + retainedWidth + "/" + EXPECTED_HEIGHT);
             cvResize(originalIplImage, resizedImg, CV_INTER_AREA);
             originalIplImage = resizedImg;
+
+            System.out.println("Big image! " + file.getName() + " is resized to " + retainedWidth + " * " + EXPECTED_HEIGHT);
         }
     }
 

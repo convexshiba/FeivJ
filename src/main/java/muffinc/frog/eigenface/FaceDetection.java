@@ -6,7 +6,6 @@ import org.bytedeco.javacpp.opencv_core.IplImage;
 import org.bytedeco.javacv.JavaCvErrorCallback;
 
 
-import java.io.File;
 import java.util.LinkedList;
 
 import static org.bytedeco.javacpp.opencv_core.*;
@@ -37,7 +36,6 @@ import static org.bytedeco.javacpp.opencv_imgproc.*;
  */
 public class FaceDetection {
 
-    // The cascade definition to be used for detection.
     public static final String CASCADE_FILE =
             "/Users/Meth/Documents/FROG/src/main/resources/xml/haarcascade_frontalface_alt.xml";
 
@@ -97,7 +95,8 @@ public class FaceDetection {
                 cvLoad(CASCADE_FILE));
 
         // We detect the faces.
-        CvSeq faces = cvHaarDetectObjects(grayImage, cascade, storage, 1.05, 1, CV_HAAR_DO_CANNY_PRUNING);
+        CvSeq faces = cvHaarDetectObjects(grayImage, cascade, storage,
+                1.05, 1, CV_HAAR_DO_CANNY_PRUNING);
 
         // Clear storage.
         cvClearMemStorage(storage);

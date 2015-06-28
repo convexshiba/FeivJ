@@ -6,7 +6,8 @@
 
     <groupId>com.muffinc.frog</groupId>
     <artifactId>frog</artifactId>
-    <version>0.0.0</version>
+    <version>0.9</version>
+
 
     <dependencies>
         <dependency>
@@ -126,11 +127,11 @@
         </dependency>
 
 
-        <dependency>
-            <groupId>com.mashape.unirest</groupId>
-            <artifactId>unirest-java</artifactId>
-            <version>1.4.5</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.mashape.unirest</groupId>-->
+            <!--<artifactId>unirest-java</artifactId>-->
+            <!--<version>1.4.5</version>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>com.thoughtworks.xstream</groupId>
@@ -145,7 +146,6 @@
         </dependency>
 
     </dependencies>
-
 
 
 </project>

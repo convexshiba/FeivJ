@@ -69,7 +69,7 @@ public class ImageHelper {
 
         IplImage resizedImg = IplImage.create(PCA.FACE_WIDTH, PCA.FACE_HEIGHT, IPL_DEPTH_8U, 1);
 
-        cvResize(img, resizedImg);
+        cvResize(img, resizedImg, CV_INTER_AREA);
 
         return resizedImg;
     }

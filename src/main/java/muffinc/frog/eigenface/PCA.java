@@ -118,7 +118,6 @@ public class PCA {
 			X.setMatrix(0, row - 1, i, i, input.get(i).minus(this.meanMatrix));
 		}
 
-		// get eigenvalues and eigenvectors
 		Matrix XT = X.transpose();
 		Matrix XTX = XT.times(X);
 
@@ -135,6 +134,7 @@ public class PCA {
 
 		row = selectedEigenVectors.getRowDimension();
 		column = selectedEigenVectors.getColumnDimension();
+
 		for (int i = 0; i < column; i++) {
 			double temp = 0;
 			for (int j = 0; j < row; j++)
@@ -196,6 +196,7 @@ public class PCA {
 	}
 
 	// The matrix has already been vectorized
+
 	private static Matrix getMean(ArrayList<Matrix> input) {
 		int rows = input.get(0).getRowDimension();
 		int length = input.size();

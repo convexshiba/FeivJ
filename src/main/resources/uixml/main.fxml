@@ -97,7 +97,7 @@
                                                   <items>
                                                       <ComboBox fx:id="facesCombo" promptText="Please Scan This Photo First!" />
                                                     <Button fx:id="deleteFaceButton" mnemonicParsing="false" onAction="#handleDeleteFaceButton" text="删除区域" />
-                                                      <Button mnemonicParsing="false" onAction="#handleReScanButton" text="ReScan" />
+                                                      <Button mnemonicParsing="false" onAction="#handleReScanButton" text="强制重新扫描" />
                                                   </items>
                                                 </ToolBar>
                                                 <ImageView fx:id="faceImageView" fitHeight="200.0" fitWidth="180.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" />

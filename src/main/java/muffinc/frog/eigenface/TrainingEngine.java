@@ -35,7 +35,7 @@ import java.util.*;
  * zj45499 (at) gmail (dot) com
  */
 
-public class TrainingEngine extends FaceDetection {
+public class TrainingEngine {
 
 
     public static final int COMPONENT_NUMBER = 18;
@@ -147,39 +147,20 @@ public class TrainingEngine extends FaceDetection {
     public Human IDCvRectInFrogImg(FrogImg frogImg, opencv_core.CvRect cvRect) {
         Matrix thisID = frogImg.idMatrices.get(cvRect);
 
-//        HashSet<Human> humans = new HashSet<>();
         Human minHuman = null;
         double min = Double.MAX_VALUE;
 
         for (Human human : humanFactory.nameTable.values()) {
             if (human.hasIDMatrix()) {
-                if (euclidean.getDistance(thisID, human.getIdMatrix()) < (IS_FACE_THRESHOLD < min ? IS_FACE_THRESHOLD : min)) {
+                if (euclidean.getDistance(thisID, human.getIdMatrix()) <
+                        (IS_FACE_THRESHOLD < min ? IS_FACE_THRESHOLD : min)) {
                     minHuman = human;
                     min = euclidean.getDistance(thisID, human.getIdMatrix());
 
                 }
             }
         }
-
         return minHuman;
-
-//        if (humans.size() == 1) {
-//            return humans.toArray(new Human[1])[0];
-//        } else if (humans.size() == 0) {
-//            System.out.println("IDCvRectInFrogImg failed");
-//            return null;
-//        } else {
-//            System.out.println("IDCvRectInFrogImg found multiple human");
-//            return null;
-//        }
-
-//        Human human = KNN.assignHuman(humanFactory, frogImg, cvRect, 3, euclidean);
-//
-//        if (euclidean.getDistance(thisID, human.getIdMatrix()) < ID_THRESHOLD) {
-//            return human;
-//        } else {
-//            return human;
-//        }
     }
 
 
