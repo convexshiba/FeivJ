@@ -1,2 +1,4 @@
-# FROG
-A Face Recognition Gallery in Java
+# YaF-DIVJ
+**Yet another Face Detection Image Viewer in Java**
+
+*To be edited*
