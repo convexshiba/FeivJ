@@ -11,7 +11,6 @@ import javafx.stage.Stage;
 import muffinc.frog.object.FrogImg;
 import muffinc.frog.object.Human;
 import muffinc.frog.eigenface.TrainingEngine;
-import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.bytedeco.javacpp.opencv_core;
 
 import java.io.*;
@@ -42,7 +41,7 @@ public class Main extends Application {
         mainController.setMain(this);
 
 
-        primaryStage.setTitle("Face Recognition Image Library in Java, FriL");
+        primaryStage.setTitle("Welcome to YaF RIVJ!");
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
 
@@ -56,20 +55,20 @@ public class Main extends Application {
     @Override
     public void stop() throws Exception {
 
-        File[] files = engine.humanFactory.frogImgTable.keySet().toArray(new File[1]);
-
-        String filesxml = xStream.toXML(files);
-
-
-        File filesXML = new File("/Users/Meth/Documents/FROG/src/main/resources/appxml/" + "filesXML.xml");
-        if (!filesXML.exists()) {
-            filesXML.createNewFile();
-        }
-
-        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filesXML.getAbsoluteFile()));
-
-        bufferedWriter.write(filesxml);
-        bufferedWriter.close();
+//        File[] files = engine.humanFactory.frogImgTable.keySet().toArray(new File[1]);
+//
+//        String filesxml = xStream.toXML(files);
+//
+//
+//        File filesXML = new File("/Users/Meth/Documents/FROG/src/main/resources/appxml/" + "filesXML.xml");
+//        if (!filesXML.exists()) {
+//            filesXML.createNewFile();
+//        }
+//
+//        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filesXML.getAbsoluteFile()));
+//
+//        bufferedWriter.write(filesxml);
+//        bufferedWriter.close();
 
 //        FileWriter fileWriter = new FileWriter(engineXML.getAbsoluteFile());
 //        fileWriter.write("adsfasdfasfd\nadsfasdfas");

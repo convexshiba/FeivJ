@@ -37,7 +37,7 @@ import static org.bytedeco.javacpp.opencv_imgproc.*;
 public class FaceDetection {
 
     public static final String CASCADE_FILE =
-            "/Users/Meth/Documents/FROG/src/main/resources/xml/haarcascade_frontalface_alt.xml";
+            "/Users/Meth/Documents/Thesis/FROG/src/main/resources/xml/haarcascade_frontalface_alt.xml";
 
     public static LinkedList<CvRect> detectFaces(IplImage img) {
         
@@ -67,7 +67,7 @@ public class FaceDetection {
 
 
     public static final String FILE =
-            "/Users/Meth/Documents/FROG/src/main/resources/testtesttest copy/201404201524468276e.jpg";
+            "/Users/Meth/Documents/Thesis/FROG/src/main/resources/testtesttest copy/201404201524468276e.jpg";
 
     public static void main(String[] args) throws Exception {
         // This will redirect the OpenCV errors to the Java console to give you

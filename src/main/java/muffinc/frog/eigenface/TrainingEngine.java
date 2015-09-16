@@ -45,7 +45,7 @@ public class TrainingEngine {
     public static final int METRIC_L1D = 1;
     public static final int METRIC_EUCILDEAN = 2;
 
-    public static final String HUMAN_DIRECTORY = "/Users/Meth/Documents/FROG/src/main/resources/Humans";
+    public static final String HUMAN_DIRECTORY = "/Users/Meth/Documents/Thesis/FROG/src/main/resources/Humans";
 
     public HumanFactory humanFactory;
     public PCA pca;
@@ -73,7 +73,7 @@ public class TrainingEngine {
         OUTER:
         for (int people = 1; people < 41; people++) {
             for (int index = 1; index < 11; index++) {
-                String filePath = "/Users/Meth/Documents/FROG/src/main/faces/s" + people + "/" + index + ".pgm";
+                String filePath = "/Users/Meth/Documents/Thesis/FROG/src/main/faces/s" + people + "/" + index + ".pgm";
 
                 File file = new File(filePath);
 
