@@ -57,14 +57,12 @@ public class YafImg {
     public HashMap<CvRect, Matrix> idMatrices = new HashMap<>();
     private TrainingEngine trainingEngine;
     private File file;
-//    private Matrix matrix;
-//    private Matrix vectorized;
-//    private boolean isFace;
     private Matrix idMatrix;
-//    private boolean isScanned;
     private LinkedList<CvRect> cvRects = null;
     private Metadata metadata = null;
     public StringProperty peopleNames = null;
+
+    private FaceDetection detector = new FaceDetection();
 
 
     public YafImg(File file, TrainingEngine trainingEngine) {
@@ -163,22 +161,6 @@ public class YafImg {
         currentImage = SwingFXUtils.toFXImage(currentIplImage.getBufferedImage(), null);
     }
 
-//    public Matrix getVectorized() {
-//        return vectorized;
-//    }
-
-//    public void setVectorized(Matrix vectorized) {
-//        this.vectorized = vectorized;
-//    }
-
-//    public Matrix getMatrix() {
-//        return matrix;
-//    }
-
-//    public void setMatrix(Matrix matrix) {
-//        this.matrix = matrix;
-//    }
-
     public boolean isProjected() {
         return idMatrix != null;
     }
@@ -201,7 +183,7 @@ public class YafImg {
 
     public void detectAndID() {
         if (!isDetected()) {
-            cvRects = FaceDetection.detectFaces(originalIplImage);
+            cvRects = detector.detectFaces(originalIplImage);
             detectedFaces.setValue(cvRects.size());
             System.out.println("detectAndID() found " + cvRects.size() + " faces");
             trainingEngine.projectAllCvRect(this);
@@ -222,7 +204,7 @@ public class YafImg {
 
     public void detect() {
         if (!isDetected()) {
-            cvRects = FaceDetection.detectFaces(originalIplImage);
+            cvRects = detector.detectFaces(originalIplImage);
             detectedFaces.setValue(cvRects.size());
             trainingEngine.projectAllCvRect(this);
 

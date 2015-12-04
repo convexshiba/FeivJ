@@ -21,10 +21,8 @@
 
 package muffinc.yafdivj.eigenface;
 
-import muffinc.yafdivj.helper.Display;
 import muffinc.yafdivj.helper.ImageHelper;
 import org.bytedeco.javacpp.opencv_core.IplImage;
-import org.bytedeco.javacv.JavaCvErrorCallback;
 
 
 import java.util.LinkedList;
@@ -39,9 +37,9 @@ import static org.bytedeco.javacpp.opencv_imgproc.*;
 public class FaceDetection {
 
     public static final String CASCADE_FILE =
-            "/Users/Meth/Documents/Thesis/FROG/src/main/resources/xml/haarcascade_frontalface_alt.xml";
+            "xml/haarcascade_frontalface_alt.xml";
 
-    public static LinkedList<CvRect> detectFaces(IplImage img) {
+    public LinkedList<CvRect> detectFaces(IplImage img) {
         
         IplImage greyImg = img.clone();
         if (greyImg.nChannels() != 1) {
@@ -49,7 +47,7 @@ public class FaceDetection {
         }
 
         CvMemStorage storage = CvMemStorage.create();
-        CvHaarClassifierCascade cascade = new CvHaarClassifierCascade(cvLoad(CASCADE_FILE));
+        CvHaarClassifierCascade cascade = new CvHaarClassifierCascade(cvLoad(getClass().getClassLoader().getResource(CASCADE_FILE).getPath()));
         CvSeq faces = cvHaarDetectObjects(greyImg, cascade, storage, 1.05, 1, CV_HAAR_SCALE_IMAGE);
         cvClearMemStorage(storage);
 
@@ -62,72 +60,6 @@ public class FaceDetection {
 
         return rects;
     }
-
-//    public static LinkedList<CvRect> detectFaces(File file) {
-//        return detectFaces(cvLoadImage(file.getAbsolutePath(), 1));
-//    }
-
-
-    public static final String FILE =
-            "/Users/Meth/Documents/Thesis/FROG/src/main/resources/testtesttest copy/201404201524468276e.jpg";
-
-    public static void main(String[] args) throws Exception {
-        // This will redirect the OpenCV errors to the Java console to give you
-        // feedback about any problems that may occur.
-        new JavaCvErrorCallback();
-
-        // Load the original image.
-        IplImage originalImage = cvLoadImage(FILE, 1);
-
-        // We need a grayscale image in order to do the recognition, so we
-        // create a new image of the same size as the original one.
-        IplImage grayImage = IplImage.create(originalImage.width(),
-                originalImage.height(), IPL_DEPTH_8U, 1);
-
-        // We convert the original image to grayscale.
-        cvCvtColor(originalImage, grayImage, CV_BGR2GRAY);
-
-        // Save greysacle image
-//        cvSaveImage(FileHelper.addNameSuffix(FILE, "grey"), grayImage);
-
-        CvMemStorage storage = CvMemStorage.create();
-
-        // We instantiate a classifier cascade to be used for detection, using the cascade definition.
-        CvHaarClassifierCascade cascade = new CvHaarClassifierCascade(
-                cvLoad(CASCADE_FILE));
-
-        // We detect the faces.
-        CvSeq faces = cvHaarDetectObjects(grayImage, cascade, storage,
-                1.05, 1, CV_HAAR_DO_CANNY_PRUNING);
-
-        // Clear storage.
-        cvClearMemStorage(storage);
-
-
-        //We iterate over the discovered faces and draw yellow rectangles around them.
-        for (int i = 0; i < faces.total(); i++) {
-            CvRect r = new CvRect(cvGetSeqElem(faces, i));
-
-            r = growRect(r);
-//            TrainingEngine trainingEngine = new TrainingEngine();
-
-//            cvRectangle(originalImage, cvPoint(r.x(), r.y()),
-//                        cvPoint(r.x() + r.width(), r.y() + r.height()), CvScalar.YELLOW, 1, CV_AA, 0);
-
-            CvFont font = new CvFont();
-            cvInitFont(font, CV_FONT_HERSHEY_SIMPLEX, 1, 1, 0, 2, CV_AA);
-//            cvPutText(originalImage, String.valueOf(i + 1), cvPoint(r.x() - 20, r.y() + 10), font, CvScalar.MAGENTA);
-
-            cvRectangle(originalImage, cvPoint(r.x(), r.y()),
-                    cvPoint(r.x() + r.width(), r.y() + r.height()), CvScalar.YELLOW, 1, CV_AA, 0);
-        }
-
-        // Save the image to a new file.
-//        cvSaveImage(FileHelper.addNameSuffix(FILE, "detected"), originalImage);
-        Display.display(originalImage);
-
-    }
-
 
     public static CvRect growRect(CvRect cvRect) {
         int x = cvRect.x();
