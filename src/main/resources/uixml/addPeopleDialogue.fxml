@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="172.0" prefWidth="354.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="muffinc.frog.userinterface.AddPeopleDialogueController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="172.0" prefWidth="354.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="muffinc.yafdivj.userinterface.AddPeopleDialogueController">
    <children>
       <Label layoutX="22.0" layoutY="38.0" text="Please choose a name:" />
       <TextField fx:id="nameField" layoutX="22.0" layoutY="73.0" prefHeight="26.0" prefWidth="252.0" promptText="name" />
